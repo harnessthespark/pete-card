@@ -40,17 +40,17 @@ body {
 	font-size: 34px;
 	margin: 10px 10px 20px 14px;
 }
-.sub { color: var(--paper); margin: 10px 0; }
+.sub { color: var(--gold); margin: 10px 0; }
 
 .form {
 	display: grid;
 	gap: 14px;
 	background: var(--paper);
-	padding: 18px;
-	border-radius: 18px;
-	border: 1px solid var(--ink);
-	margin-bottom: 32px;
+	padding-top: 18px;
+	border-radius: 6px;
+	border: 5px dashed var(--ink);
 }
+
 .form input, .form textarea {
 	font: inherit;
 	font-size: 16px;
@@ -70,6 +70,7 @@ body {
 	border-radius: 999px;
 	background: var(--ink);
 	color: var(--ground);
+	margin-bottom: 10px;
 }
 .form button:disabled { opacity: 0.6; }
 .status { margin: 0; text-align: center; color: var(--coral); }
@@ -168,3 +169,45 @@ body { overflow-x: hidden; }
 
 /* Title is now a full line of text: scale it to the screen */
 .fifty { font-size: clamp(30px, 7vw, 52px); line-height: 1.1; margin: 10px 0; text-wrap: balance; }
+
+/* Code screen = ticket stub */
+.gate .form {
+	position: relative;
+	border: 3px dashed var(--ink);   /* the tear line */
+	border-radius: 6px;
+	padding: 28px 18px 18px;
+}
+.gate .form::before { content: none; }
+
+/* Ticket: flyer on top, tear-off stub attached underneath */
+.gate .cover {
+	margin-bottom: 0;
+	border-radius: 12px 12px 0 0;
+}
+.gate .form {
+	margin-top: 0;
+	border: 0;
+	border-top: 3px dashed var(--ink);   /* the tear line */
+	border-radius: 0 0 12px 12px;
+	background: var(--paper);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.stub-note::before {
+	content: "ADMIT ONE · VIP";
+	display: block;            /* its own line, above the text */
+	font-size: 13px;
+	letter-spacing: 0.15em;
+	color: var(--coral);
+	margin-bottom: 6px;
+}
+
+/* Laptop: note on the left, code + button on the right */
+@media (min-width: 600px) {
+	.gate .form {
+		grid-template-columns: 1fr 2fr;
+		align-items: center;
+		column-gap: 20px;
+	}
+	.stub-note { grid-row: span 3; }
+}

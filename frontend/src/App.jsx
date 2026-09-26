@@ -97,9 +97,9 @@ function App() {
           </header>
           <img className="cover" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-          <p className="sub under-cover">Enter the invite code you were sent</p>
           <form className="form" onSubmit={handleUnlock}>
-            <input placeholder="Invite code" value={code} autoFocus
+            <p className="stub-note">Enter the invite code you were sent</p>
+            <input placeholder="Door code" value={code} autoFocus
                    autoCapitalize="none" autoCorrect="off"
                    onChange={(e) => setCode(e.target.value)} required />
             <button>Open the card</button>
@@ -114,7 +114,8 @@ function App() {
         <header className="hero">
           <p className="fifty">Pete's 50th Birthday Online-Card</p>
         </header>
-        <img className="cover" src="/cover.jpg"
+        <img className="cover" src={isPeteView ? '/cover.jpg' : '/vip-flyer.png'}
+             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
         <p className="sub under-cover">Leave a message, a photo or a video</p>
 
