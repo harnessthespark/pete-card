@@ -92,7 +92,11 @@ function App() {
   if (!isPeteView && !unlocked) {
     return (
         <main className="page gate">
-          <header className="hero">
+          <img className="cover" src="/cover.jpg"
+               alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+          <img className="cover" src="/cover.jpg"
+             alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+        <header className="hero">
             <p className="fifty">50</p>
             <h1>Happy 50th, Pete!</h1>
             <p className="sub">Enter the invite code you were sent</p>
@@ -110,6 +114,8 @@ function App() {
 
   return (
       <main className="page">
+        <img className="cover" src="/cover.jpg"
+             alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
         <header className="hero">
           <p className="fifty">50</p>
           <h1>Happy 50th, Pete!</h1>

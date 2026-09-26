@@ -152,3 +152,14 @@ body { overflow-x: hidden; }
 	.spec dd, .spec p { color: var(--line); }
 	.note:nth-child(odd), .note:nth-child(even) { transform: none; }
 }
+
+/* Poster on the front of the card */
+.cover {
+	display: block;
+	width: 100%;
+	max-width: 760px;
+	height: auto;
+	margin: 0 auto 20px;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
