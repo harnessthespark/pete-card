@@ -1,0 +1,10 @@
+.git
+.idea
+venv
+.venv
+__pycache__
+*.db
+uploads
+pete-card
+frontend/node_modules
+frontend/dist

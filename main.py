@@ -7,10 +7,11 @@ from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-DB = "petebirthday.db"
-SECRET_CODE = "allin76"
-ADMIN_CODE = "scruttock"
-UPLOAD_DIR = "uploads"
+DATA_DIR = os.environ.get("DATA_DIR", ".")
+DB = os.path.join(DATA_DIR, "petebirthday.db")
+SECRET_CODE = os.environ.get("SECRET_CODE", "allin76")
+ADMIN_CODE = os.environ.get("ADMIN_CODE", "scruttock")
+UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -39,11 +40,6 @@ class Message(BaseModel):
     name: str = Field(max_length=60)
     text: str = Field(max_length=2000)
     media: str | None = None
-
-
-@app.get("/")
-def home():
-    return {"message": "Happy Birthday"}
 
 
 @app.post("/messages")
@@ -120,3 +116,9 @@ def admin_delete(message_id: int, admin_code: str):
                 os.remove(path)
         conn.execute("DELETE FROM messages WHERE id = ?", (message_id,))
     return {"deleted": message_id}
+
+
+# Serve the built React site (only exists in the live version)
+FRONTEND_DIR = "frontend/dist"
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
