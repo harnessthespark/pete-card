@@ -1,6 +1,104 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+function AdminPage() {
+  const [adminCode, setAdminCode] = useState(() => {
+    try { return sessionStorage.getItem('peteAdmin') || '' } catch { return '' }
+  })
+  const [items, setItems] = useState(null)
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const q = (c) => `admin_code=${encodeURIComponent(c)}`
+
+  async function load(codeToUse) {
+    setError('')
+    const res = await fetch(`/admin/messages?${q(codeToUse)}`)
+    if (!res.ok) {
+      setItems(null)
+      setError("That admin code isn't right.")
+      return
+    }
+    setItems(await res.json())
+    try { sessionStorage.setItem('peteAdmin', codeToUse) } catch { /* ignore */ }
+  }
+
+  useEffect(() => {
+    if (adminCode) load(adminCode)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function approve(id) {
+    setBusy(true)
+    await fetch(`/admin/approve/${id}?${q(adminCode)}`, { method: 'POST' })
+    await load(adminCode)
+    setBusy(false)
+  }
+
+  async function remove(id) {
+    if (!window.confirm('Delete this message (and its photo/video) for good?')) return
+    setBusy(true)
+    await fetch(`/admin/messages/${id}?${q(adminCode)}`, { method: 'DELETE' })
+    await load(adminCode)
+    setBusy(false)
+  }
+
+  const isVideo = (f) => /\.(mp4|mov)$/i.test(f)
+
+  if (items === null) {
+    return (
+        <main className="page">
+          <header className="hero">
+            <p className="fifty">Card admin</p>
+          </header>
+          <form className="form" onSubmit={(e) => { e.preventDefault(); load(adminCode.trim()) }}>
+            <input placeholder="Admin code" value={adminCode} type="password"
+                   onChange={(e) => setAdminCode(e.target.value)} required />
+            <button>See messages</button>
+            {error && <p className="status">{error}</p>}
+          </form>
+        </main>
+    )
+  }
+
+  const waiting = items.filter((m) => !m.approved)
+  const live = items.filter((m) => m.approved)
+
+  function Row({ m }) {
+    return (
+        <article className="note admin-note">
+          <p className={m.approved ? 'chip chip-live' : 'chip chip-wait'}>
+            {m.approved ? 'On the card' : 'Waiting for you'}
+          </p>
+          {m.media && (isVideo(m.media)
+              ? <video src={`/media/${m.media}`} controls playsInline />
+              : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
+          <p>{m.text}</p>
+          <p className="from">— {m.name}</p>
+          <div className="admin-actions">
+            {!m.approved && <button disabled={busy} onClick={() => approve(m.id)}>Approve</button>}
+            <button disabled={busy} className="danger" onClick={() => remove(m.id)}>Delete</button>
+          </div>
+        </article>
+    )
+  }
+
+  return (
+      <main className="page">
+        <header className="hero">
+          <p className="fifty">Card admin</p>
+          <p className="sub">{waiting.length} waiting · {live.length} on the card</p>
+          <button className="refresh" onClick={() => load(adminCode)}>Refresh</button>
+        </header>
+        <h2 className="admin-h">Waiting for you</h2>
+        {waiting.length === 0 && <p className="sub">Nothing waiting. All caught up.</p>}
+        <section className="wall">{waiting.map((m) => <Row key={m.id} m={m} />)}</section>
+        <h2 className="admin-h">On the card</h2>
+        <section className="wall">{live.map((m) => <Row key={m.id} m={m} />)}</section>
+      </main>
+  )
+}
+
 function App() {
   const [messages, setMessages] = useState([])
   const [code, setCode] = useState('')
@@ -88,6 +186,10 @@ function App() {
   }
 
   const isPeteView = window.location.hash === '#pete'
+
+  if (window.location.hash === '#admin') {
+    return <AdminPage />
+  }
 
   if (!isPeteView && !unlocked) {
     return (

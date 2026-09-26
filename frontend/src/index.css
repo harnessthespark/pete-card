@@ -211,3 +211,17 @@ body { overflow-x: hidden; }
 	}
 	.stub-note { grid-row: span 3; }
 }
+
+/* Admin page (#admin) */
+.admin-h { color: var(--paper); font-size: 20px; margin: 28px 0 12px; }
+.admin-note { transform: none !important; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+	text-transform: uppercase; padding: 4px 10px; border-radius: 999px; margin: 0 0 10px; }
+.chip-wait { background: var(--gold); color: #fff; }
+.chip-live { background: var(--ink); color: var(--paper); }
+.admin-actions { display: flex; gap: 10px; margin-top: 8px; }
+.admin-actions button, .refresh {
+	font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 999px;
+	border: 0; background: var(--ink); color: var(--paper); cursor: pointer; }
+.admin-actions .danger { background: var(--coral); }
+.refresh { margin-top: 8px; background: var(--gold); }
