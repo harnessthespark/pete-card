@@ -94,7 +94,6 @@ function App() {
         <main className="page gate">
           <header className="hero">
             <p className="fifty">Pete's 50th Birthday Online-Card</p>
-            <h1>Happy 50th, Pete!</h1>
           </header>
           <img className="cover" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
@@ -114,7 +113,6 @@ function App() {
       <main className="page">
         <header className="hero">
           <p className="fifty">Pete's 50th Birthday Online-Card</p>
-          <h1>Happy 50th, Pete!</h1>
         </header>
         <img className="cover" src="/cover.jpg"
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
