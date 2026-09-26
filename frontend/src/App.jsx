@@ -94,8 +94,6 @@ function App() {
         <main className="page gate">
           <img className="cover" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-          <img className="cover" src="/cover.jpg"
-             alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
         <header className="hero">
             <p className="fifty">50</p>
             <h1>Happy 50th, Pete!</h1>
