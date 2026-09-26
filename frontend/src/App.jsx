@@ -92,13 +92,13 @@ function App() {
   if (!isPeteView && !unlocked) {
     return (
         <main className="page gate">
+          <header className="hero">
+            <p className="fifty">Pete's 50th Birthday Online-Card</p>
+            <h1>Happy 50th, Pete!</h1>
+          </header>
           <img className="cover" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-        <header className="hero">
-            <p className="fifty">50</p>
-            <h1>Happy 50th, Pete!</h1>
-            <p className="sub">Enter the invite code you were sent</p>
-          </header>
+          <p className="sub under-cover">Enter the invite code you were sent</p>
           <form className="form" onSubmit={handleUnlock}>
             <input placeholder="Invite code" value={code} autoFocus
                    autoCapitalize="none" autoCorrect="off"
@@ -112,13 +112,13 @@ function App() {
 
   return (
       <main className="page">
+        <header className="hero">
+          <p className="fifty">Pete's 50th Birthday Online-Card</p>
+          <h1>Happy 50th, Pete!</h1>
+        </header>
         <img className="cover" src="/cover.jpg"
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-        <header className="hero">
-          <p className="fifty">50</p>
-          <h1>Happy 50th, Pete!</h1>
-          <p className="sub">Leave a message, a photo or a video</p>
-        </header>
+        <p className="sub under-cover">Leave a message, a photo or a video</p>
 
         {!isPeteView && (
             <div className="compose">
