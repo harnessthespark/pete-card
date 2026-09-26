@@ -212,6 +212,13 @@ body { overflow-x: hidden; }
 	.stub-note { grid-row: span 3; }
 }
 
+.wall video {
+	width: 100%;
+	max-height: 110px;
+	object-fit: contain;
+	background: #000;
+}
+
 /* Admin page (#admin) */
 .admin-h { color: var(--paper); font-size: 20px; margin: 28px 0 12px; }
 .admin-note { transform: none !important; }
@@ -225,3 +232,5 @@ body { overflow-x: hidden; }
 	border: 0; background: var(--ink); color: var(--paper); cursor: pointer; }
 .admin-actions .danger { background: var(--coral); }
 .refresh { margin-top: 8px; background: var(--gold); }
+
+
