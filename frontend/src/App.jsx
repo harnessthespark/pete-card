@@ -9,15 +9,46 @@ function App() {
   const [file, setFile] = useState(null)
   const [status, setStatus] = useState('')
   const [sending, setSending] = useState(false)
+  const [unlocked, setUnlocked] = useState(false)
+  const [codeError, setCodeError] = useState('')
 
   async function loadMessages() {
     const res = await fetch('/messages')
     setMessages(await res.json())
   }
 
+  async function checkCode(tryCode) {
+    const res = await fetch('/check-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: tryCode }),
+    })
+    return res.ok
+  }
+
   useEffect(() => {
     loadMessages()
+    let saved = ''
+    try { saved = localStorage.getItem('peteCode') || '' } catch { saved = '' }
+    if (saved) {
+      checkCode(saved).then((ok) => {
+        if (ok) { setCode(saved); setUnlocked(true) }
+      })
+    }
   }, [])
+
+  async function handleUnlock(e) {
+    e.preventDefault()
+    setCodeError('')
+    const tryCode = code.trim()
+    if (await checkCode(tryCode)) {
+      setCode(tryCode)
+      setUnlocked(true)
+      try { localStorage.setItem('peteCode', tryCode) } catch { /* ignore */ }
+    } else {
+      setCodeError("That code isn't right. Check the message you were sent.")
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -58,6 +89,25 @@ function App() {
 
   const isPeteView = window.location.hash === '#pete'
 
+  if (!isPeteView && !unlocked) {
+    return (
+        <main className="page gate">
+          <header className="hero">
+            <p className="fifty">50</p>
+            <h1>Happy 50th, Pete!</h1>
+            <p className="sub">Enter the invite code you were sent</p>
+          </header>
+          <form className="form" onSubmit={handleUnlock}>
+            <input placeholder="Invite code" value={code} autoFocus
+                   autoCapitalize="none" autoCorrect="off"
+                   onChange={(e) => setCode(e.target.value)} required />
+            <button>Open the card</button>
+            {codeError && <p className="status">{codeError}</p>}
+          </form>
+        </main>
+    )
+  }
+
   return (
       <main className="page">
         <header className="hero">
@@ -69,8 +119,6 @@ function App() {
         {!isPeteView && (
             <div className="compose">
               <form className="form" onSubmit={handleSubmit}>
-                <input placeholder="Invite code" value={code}
-                       onChange={(e) => setCode(e.target.value)} required />
                 <input placeholder="Your name" value={name} maxLength={60}
                        onChange={(e) => setName(e.target.value)} required />
                 <textarea placeholder="Your message to Pete" value={text} maxLength={2000}

@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/messages': 'http://127.0.0.1:8001',
+      '/check-code': 'http://127.0.0.1:8001',
       '/upload': 'http://127.0.0.1:8001',
       '/media': 'http://127.0.0.1:8001',
     },

@@ -118,6 +118,17 @@ def admin_delete(message_id: int, admin_code: str):
     return {"deleted": message_id}
 
 
+class CodeCheck(BaseModel):
+    code: str
+
+
+@app.post("/check-code")
+def check_code(body: CodeCheck):
+    if body.code.strip() != SECRET_CODE:
+        raise HTTPException(status_code=403, detail="That code isn't right")
+    return {"ok": True}
+
+
 # Serve the built React site (only exists in the live version)
 FRONTEND_DIR = "frontend/dist"
 if os.path.isdir(FRONTEND_DIR):
