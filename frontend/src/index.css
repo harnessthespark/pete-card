@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&display=swap');
+
+:root {
+	--ground: #eef0e6;
+	--paper: #fffdf7;
+	--ink: #1f3a2e;
+	--muted: #5c6b61;
+	--gold: #b8862a;
+	--coral: #c95a40;
+	--line: #d6dacb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	background: var(--ink);
+	color: var(--ink);
+	font-family: 'Instrument Sans', system-ui, sans-serif;
+}
+
+.page {
+	max-width: 480px;
+	margin: 0 auto;
+	padding: 24px 16px 64px;
+}
+
+.hero { text-align: center; padding-bottom: 24px; }
+.fifty {
+	font-family: 'Young Serif', Georgia, serif;
+	font-size: 60px;
+	line-height: 1;
+	color: var(--gold);
+	margin: 15px;
+}
+.hero h1 {
+	font-family: 'Young Serif', Georgia, serif;
+	font-weight: 400;
+	color: var(--line);
+	font-size: 34px;
+	margin: 10px 10px 20px 14px;
+}
+.sub { color: var(--paper); margin: 10px 0; }
+
+.form {
+	display: grid;
+	gap: 14px;
+	background: var(--paper);
+	padding: 18px;
+	border-radius: 18px;
+	border: 1px solid var(--ink);
+	margin-bottom: 32px;
+}
+.form input, .form textarea {
+	font: inherit;
+	font-size: 16px;
+	padding: 12px;
+	border: 1.5px solid var(--line);
+	border-radius: 10px;
+	background: var(--paper);
+	color: var(--ink);
+}
+.form textarea { min-height: 110px; resize: vertical; }
+.form button {
+	font: inherit;
+	font-weight: 600;
+	font-size: 17px;
+	padding: 14px;
+	border: 0.1px solid var(--line);
+	border-radius: 999px;
+	background: var(--ink);
+	color: var(--ground);
+}
+.form button:disabled { opacity: 0.6; }
+.status { margin: 0; text-align: center; color: var(--coral); }
+
+.wall { display: grid; gap: 20px; }
+.note {
+	background: var(--paper);
+	padding: 18px;
+	border-radius: 6px;
+	box-shadow: 0 4px 14px rgba(31, 58, 46, 0.08);
+}
+.note:nth-child(odd) { transform: rotate(-0.6deg); }
+.note:nth-child(even) { transform: rotate(0.5deg); }
+.note img, .note video {
+	width: 100%;
+	border-radius: 4px;
+	display: block;
+	margin-bottom: 10px;
+}
+.note p { margin: 0 0 8px; white-space: pre-wrap; }
+.from {
+	font-family: 'Caveat', cursive;
+	font-size: 26px;
+	color: var(--coral);
+	text-align: right;
+}
+
+.compose {
+	display: grid;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+.compose .form { margin-bottom: 0; }
+
+.spec {
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	padding: 16px;
+	font-size: 14px;
+	align-self: start;
+}
+.spec h2 {
+	font-size: 16px;
+	margin: 0 0 10px;
+}
+.spec dl {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 6px 12px;
+	margin: 0 0 10px;
+}
+.spec dt { font-weight: 600; }
+.spec dd { margin: 0; color: var(--muted); }
+.spec p { margin: 0; color: var(--muted); }
+
+@media (min-width: 760px) {
+	.page { max-width: 760px; }
+	.compose { grid-template-columns: 1fr 240px; }
+}
