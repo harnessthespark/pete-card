@@ -6,6 +6,7 @@ import { enterChapel, enterClub } from './music.js'
 // Friends' messages are all shown in full underneath (see App.jsx).
 
 const START = new Date('2026-10-01T00:00:00+01:00') // 1 October, UK time
+const EVE = new Date('2026-09-30T19:00:00+01:00') // Petermas Eve: window 1 opens early, Wednesday 7pm UK
 const DAY_MS = 24 * 60 * 60 * 1000
 const LEAD_BLANKS = 3 // October 2026 starts on a Thursday (Mon-first week)
 
@@ -49,6 +50,7 @@ function daysOpenNow() {
   // Preview any day with #pete-day-12 (for Lisa to test)
   const m = window.location.hash.match(/^#pete-day-(\d+)/)
   if (m) return Math.min(31, Math.max(0, Number(m[1])))
+  if (Date.now() >= EVE.getTime() && Date.now() < START.getTime()) return 1
   const n = Math.floor((Date.now() - START.getTime()) / DAY_MS) + 1
   return Math.min(31, Math.max(0, n))
 }
@@ -175,7 +177,7 @@ export default function PetermasCalendar() {
       <section ref={sectionRef} className={`petermas ${canonised ? 'canonised' : ''}`}>
         <h2 className="petermas-title">The Feast of St Petermas</h2>
         <p className="petermas-sub">
-          {daysOpen === 0 ? 'The feast begins on 1st October.'
+          {daysOpen === 0 ? 'The feast begins on Petermas Eve, Wednesday 30th September at 7pm.'
               : canonised ? 'St Petermas, canonised 1 November 2026'
                   : `Day ${daysOpen} of 31 · open a window each day`}
         </p>
