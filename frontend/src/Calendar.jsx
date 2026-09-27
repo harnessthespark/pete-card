@@ -2,27 +2,48 @@ import { useEffect, useRef, useState } from 'react'
 import { enterChapel, enterClub } from './music.js'
 
 // The Feast of St Petermas: a stained-glass advent calendar for October.
-// One pane opens each day (UK time). Pane N shows the Nth message on the card
-// (oldest first), so new messages naturally fill the later days.
+// One pane opens each day (UK time) with a blessing, and the window slowly lights up.
+// Friends' messages are all shown in full underneath (see App.jsx).
 
 const START = new Date('2026-10-01T00:00:00+01:00') // 1 October, UK time
 const DAY_MS = 24 * 60 * 60 * 1000
 const LEAD_BLANKS = 3 // October 2026 starts on a Thursday (Mon-first week)
 
+// One blessing per day of the feast
 const BLESSINGS = [
+  'Day one of the feast. Fifty years young, and the night has only just started.',
   'Blessed are the ravers, for they shall inherit the dance floor.',
-  'And on the seventh day, he did not rest. He went to an all-nighter.',
+  'And on the seventh day he did not rest. He found an after-party.',
   'Thou shalt not leave before the last record.',
   'Hands in the air, like it’s 1990.',
+  'Let there be bass. And there was bass. And it was good.',
   'Go forth and dance. The lasers are with you.',
-  'Let there be bass.',
   'Whistles, glowsticks and a month of cake. Amen.',
-  'The feast continues. Keep the faith, keep the beat.',
+  'Patron saint of the all-nighter, and the 6am bacon sandwich.',
+  'Keep the faith. Keep the beat. Keep the receipts for the birthday drinks.',
+  'Ten days in and still celebrating. Truly a miracle.',
+  'Blessed be the DJ who plays one more tune.',
+  'Thirteen: lucky for some, compulsory for St Pete.',
+  'Two weeks of Petermas. Most people manage one day.',
+  'The congregation is reminded that the bar is still open.',
+  'Halfway through the feast. Hydrate, then dance.',
+  'He who dances all month shall be forgiven all month.',
+  'A strobe is just a halo that can’t sit still.',
+  'Nineteen days in. The saint remains undefeated.',
+  'Twenty down. Sacred rule: the birthday isn’t over till he says so.',
+  'Behold, a man who treats a birthday like a festival season.',
+  'Peace, love, unity, respect, and cake.',
+  'Every day a feast day. It’s in the scriptures, look it up.',
+  'The saint is spotted by the speakers again. Pilgrims, gather.',
+  'Blessed are the ones who knew the words to every hardcore anthem.',
+  'Five days left. The halo is getting brighter.',
+  'Glory be to the 12-inch remix.',
+  'Three days to canonisation. Practise the saintly wave.',
+  'Almost there. The glass is nearly all lit.',
+  'Tomorrow the window blazes. Tonight, one more dance.',
+  'The feast is complete. St Petermas, patron saint of the all-nighter. Amen, and rave on.',
 ]
 
-function isVideo(fileName) {
-  return /\.(mp4|mov)$/i.test(fileName)
-}
 
 function daysOpenNow() {
   // Preview any day with #pete-day-12 (for Lisa to test)
@@ -36,7 +57,7 @@ function loadOpened() {
   try { return JSON.parse(localStorage.getItem('petermasOpened') || '[]') } catch { return [] }
 }
 
-export default function PetermasCalendar({ messages }) {
+export default function PetermasCalendar() {
   const daysOpen = daysOpenNow()
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
@@ -48,15 +69,13 @@ export default function PetermasCalendar({ messages }) {
     const el = sectionRef.current
     if (!el || !('IntersectionObserver' in window)) return
     const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) enterChapel(); else enterClub()
+      // In view, or scrolled past it down to the messages: chapel. Scrolled back up above it: club.
+      if (entry.isIntersecting || entry.boundingClientRect.top < 0) enterChapel(); else enterClub()
     }, { threshold: 0.35 })
     io.observe(el)
     return () => io.disconnect()
   }, [])
 
-  function messagesFor(day) {
-    return messages.filter((_, i) => (i % 31) + 1 === day)
-  }
 
   function openPane(day) {
     if (day > daysOpen) return
@@ -81,7 +100,6 @@ export default function PetermasCalendar({ messages }) {
   }
   while (cells.length % 7 !== 0) cells.push(<span key={`e${cells.length}`} className="pane pane-blank" aria-hidden="true" />)
 
-  const dayMsgs = showDay ? messagesFor(showDay) : []
 
   return (
       <section ref={sectionRef} className={`petermas ${canonised ? 'canonised' : ''}`}>
@@ -102,38 +120,12 @@ export default function PetermasCalendar({ messages }) {
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>
               <div className="pane-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">Day {showDay} of 31</p>
-                {dayMsgs.length === 0
-                    ? <p className="blessing">{BLESSINGS[(showDay - 1) % BLESSINGS.length]}</p>
-                    : dayMsgs.map((m) => (
-                        <article className="note" key={m.id}>
-                          {m.media && (isVideo(m.media)
-                              ? <video src={`/media/${m.media}`} controls playsInline />
-                              : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
-                          <p>{m.text}</p>
-                          <p className="from">— {m.name}</p>
-                        </article>
-                    ))}
+                <p className="blessing">{BLESSINGS[showDay - 1]}</p>
                 <button type="button" className="enter-btn pane-close" onClick={() => setShowDay(null)}>Close the window</button>
               </div>
             </div>
         )}
 
-        {canonised && (
-            <>
-              <h2 className="petermas-title">Every offering</h2>
-              <div className="wall">
-                {messages.map((m) => (
-                    <article className="note" key={m.id}>
-                      {m.media && (isVideo(m.media)
-                          ? <video src={`/media/${m.media}`} controls playsInline />
-                          : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
-                      <p>{m.text}</p>
-                      <p className="from">— {m.name}</p>
-                    </article>
-                ))}
-              </div>
-            </>
-        )}
       </section>
   )
 }

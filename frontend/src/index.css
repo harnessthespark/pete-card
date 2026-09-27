@@ -481,3 +481,4 @@ body { overflow-x: hidden; }
 	text-shadow: 2px 2px 0 #8b1a1a;
 }
 #yt-chapel, iframe#yt-chapel { position: fixed !important; left: -400px !important; bottom: 0 !important; width: 200px !important; height: 200px !important; opacity: 0 !important; pointer-events: none; z-index: -1; }
+.offerings-h { margin-top: 36px; }

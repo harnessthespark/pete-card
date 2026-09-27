@@ -391,19 +391,19 @@ function App() {
 
         {isPeteView && musicStarted && <SoundControls />}
 
-        {isPeteView ? <PetermasCalendar messages={messages} /> : (
-            <section className="wall">
-          {messages.map((m) => (
-              <article className="note" key={m.id}>
-                {m.media && (isVideo(m.media)
-                    ? <video src={`/media/${m.media}`} controls playsInline />
-                    : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
-                <p>{m.text}</p>
-                <p className="from">— {m.name}</p>
-              </article>
-          ))}
-        </section>
-        )}
+        {isPeteView && <PetermasCalendar />}
+        {isPeteView && <h2 className="petermas-title offerings-h">Offerings from the congregation</h2>}
+        <section className="wall">
+      {messages.map((m) => (
+          <article className="note" key={m.id}>
+            {m.media && (isVideo(m.media)
+                ? <video src={`/media/${m.media}`} controls playsInline />
+                : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
+            <p>{m.text}</p>
+            <p className="from">— {m.name}</p>
+          </article>
+      ))}
+    </section>
       </main>
   )
 }
