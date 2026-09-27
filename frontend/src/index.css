@@ -585,3 +585,7 @@ iframe#yt-chapel.player-visible { width: 192px !important; height: 108px !import
 .club-ticket .club-bg { filter: brightness(.8); }
 /* keep the queue message readable over the photo */
 .queue-msg { top: 6%; padding: 14px 16px; background: radial-gradient(ellipse at center, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 55%, rgba(0,0,0,0) 80%); }
+
+/* Club black page background (was dark green). Delete these two lines to go back. */
+body { background: #0a0a0c; }
+.stained { box-shadow: 0 0 0 4px #3b2a12, 0 0 50px rgba(255,212,0,.22); }
