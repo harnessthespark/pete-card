@@ -530,3 +530,16 @@ iframe#yt-chapel.player-visible { width: min(320px, calc(100vw - 110px)) !import
 	padding: 8px 12px; border-radius: 999px; background: #111; color: #fff; font-weight: 600; font-size: 14px;
 	box-shadow: 0 0 0 2px #ffd400; animation: pulse 1.6s ease-in-out infinite;
 }
+
+/* Friends' message / relic box: bigger, roomier, and a proper card on phones too */
+.compose { margin: 28px 0 44px; gap: 20px; }
+.compose .form {
+	background: var(--paper); border: 4px dashed var(--ink); border-radius: 14px;
+	padding: 26px 22px 16px; gap: 16px;
+}
+.compose .form textarea { min-height: 180px; }
+.compose .form input, .compose .form textarea { padding: 14px; }
+.compose .relic-intro { font-size: 15px; }
+@media (max-width: 600px) {
+	.compose .form { padding: 22px 16px 12px; border-width: 3px; }
+}
