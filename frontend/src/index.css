@@ -482,3 +482,13 @@ body { overflow-x: hidden; }
 }
 #yt-chapel, iframe#yt-chapel { position: fixed !important; left: -400px !important; bottom: 0 !important; width: 200px !important; height: 200px !important; opacity: 0 !important; pointer-events: none; z-index: -1; }
 .offerings-h { margin-top: 36px; }
+
+/* Smaller message cards: two per row, pictures cropped to a tidy size */
+.wall { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.note { padding: 10px; font-size: 14px; line-height: 1.35; }
+.note img { aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
+.note video, .wall video { max-height: 160px; margin-bottom: 8px; }
+.note p { margin: 0 0 6px; }
+.note .from { font-size: 20px; margin: 0; }
+.admin-page .wall, .wall:has(.admin-actions) { grid-template-columns: 1fr; }
+@media (max-width: 340px) { .wall { grid-template-columns: 1fr; } }
