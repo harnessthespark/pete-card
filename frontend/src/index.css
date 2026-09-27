@@ -235,54 +235,102 @@ body { overflow-x: hidden; }
 
 
 
-/* ===== Pete's opening: tap the flyer, club lasers ===== */
+/* ===== Pete's opening (Elisa-card style): ticket -> card drops in -> opens like a book ===== */
 .club {
-	position: fixed; inset: 0; z-index: 50;
-	background: radial-gradient(ellipse at 50% 110%, #2a0a3a 0%, #07040c 60%, #000 100%);
-	display: flex; flex-direction: column; align-items: center; justify-content: center;
-	overflow: hidden; cursor: pointer; perspective: 1400px;
+	position: fixed; inset: 0; z-index: 50; overflow: hidden;
+	background: radial-gradient(ellipse at 50% 115%, #3a0d4a 0%, #0b0612 55%, #000 100%);
 	transition: opacity .8s ease;
 }
 .club-leaving { opacity: 0; }
 
-.card-stage { position: relative; z-index: 3; width: min(88vw, 520px); }
-.card-front {
-	display: block; width: 100%; border-radius: 10px;
-	box-shadow: 0 20px 60px rgba(0,0,0,.7);
+/* the VIP ticket waiting on the floor */
+.ticket {
+	position: absolute; left: 50%; top: 50%; z-index: 3;
+	transform: translate(-50%, -50%) rotate(-4deg);
+	width: min(78vw, 340px); padding: 22px 20px;
+	display: flex; flex-direction: column; align-items: center; gap: 6px;
+	background: var(--paper); color: #111; border: 0; border-radius: 10px;
+	border-left: 4px dashed #111; font: inherit; cursor: pointer;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 30px rgba(255,43,214,.45), 0 18px 40px rgba(0,0,0,.6);
+	animation: ticketFloat 2.5s ease-in-out infinite;
+	transition: opacity .6s ease, transform .6s ease;
+}
+.ticket-top { font-size: 12px; font-weight: 600; letter-spacing: .2em; }
+.ticket-name { font-family: 'Caveat', cursive; font-size: 54px; line-height: 1; }
+.ticket-date { font-size: 12px; letter-spacing: .08em; color: #555; }
+@keyframes ticketFloat { 50% { transform: translate(-50%, -54%) rotate(-3deg); } }
+.club:not(.club-ticket) .ticket { opacity: 0; pointer-events: none; animation: none; transform: translate(-50%, -30%) scale(.8) rotate(-8deg); }
+
+/* the card (flyer on the cover) */
+.book-area {
+	position: absolute; left: 50%; top: 50%; z-index: 4;
+	width: min(88vw, 520px);
+	transform: translate(-50%, -50%);
+	perspective: 1600px;
+	visibility: hidden;
+}
+.club-arriving .book-area, .club-standing .book-area, .club-displayed .book-area,
+.club-open .book-area, .club-leaving .book-area { visibility: visible; }
+.club-arriving .book-area { animation: dropIn 1.4s cubic-bezier(.22,.68,.36,1) both; }
+@keyframes dropIn {
+	0%   { opacity: 0; transform: translate(-50%, -140%) scale(.6) rotate(-6deg); }
+	60%  { opacity: 1; transform: translate(-50%, -46%) scale(1.02) rotate(1deg); }
+	80%  { transform: translate(-50%, -52%) scale(.99) rotate(-.4deg); }
+	100% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+
+.book {
+	position: relative; aspect-ratio: 4 / 3; cursor: pointer;
+	transform-style: preserve-3d;
+	transition: transform 1.2s cubic-bezier(.4,0,.15,1);
+	transform: rotateX(-4deg) rotateY(-10deg) scale(.95);
+}
+.club-standing .book { transform: rotateX(-4deg) rotateY(-12deg) scale(1.12); }
+.club-displayed .book { transform: rotateX(-4deg) rotateY(-10deg) scale(.95); }
+.club-open .book, .club-leaving .book { transform: rotateX(-4deg) rotateY(0deg) scale(1); cursor: default; }
+
+.book-cover, .book-inside {
+	position: absolute; inset: 0; border-radius: 10px; overflow: hidden;
+	box-shadow: 0 24px 60px rgba(0,0,0,.7);
+}
+.book-cover {
 	transform-origin: left center;
-	transition: transform 1.4s cubic-bezier(.6,0,.2,1), opacity 1.4s ease;
-	animation: bob 3s ease-in-out infinite;
+	transition: transform 1.4s cubic-bezier(.4,0,.15,1);
+	backface-visibility: hidden;
 }
-.club-party .card-front, .club-leaving .card-front {
-	animation: none;
-	transform: rotateY(-105deg);
-	opacity: 0;
-}
-@keyframes bob { 50% { transform: translateY(-6px) rotate(-.4deg); } }
+.book-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.club-open .book-cover, .club-leaving .book-cover { transform: rotateY(-160deg); }
 
-.tap {
-	position: relative; z-index: 3; margin: 22px 0 0;
-	color: #fff; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 14px;
-	animation: pulse 1.6s ease-in-out infinite;
+.book-inside {
+	background: var(--paper);
+	display: flex; flex-direction: column; align-items: center; justify-content: center;
+	gap: 10px; padding: 20px; text-align: center;
 }
-.club-party .tap, .club-leaving .tap { opacity: 0; }
+.book-inside h1 {
+	margin: 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400;
+	font-size: clamp(30px, 8vw, 52px); line-height: 1.05; color: #111;
+	text-shadow: 0 0 10px rgba(255,43,214,.35);
+}
+.book-inside p { margin: 0; font-family: 'Caveat', cursive; font-size: clamp(22px, 5vw, 30px); color: var(--coral); }
+.enter-btn {
+	margin-top: 8px; border: 0; border-radius: 999px; padding: 12px 20px;
+	background: #111; color: #fff; font: inherit; font-weight: 600; cursor: pointer;
+	box-shadow: 0 0 0 2px #00e5ff, 0 0 16px rgba(0,229,255,.5);
+	opacity: 0; transition: opacity .6s ease 1.2s;
+}
+.club-open .enter-btn { opacity: 1; }
+
+.hint {
+	position: absolute; left: 0; right: 0; bottom: 12%; z-index: 5; margin: 0;
+	text-align: center; color: #fff; font-weight: 600; letter-spacing: .12em;
+	text-transform: uppercase; font-size: 13px;
+	animation: pulse 2.5s ease-in-out infinite;
+}
 @keyframes pulse { 50% { opacity: .35; } }
-
-.club-title {
-	position: absolute; z-index: 4; left: 0; right: 0; top: 50%;
-	transform: translateY(-50%) scale(.6);
-	margin: 0; padding: 0 16px; text-align: center;
-	font-family: 'Young Serif', Georgia, serif; font-weight: 400;
-	font-size: clamp(40px, 11vw, 88px); line-height: 1.05; color: #fff;
-	text-shadow: 0 0 12px #ff2bd6, 0 0 32px #00e5ff, 0 0 60px #39ff14;
-	opacity: 0; pointer-events: none;
-	transition: opacity .8s ease 1s, transform .8s cubic-bezier(.2,1.4,.4,1) 1s;
-}
-.club-party .club-title, .club-leaving .club-title { opacity: 1; transform: translateY(-50%) scale(1); }
 
 /* laser beams: thin glowing lines fanning up from the floor */
 .lasers { position: absolute; inset: 0; z-index: 2; mix-blend-mode: screen; opacity: 0; transition: opacity .3s; }
-.club-party .lasers, .club-leaving .lasers { opacity: 1; }
+.club-open .lasers, .club-leaving .lasers { opacity: 1; }
 .beam {
 	position: absolute; bottom: -2vh; left: var(--x);
 	width: 3px; height: 160vh; margin-left: -1.5px;
@@ -308,32 +356,32 @@ body { overflow-x: hidden; }
 	transition: opacity 1s;
 	animation: drift 8s ease-in-out infinite alternate;
 }
-.club-party .haze, .club-leaving .haze { opacity: 1; }
+.club-open .haze, .club-leaving .haze { opacity: 1; }
 @keyframes drift { to { transform: translate(4%, -3%) scale(1.08); } }
 
 /* quick strobe as it opens */
 .strobe { position: absolute; inset: 0; z-index: 5; background: #fff; opacity: 0; pointer-events: none; }
-.club-party .strobe { animation: strobe 1s steps(1) 1; }
+.club-open .strobe { animation: strobe 1s steps(1) 1; }
 @keyframes strobe {
 	0% { opacity: .85; } 10% { opacity: 0; } 20% { opacity: .7; } 30% { opacity: 0; }
 	45% { opacity: .5; } 55% { opacity: 0; } 100% { opacity: 0; }
 }
 
+
 @media (prefers-reduced-motion: reduce) {
-	.beam, .haze, .card-front, .tap { animation: none; }
-	.club-party .strobe { animation: none; }
-	.card-front { transition: opacity .6s; }
-	.club-party .card-front { transform: none; }
+	.beam, .haze, .ticket, .hint { animation: none; }
+	.club-open .strobe, .club-arriving .book-area { animation: none; }
 }
 
-/* music on/off for Pete's view */
-.sound-btn {
-	position: fixed; right: 16px; bottom: 16px; z-index: 40;
-	border: 0; border-radius: 999px; padding: 10px 16px;
-	background: #111; color: #fff; font: inherit; font-weight: 600;
+/* music on/off + volume for Pete's view */
+.sound-ctl {
+	position: fixed; right: 16px; bottom: 150px; z-index: 70;
+	display: flex; align-items: center; gap: 8px;
+	padding: 8px 12px; border-radius: 999px; background: #111;
 	box-shadow: 0 0 0 2px #ff2bd6, 0 0 16px rgba(0,229,255,.6);
-	cursor: pointer;
 }
+.sound-ctl button { border: 0; background: none; font-size: 20px; cursor: pointer; padding: 0; }
+.sound-ctl input { width: 110px; accent-color: #ff2bd6; }
 
 /* SoundCloud player for Pete's song */
 .sc-player {
@@ -342,5 +390,4 @@ body { overflow-x: hidden; }
 	border: 0; border-radius: 12px; background: #111;
 	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.5);
 }
-.sound-btn { bottom: 150px; }
 .wall { padding-bottom: 160px; }

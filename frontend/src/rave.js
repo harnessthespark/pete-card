@@ -6,6 +6,7 @@ let noise = null
 let timer = null
 let nextTime = 0
 let step = 0
+let level = 0.35
 
 const BPM = 136
 const SIXTEENTH = 60 / BPM / 4
@@ -126,7 +127,7 @@ export function startRave() {
     }
     master.gain.cancelScheduledValues(ctx.currentTime)
     master.gain.setValueAtTime(master.gain.value, ctx.currentTime)
-    master.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 1.5)
+    master.gain.linearRampToValueAtTime(level, ctx.currentTime + 1.5)
   } catch { /* no sound available, the card still works */ }
 }
 
@@ -136,4 +137,12 @@ export function stopRave() {
   master.gain.setValueAtTime(master.gain.value, ctx.currentTime)
   master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6)
   setTimeout(() => { clearInterval(timer); timer = null; ctx.suspend() }, 700)
+}
+
+export function setRaveVolume(v) {
+  level = 0.5 * v
+  if (ctx && timer) {
+    master.gain.cancelScheduledValues(ctx.currentTime)
+    master.gain.setTargetAtTime(level, ctx.currentTime, 0.05)
+  }
 }

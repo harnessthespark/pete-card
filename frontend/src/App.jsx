@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { startMusic, stopMusic } from './music.js'
+import { startMusic, stopMusic, setMusicVolume, getMusicVolume } from './music.js'
 
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
@@ -111,21 +111,54 @@ const BEAMS = [
   { c: '#00e5ff', x: '65%', from: '20deg',  to: '-40deg', d: '1.7s', delay: '.4s' },
 ]
 
-function PeteIntro({ onDone }) {
-  const [stage, setStage] = useState('closed')
+// Music controls: on/off plus a volume slider (Pete's view only)
+function SoundControls() {
+  const [on, setOn] = useState(true)
+  const [vol, setVol] = useState(getMusicVolume())
+  return (
+      <div className="sound-ctl">
+        <button type="button" aria-label={on ? 'Turn music off' : 'Turn music on'}
+                onClick={() => { if (on) { stopMusic() } else { startMusic() } setOn(!on) }}>
+          {on ? '🔊' : '🔇'}
+        </button>
+        <input type="range" min="0" max="1" step="0.05" value={vol} aria-label="Music volume"
+               onChange={(e) => { const v = Number(e.target.value); setVol(v); setMusicVolume(v) }} />
+      </div>
+  )
+}
 
-  function start() {
-    if (stage !== 'closed') return
-    setStage('party')
-    startMusic()
-    setTimeout(() => setStage('leaving'), 5500)
-    setTimeout(onDone, 6300)
+// Pete's opening, in the style of Lisa's Elisa card:
+// a VIP ticket waits, tap it, the flyer card drops in, tap the card and it opens like a book,
+// then the lasers and the music kick in.
+function PeteIntro({ onOpen, onDone }) {
+  // ticket -> arriving -> standing -> displayed -> open -> leaving
+  const [stage, setStage] = useState('ticket')
+
+  function tapTicket() {
+    if (stage !== 'ticket') return
+    setStage('arriving')
+    setTimeout(() => setStage('standing'), 1500)
+    setTimeout(() => setStage('displayed'), 2900)
   }
 
+  function tapCard() {
+    if (stage !== 'displayed') return
+    setStage('open')
+    startMusic()
+    onOpen()
+  }
+
+  function enter(e) {
+    e.stopPropagation()
+    setStage('leaving')
+    setTimeout(onDone, 800)
+  }
+
+  const hint = stage === 'ticket' ? 'tap your ticket'
+      : stage === 'displayed' ? 'tap the card to open 🔊' : ''
+
   return (
-      <div className={`club club-${stage}`} onClick={start} role="button" tabIndex={0}
-           aria-label="Open Pete's birthday card"
-           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') start() }}>
+      <div className={`club club-${stage}`}>
         <div className="haze" aria-hidden="true" />
         <div className="lasers" aria-hidden="true">
           {BEAMS.map((b, i) => (
@@ -135,12 +168,29 @@ function PeteIntro({ onDone }) {
           ))}
         </div>
         <div className="strobe" aria-hidden="true" />
-        <div className="card-stage">
-          <img className="card-front" src="/cover.jpg"
-               alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+
+        <button type="button" className="ticket" onClick={tapTicket} aria-label="Open your VIP ticket">
+          <span className="ticket-top">ADMIT ONE · VIP</span>
+          <span className="ticket-name">Pete</span>
+          <span className="ticket-date">All-In Revival Rave · 01.10</span>
+        </button>
+
+        <div className="book-area">
+          <div className="book" onClick={tapCard} role="button" tabIndex={0}
+               aria-label="Open the card"
+               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapCard() }}>
+            <div className="book-inside">
+              <h1>Happy 50th, Pete!</h1>
+              <p>Love from everyone on the dance floor</p>
+              <button type="button" className="enter-btn" onClick={enter}>Read your messages →</button>
+            </div>
+            <div className="book-cover">
+              <img src="/cover.jpg" alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+            </div>
+          </div>
         </div>
-        <p className="tap">Tap to open your card 🔊</p>
-        <h1 className="club-title">Happy 50th, Pete!</h1>
+
+        {hint && <p className="hint" aria-live="polite">{hint}</p>}
       </div>
   )
 }
@@ -156,7 +206,7 @@ function App() {
   const [unlocked, setUnlocked] = useState(false)
   const [codeError, setCodeError] = useState('')
   const [introDone, setIntroDone] = useState(false)
-  const [soundOn, setSoundOn] = useState(true)
+  const [musicStarted, setMusicStarted] = useState(false)
 
   async function loadMessages() {
     const res = await fetch('/messages')
@@ -240,7 +290,12 @@ function App() {
   }
 
   if (isPeteView && !introDone) {
-    return <PeteIntro onDone={() => setIntroDone(true)} />
+    return (
+        <>
+          <PeteIntro onOpen={() => setMusicStarted(true)} onDone={() => setIntroDone(true)} />
+          {musicStarted && <SoundControls />}
+        </>
+    )
   }
 
   if (!isPeteView && !unlocked) {
@@ -301,12 +356,7 @@ function App() {
             </div>
         )}
 
-        {isPeteView && (
-            <button className="sound-btn" type="button"
-                    onClick={() => { if (soundOn) { stopMusic() } else { startMusic() } setSoundOn(!soundOn) }}>
-              {soundOn ? '🔊 Music on' : '🔇 Music off'}
-            </button>
-        )}
+        {isPeteView && musicStarted && <SoundControls />}
 
         <section className="wall">
           {messages.map((m) => (

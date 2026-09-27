@@ -1,11 +1,12 @@
 // Pete's song: Together - Hardcore Uproar (1990), played through SoundCloud's own player.
 // If SoundCloud can't play (blocked, offline), the home-made rave loop in rave.js plays instead.
-import { primeRave, startRave, stopRave } from './rave.js'
+import { primeRave, startRave, stopRave, setRaveVolume } from './rave.js'
 
 const TRACK = 'https://api.soundcloud.com/tracks/20039560'
 let frame = null
 let widget = null
 let playing = false
+let volume = 0.7
 
 function loadApi() {
   return new Promise((resolve, reject) => {
@@ -39,7 +40,7 @@ export function startMusic() {
   loadApi().then(() => {
     const E = window.SC.Widget.Events
     widget = window.SC.Widget(frame)
-    widget.bind(E.READY, () => widget.play())
+    widget.bind(E.READY, () => { widget.setVolume(volume * 100); widget.play() })
     widget.bind(E.PLAY, () => { playing = true; stopRave() })
     widget.bind(E.PAUSE, () => { playing = false })
     widget.bind(E.FINISH, () => { widget.seekTo(0); widget.play() }) // loop
@@ -50,3 +51,11 @@ export function stopMusic() {
   if (widget) widget.pause()
   stopRave()
 }
+
+export function setMusicVolume(v) {
+  volume = v
+  if (widget) widget.setVolume(v * 100)
+  setRaveVolume(v)
+}
+
+export function getMusicVolume() { return volume }
