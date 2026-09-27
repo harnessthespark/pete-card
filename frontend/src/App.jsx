@@ -188,7 +188,7 @@ function PeteIntro({ onOpen, onDone }) {
   }
 
   const hint = stage === 'ticket' ? 'tap your ticket'
-      : stage === 'displayed' ? 'tap the card to open 🔊' : ''
+      : stage === 'displayed' ? 'Skip the queue, access the club 🔊' : ''
 
   return (
       <div className={`club club-${stage}`}>
@@ -210,7 +210,7 @@ function PeteIntro({ onOpen, onDone }) {
 
         <div className="book-area">
           <div className="book" onClick={tapCard} role="button" tabIndex={0}
-               aria-label="Open the card"
+               aria-label="Skip the queue, access the club"
                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapCard() }}>
             <div className="book-inside">
               <h1>Happy 50th, Pete!</h1>
