@@ -57,10 +57,72 @@ function loadOpened() {
   try { return JSON.parse(localStorage.getItem('petermasOpened') || '[]') } catch { return [] }
 }
 
+
+// Day photos live in frontend/public/advent/1.jpg ... 31.jpg (any missing day just shows the blessing)
+function loadScratched() {
+  try { return JSON.parse(localStorage.getItem('petermasScratched') || '[]') } catch { return [] }
+}
+
+// A gold scratch-card layer over the day's photo. Scratch with a finger or the mouse.
+function ScratchReveal({ src, done, onDone }) {
+  const canvasRef = useRef(null)
+  const [missing, setMissing] = useState(false)
+  const [cleared, setCleared] = useState(done)
+
+  function paint(img) {
+    const c = canvasRef.current
+    if (!c || cleared) return
+    const w = img.clientWidth, h = img.clientHeight
+    c.width = w; c.height = h
+    const ctx = c.getContext('2d')
+    const g = ctx.createLinearGradient(0, 0, w, h)
+    g.addColorStop(0, '#b8862a'); g.addColorStop(.5, '#ffe28a'); g.addColorStop(1, '#a8741c')
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h)
+    ctx.fillStyle = 'rgba(80,50,0,.8)'
+    ctx.font = '600 20px "Instrument Sans", sans-serif'; ctx.textAlign = 'center'
+    ctx.fillText('Scratch the glass ✦', w / 2, h / 2)
+  }
+
+  function scratchAt(e) {
+    const c = canvasRef.current
+    if (!c || cleared) return
+    const r = c.getBoundingClientRect()
+    const p = e.touches ? e.touches[0] : e
+    const ctx = c.getContext('2d')
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.beginPath(); ctx.arc(p.clientX - r.left, p.clientY - r.top, 24, 0, Math.PI * 2); ctx.fill()
+  }
+
+  function check() {
+    const c = canvasRef.current
+    if (!c || cleared) return
+    const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data
+    let clear = 0, total = 0
+    for (let i = 3; i < data.length; i += 4 * 40) { total++; if (data[i] === 0) clear++ }
+    if (clear / total > 0.5) { setCleared(true); onDone() }
+  }
+
+  if (missing) return null
+  return (
+      <div className="scratch">
+        <img src={src} alt="A photo for today" onLoad={(e) => paint(e.currentTarget)}
+             onError={() => { setMissing(true); onDone() }} />
+        {!cleared && (
+            <canvas ref={canvasRef} className="scratch-foil"
+                    onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); scratchAt(e) }}
+                    onPointerMove={(e) => { if (e.buttons || e.pointerType === 'touch') scratchAt(e) }}
+                    onPointerUp={check} onPointerLeave={check} />
+        )}
+        {!cleared && <button type="button" className="scratch-skip" onClick={() => { setCleared(true); onDone() }}>just open it</button>}
+      </div>
+  )
+}
+
 export default function PetermasCalendar() {
   const daysOpen = daysOpenNow()
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
+  const [scratched, setScratched] = useState(loadScratched)
   const canonised = daysOpen >= 31
   const sectionRef = useRef(null)
 
@@ -76,6 +138,14 @@ export default function PetermasCalendar() {
     return () => io.disconnect()
   }, [])
 
+
+  function markScratched(day) {
+    setScratched((prev) => {
+      const next = prev.includes(day) ? prev : [...prev, day]
+      try { localStorage.setItem('petermasScratched', JSON.stringify(next)) } catch { /* ignore */ }
+      return next
+    })
+  }
 
   function openPane(day) {
     if (day > daysOpen) return
@@ -120,6 +190,8 @@ export default function PetermasCalendar() {
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>
               <div className="pane-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">Day {showDay} of 31</p>
+                <ScratchReveal key={showDay} src={`/advent/${showDay}.jpg`}
+                               done={scratched.includes(showDay)} onDone={() => markScratched(showDay)} />
                 <p className="blessing">{BLESSINGS[showDay - 1]}</p>
                 <button type="button" className="enter-btn pane-close" onClick={() => setShowDay(null)}>Close the window</button>
               </div>
