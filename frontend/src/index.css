@@ -580,3 +580,6 @@ iframe#yt-chapel.player-visible { width: 192px !important; height: 108px !import
 	transition: opacity 1s ease;
 }
 .club-open .club-bg, .club-leaving .club-bg { opacity: .12; }
+/* Phones held upright: keep the GUEST LIST sign in view */
+@media (orientation: portrait) { .club-bg { background-position: 78% center; } }
+.club-ticket .club-bg { filter: brightness(.8); }
