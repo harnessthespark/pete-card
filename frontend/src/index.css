@@ -334,3 +334,13 @@ body { overflow-x: hidden; }
 	box-shadow: 0 0 0 2px #ff2bd6, 0 0 16px rgba(0,229,255,.6);
 	cursor: pointer;
 }
+
+/* SoundCloud player for Pete's song */
+.sc-player {
+	position: fixed; left: 16px; bottom: 16px; z-index: 60;
+	width: min(420px, calc(100vw - 32px)); height: 120px;
+	border: 0; border-radius: 12px; background: #111;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.5);
+}
+.sound-btn { bottom: 150px; }
+.wall { padding-bottom: 160px; }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { startRave, stopRave } from './rave.js'
+import { startMusic, stopMusic } from './music.js'
 
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
@@ -117,7 +117,7 @@ function PeteIntro({ onDone }) {
   function start() {
     if (stage !== 'closed') return
     setStage('party')
-    startRave()
+    startMusic()
     setTimeout(() => setStage('leaving'), 5500)
     setTimeout(onDone, 6300)
   }
@@ -303,7 +303,7 @@ function App() {
 
         {isPeteView && (
             <button className="sound-btn" type="button"
-                    onClick={() => { if (soundOn) { stopRave() } else { startRave() } setSoundOn(!soundOn) }}>
+                    onClick={() => { if (soundOn) { stopMusic() } else { startMusic() } setSoundOn(!soundOn) }}>
               {soundOn ? '🔊 Music on' : '🔇 Music off'}
             </button>
         )}

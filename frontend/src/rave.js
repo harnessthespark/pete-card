@@ -92,6 +92,22 @@ function schedule() {
   }
 }
 
+// Call this inside a tap so phones allow sound later
+export function primeRave() {
+  try {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)()
+      master = ctx.createGain()
+      master.gain.value = 0
+      master.connect(ctx.destination)
+      noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate)
+      const d = noise.getChannelData(0)
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
+    }
+    ctx.resume()
+  } catch { /* no sound available */ }
+}
+
 export function startRave() {
   try {
     if (!ctx) {
