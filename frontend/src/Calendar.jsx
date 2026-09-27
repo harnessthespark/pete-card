@@ -75,7 +75,7 @@ export default function PetermasCalendar({ messages }) {
         <h2 className="petermas-title">The Feast of St Petermas</h2>
         <p className="petermas-sub">
           {daysOpen === 0 ? 'The feast begins on 1st October.'
-              : canonised ? 'St Petermas, canonised 1 November 2026 · patron saint of the all-nighter'
+              : canonised ? 'St Petermas, canonised 1 November 2026'
                   : `Day ${daysOpen} of 31 · open a window each day`}
         </p>
 
@@ -83,6 +83,7 @@ export default function PetermasCalendar({ messages }) {
           <div className="halo" aria-hidden="true" />
           <div className="panes">{cells}</div>
         </div>
+        <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
 
         {showDay && (
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>

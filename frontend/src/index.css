@@ -420,12 +420,12 @@ body { overflow-x: hidden; }
 .stained::before {
 	content: ""; position: absolute; inset: 14px; border-radius: inherit;
 	background-image:
-		url('/st-petermas.png'),
+		url('/st-petermas.jpg'),
 		conic-gradient(from 20deg at 50% 38%, #c1121f, #f4a261, #ffd60a, #2a9d8f, #1d3557, #7b2cbf, #c1121f);
 	background-size: cover, cover; background-position: center, center;
 }
 .halo {
-	position: absolute; left: 50%; top: 9%; width: 34%; aspect-ratio: 1; transform: translateX(-50%);
+	position: absolute; left: 50%; top: 6%; width: 52%; aspect-ratio: 1; transform: translateX(-50%);
 	border-radius: 50%; z-index: 1; pointer-events: none;
 	background: radial-gradient(circle, rgba(255,215,0,.0) 45%, rgba(255,215,0,.55) 60%, rgba(255,215,0,0) 72%);
 	opacity: .25; transition: opacity 1.5s;
@@ -471,4 +471,12 @@ body { overflow-x: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
 	.pane-today, .canonised .halo { animation: none; }
+}
+
+/* On the 31st he returns in his 90s raver glory */
+.canonised .stained::before { background-image: url('/st-petermas-90s.jpg'), url('/st-petermas.jpg'); }
+.petermas-caption {
+	margin: 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-variant: small-caps;
+	font-size: clamp(20px, 5.5vw, 28px); line-height: 1.2; color: #f5b700;
+	text-shadow: 2px 2px 0 #8b1a1a;
 }
