@@ -335,7 +335,7 @@ function App() {
     return (
         <main className="page gate">
           <header className="hero">
-            <p className="fifty">Pete's 50th Birthday Online-Card</p>
+            <p className="fifty">Pete's 50th · VIP Guest List</p>
           </header>
           <img className="cover" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
@@ -354,7 +354,7 @@ function App() {
   return (
       <main className="page">
         <header className="hero">
-          <p className="fifty">Pete's 50th Birthday Online-Card</p>
+          <p className="fifty">Pete's 50th · VIP Guest List</p>
         </header>
         <img className="cover" src={isPeteView ? '/cover.jpg' : '/vip-flyer.png'}
              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
