@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume } from './music.js'
+import PetermasCalendar from './Calendar.jsx'
 
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
@@ -316,7 +317,7 @@ function App() {
     return /\.(mp4|mov)$/i.test(fileName)
   }
 
-  const isPeteView = window.location.hash === '#pete'
+  const isPeteView = window.location.hash.startsWith('#pete')
 
   if (window.location.hash === '#admin') {
     return <AdminPage />
@@ -359,7 +360,7 @@ function App() {
         <img className="cover" src={isPeteView ? '/cover.jpg' : '/vip-flyer.png'}
              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-        <p className="sub under-cover">{isPeteView ? 'From all of us. Scroll down for your messages' : 'Leave a message, a photo or a video'}</p>
+        <p className="sub under-cover">{isPeteView ? 'From all of us. Scroll down to the window' : 'Leave a message, a photo or a video'}</p>
 
         {!isPeteView && (
             <div className="compose">
@@ -391,7 +392,8 @@ function App() {
 
         {isPeteView && musicStarted && <SoundControls />}
 
-        <section className="wall">
+        {isPeteView ? <PetermasCalendar messages={messages} /> : (
+            <section className="wall">
           {messages.map((m) => (
               <article className="note" key={m.id}>
                 {m.media && (isVideo(m.media)
@@ -402,6 +404,7 @@ function App() {
               </article>
           ))}
         </section>
+        )}
       </main>
   )
 }
