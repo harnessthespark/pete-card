@@ -28,6 +28,25 @@ let ytLevel = 0
 let ytWaiting = null
 
 let fadeTimer = null
+let hintEl = null
+
+// Phones often block music that isn't started by a tap inside the player itself.
+// If a track hasn't started, show that player so he can tap its play button.
+function showPlayer(el, text) {
+  if (!el) return
+  el.classList.add('player-visible')
+  if (!hintEl) {
+    hintEl = document.createElement('p')
+    hintEl.className = 'player-hint'
+    document.body.appendChild(hintEl)
+  }
+  hintEl.textContent = text
+  hintEl.style.display = 'block'
+}
+function hidePlayers() {
+  document.querySelectorAll('.player-visible').forEach((e) => e.classList.remove('player-visible'))
+  if (hintEl) hintEl.style.display = 'none'
+}
 
 function applyLevels() {
   if (widget) widget.setVolume(Math.round(volume * scLevel * 100))
@@ -65,7 +84,7 @@ function loadYouTube() {
   const make = () => {
     yt = new window.YT.Player('yt-chapel', {
       videoId: YT_ID,
-      playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: YT_ID, playsinline: 1 },
+      playerVars: { autoplay: 0, controls: 1, loop: 1, playlist: YT_ID, playsinline: 1 },
       events: {
         onReady: () => {
           ytReady = true
@@ -75,6 +94,7 @@ function loadYouTube() {
           if (ytWaiting) { const w = ytWaiting; ytWaiting = null; w() }
         },
         onStateChange: (e) => {
+          if (e.data === 1) setTimeout(hidePlayers, 1200)
           if (e.data === 1 && room === 'chapel') { // playing
             stopRave()
             fade('chapel', 2000, () => { if (widget) widget.pause() })
@@ -107,13 +127,18 @@ export function startMusic() {
     '&show_user=true&show_reposts=false&show_teaser=false&color=%23ff2bd6'
   document.body.appendChild(frame)
 
-  setTimeout(() => { if (!scPlaying && room === 'club') startRave() }, 6000)
+  setTimeout(() => {
+    if (!scPlaying && room === 'club' && !muted) {
+      showPlayer(frame, 'Tap ▶ on the player to start the music')
+      startRave()
+    }
+  }, 3000)
 
   loadScript('https://w.soundcloud.com/player/api.js', () => !!(window.SC && window.SC.Widget)).then(() => {
     const E = window.SC.Widget.Events
     widget = window.SC.Widget(frame)
     widget.bind(E.READY, () => { applyLevels(); if (room === 'club' && !muted) widget.play() })
-    widget.bind(E.PLAY, () => { scPlaying = true; stopRave() })
+    widget.bind(E.PLAY, () => { scPlaying = true; stopRave(); setTimeout(hidePlayers, 1200) })
     widget.bind(E.PAUSE, () => { scPlaying = false })
     widget.bind(E.FINISH, () => { widget.seekTo(0); widget.play() }) // loop
   }).catch(() => startRave())
@@ -126,7 +151,14 @@ export function enterChapel() {
   room = 'chapel'
   if (!started || muted) return
   loadYouTube()
-  const go = () => { yt.playVideo() } // fade happens when YouTube reports it is playing
+  const go = () => {
+    yt.playVideo() // fade happens when YouTube reports it is playing
+    setTimeout(() => {
+      if (room === 'chapel' && !muted && yt.getPlayerState && yt.getPlayerState() !== 1) {
+        showPlayer(document.getElementById('yt-chapel'), 'Tap ▶ for Viola, the chapel track')
+      }
+    }, 3000)
+  }
   if (ytReady) go(); else ytWaiting = go
 }
 
@@ -134,12 +166,14 @@ export function enterChapel() {
 export function enterClub() {
   if (room === 'club') return
   room = 'club'
+  hidePlayers()
   if (!started || muted) return
   if (widget) { widget.play(); fade('club', 1500, () => { if (yt && ytReady) yt.pauseVideo() }) }
 }
 
 export function stopMusic() {
   muted = true
+  hidePlayers()
   clearInterval(fadeTimer)
   if (widget) widget.pause()
   if (yt && ytReady) yt.pauseVideo()

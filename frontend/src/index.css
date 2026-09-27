@@ -516,3 +516,17 @@ body { overflow-x: hidden; }
 .relic-intro strong { color: var(--ink); }
 .chip-relic { background: #f3e2b3; color: #6b4a00; }
 .relic-credit { margin: 0 0 4px; color: #9ff; font-size: 13px; }
+
+/* When a phone blocks the music, the player pops up so Pete can tap play */
+iframe.sc-player.player-visible, iframe#yt-chapel.player-visible {
+	left: 12px !important; bottom: 12px !important; opacity: 1 !important; pointer-events: auto !important;
+	z-index: 90 !important; border-radius: 12px;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.55);
+}
+iframe.sc-player.player-visible { width: min(360px, calc(100vw - 110px)) !important; height: 120px !important; }
+iframe#yt-chapel.player-visible { width: min(320px, calc(100vw - 110px)) !important; height: 180px !important; }
+.player-hint {
+	position: fixed; left: 12px; bottom: 200px; z-index: 91; margin: 0; display: none;
+	padding: 8px 12px; border-radius: 999px; background: #111; color: #fff; font-weight: 600; font-size: 14px;
+	box-shadow: 0 0 0 2px #ffd400; animation: pulse 1.6s ease-in-out infinite;
+}
