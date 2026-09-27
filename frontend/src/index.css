@@ -507,3 +507,12 @@ body { overflow-x: hidden; }
 .wall .note { break-inside: avoid; margin-bottom: 12px; display: inline-block; width: 100%; }
 .wall:has(.admin-actions) { columns: 1; }
 @media (max-width: 340px) { .wall { columns: 1; } }
+
+/* Friends' form: message or relic */
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mode-tabs button { border: 2px solid var(--ink); background: transparent; color: var(--ink); border-radius: 999px; padding: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+.mode-tabs button.on { background: var(--ink); color: var(--paper); }
+.relic-intro { margin: 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+.relic-intro strong { color: var(--ink); }
+.chip-relic { background: #f3e2b3; color: #6b4a00; }
+.relic-credit { margin: 0 0 4px; color: #9ff; font-size: 13px; }

@@ -34,22 +34,30 @@ with get_db() as conn:
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    # kind: 'message' (shown on the card) or 'relic' (old photo hidden in an advent window)
+    cols = [r["name"] for r in conn.execute("PRAGMA table_info(messages)").fetchall()]
+    if "kind" not in cols:
+        conn.execute("ALTER TABLE messages ADD COLUMN kind TEXT DEFAULT 'message'")
 
 class Message(BaseModel):
     code: str
     name: str = Field(max_length=60)
     text: str = Field(max_length=2000)
     media: str | None = None
+    kind: str = "message"
 
 
 @app.post("/messages")
 def add_message(msg: Message):
     if msg.code != SECRET_CODE:
         raise HTTPException(status_code=403, detail="Wrong code")
+    kind = "relic" if msg.kind == "relic" else "message"
+    if kind == "relic" and not msg.media:
+        raise HTTPException(status_code=400, detail="A relic needs a photo")
     with get_db() as conn:
         conn.execute(
-        "INSERT INTO messages (name, text, media) VALUES (?, ?, ?)",
-  (msg.name, msg.text, msg.media),
+            "INSERT INTO messages (name, text, media, kind) VALUES (?, ?, ?, ?)",
+            (msg.name, msg.text, msg.media, kind),
         )
     return {"saved": True}
 
@@ -58,7 +66,19 @@ def add_message(msg: Message):
 def list_messages():
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media, created_at FROM messages WHERE approved = 1 ORDER BY id"
+            "SELECT id, name, text, media, created_at FROM messages "
+            "WHERE approved = 1 AND COALESCE(kind, 'message') = 'message' ORDER BY id"
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+@app.get("/relics")
+def list_relics():
+    # Approved old photos, in order: the first fills window 1, the second window 2, and so on
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT id, name, text, media FROM messages "
+            "WHERE approved = 1 AND kind = 'relic' ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
 
@@ -92,7 +112,8 @@ def admin_list(admin_code: str):
     check_admin(admin_code)
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media, approved, created_at FROM messages ORDER BY id"
+            "SELECT id, name, text, media, approved, COALESCE(kind, 'message') AS kind, created_at "
+            "FROM messages ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
 

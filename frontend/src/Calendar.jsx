@@ -125,6 +125,12 @@ export default function PetermasCalendar() {
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
   const [scratched, setScratched] = useState(loadScratched)
+  const [relics, setRelics] = useState([])
+
+  // Friends' donated old photos: relic 1 fills window 1, relic 2 window 2, and so on
+  useEffect(() => {
+    fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
+  }, [])
   const canonised = daysOpen >= 31
   const sectionRef = useRef(null)
 
@@ -192,8 +198,15 @@ export default function PetermasCalendar() {
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>
               <div className="pane-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">Day {showDay} of 31</p>
-                <ScratchReveal key={showDay} src={`/advent/${showDay}.jpg`}
+                <ScratchReveal key={showDay}
+                               src={relics[showDay - 1] ? `/media/${relics[showDay - 1].media}` : `/advent/${showDay}.jpg`}
                                done={scratched.includes(showDay)} onDone={() => markScratched(showDay)} />
+                {relics[showDay - 1] && (
+                    <p className="relic-credit">
+                      A relic from {relics[showDay - 1].name}
+                      {relics[showDay - 1].text ? ` · ${relics[showDay - 1].text}` : ''}
+                    </p>
+                )}
                 <p className="blessing">{BLESSINGS[showDay - 1]}</p>
                 <button type="button" className="enter-btn pane-close" onClick={() => setShowDay(null)}>Close the window</button>
               </div>

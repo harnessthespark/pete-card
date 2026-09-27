@@ -72,6 +72,7 @@ function AdminPage() {
           <p className={m.approved ? 'chip chip-live' : 'chip chip-wait'}>
             {m.approved ? 'On the card' : 'Waiting for you'}
           </p>
+          {m.kind === 'relic' && <p className="chip chip-relic">📿 Relic for the advent windows</p>}
           {m.media && (isVideo(m.media)
               ? <video src={`/media/${m.media}`} controls playsInline />
               : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
@@ -240,6 +241,7 @@ function App() {
   const [codeError, setCodeError] = useState('')
   const [introDone, setIntroDone] = useState(false)
   const [musicStarted, setMusicStarted] = useState(false)
+  const [mode, setMode] = useState('message') // 'message' or 'relic'
 
   async function loadMessages() {
     const res = await fetch('/messages')
@@ -296,14 +298,16 @@ function App() {
       const res = await fetch('/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, name, text, media }),
+        body: JSON.stringify({ code, name, text, media, kind: mode }),
       })
       if (!res.ok) throw new Error((await res.json()).detail)
       setName('')
       setText('')
       setFile(null)
       e.target.reset()
-      setStatus('Thanks! Your message will appear once it has been checked.')
+      setStatus(mode === 'relic'
+          ? 'Relic received! Once it’s blessed (checked), it will be hidden in one of St Petermas’s windows for Pete to scratch open.'
+          : 'Thanks! Your message will appear once it has been checked.')
       loadMessages()
     } catch (err) {
       setStatus(err.message || 'Something went wrong')
@@ -364,14 +368,33 @@ function App() {
         {!isPeteView && (
             <div className="compose">
               <form className="form" onSubmit={handleSubmit}>
+                <div className="mode-tabs" role="tablist">
+                  <button type="button" role="tab" aria-selected={mode === 'message'}
+                          className={mode === 'message' ? 'on' : ''}
+                          onClick={() => { setMode('message'); setStatus('') }}>Leave a message</button>
+                  <button type="button" role="tab" aria-selected={mode === 'relic'}
+                          className={mode === 'relic' ? 'on' : ''}
+                          onClick={() => { setMode('relic'); setStatus('') }}>Donate a relic 📿</button>
+                </div>
+                {mode === 'relic' && (
+                    <p className="relic-intro">
+                      <strong>Relics for the Chapel of St Petermas.</strong> Send an old photo of Pete, the more
+                      90s the better. It will be hidden behind one of the 31 stained-glass windows for him to
+                      scratch open during October. It won’t appear on the card before then.
+                    </p>
+                )}
                 <input placeholder="Your name" value={name} maxLength={60}
                        onChange={(e) => setName(e.target.value)} required />
-                <textarea placeholder="Your message to Pete" value={text} maxLength={2000}
-                          onChange={(e) => setText(e.target.value)} required />
-                <input type="file" accept="image/*,video/*"
+                {mode === 'message'
+                    ? <textarea placeholder="Your message to Pete" value={text} maxLength={2000}
+                                onChange={(e) => setText(e.target.value)} required />
+                    : <input placeholder="Where and when? e.g. Ibiza, 1998 (optional)" value={text} maxLength={120}
+                             onChange={(e) => setText(e.target.value)} />}
+                <input type="file" accept={mode === 'relic' ? 'image/*' : 'image/*,video/*'}
+                       required={mode === 'relic'}
                        onChange={(e) => setFile(e.target.files[0])} />
                 <button disabled={sending}>
-                  {sending ? 'Sending…' : 'Add to the card'}
+                  {sending ? 'Sending…' : mode === 'relic' ? 'Donate this relic' : 'Add to the card'}
                 </button>
                 {status && <p className="status">{status}</p>}
               </form>
