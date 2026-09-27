@@ -111,18 +111,51 @@ const BEAMS = [
   { c: '#00e5ff', x: '65%', from: '20deg',  to: '-40deg', d: '1.7s', delay: '.4s' },
 ]
 
-// Music controls: on/off plus a volume slider (Pete's view only)
+// Music control: a DJ-decks icon. Tap it for play/pause, volume and the track credit.
+function DecksIcon() {
+  return (
+      <svg viewBox="0 0 64 40" width="56" height="35" aria-hidden="true">
+        <rect x="1" y="4" width="62" height="32" rx="6" fill="#161616" stroke="#ff2bd6" strokeWidth="1.5" />
+        {[16, 48].map((cx) => (
+            <g key={cx} className="platter">
+              <circle cx={cx} cy="20" r="11" fill="#050505" stroke="#444" />
+              <circle cx={cx} cy="20" r="7.5" fill="none" stroke="#2a2a2a" />
+              <circle cx={cx} cy="20" r="3.2" fill={cx === 16 ? '#00e5ff' : '#39ff14'} />
+              <rect x={cx - 0.6} y="9.5" width="1.2" height="4" fill="#fff" />
+            </g>
+        ))}
+        <rect x="28.5" y="9" width="7" height="22" rx="1.5" fill="#2b2b2b" />
+        <rect x="29.5" y="13" width="5" height="2" fill="#ff2bd6" />
+        <rect x="29.5" y="24" width="5" height="2" fill="#ffd400" />
+      </svg>
+  )
+}
+
 function SoundControls() {
   const [on, setOn] = useState(true)
+  const [open, setOpen] = useState(false)
   const [vol, setVol] = useState(getMusicVolume())
   return (
-      <div className="sound-ctl">
-        <button type="button" aria-label={on ? 'Turn music off' : 'Turn music on'}
-                onClick={() => { if (on) { stopMusic() } else { startMusic() } setOn(!on) }}>
-          {on ? '🔊' : '🔇'}
+      <div className={`dj ${on ? 'dj-on' : ''}`}>
+        {open && (
+            <div className="dj-panel">
+              <button type="button" className="dj-play"
+                      onClick={() => { if (on) { stopMusic() } else { startMusic() } setOn(!on) }}>
+                {on ? '❚❚ Pause' : '▶ Play'}
+              </button>
+              <label className="dj-vol">
+                <span>Volume</span>
+                <input type="range" min="0" max="1" step="0.05" value={vol}
+                       onChange={(e) => { const v = Number(e.target.value); setVol(v); setMusicVolume(v) }} />
+              </label>
+              <a href="https://soundcloud.com/suddi-raval/hardcore-uproar-by-together"
+                 target="_blank" rel="noopener noreferrer">♪ Together – Hardcore Uproar (1990)</a>
+            </div>
+        )}
+        <button type="button" className="dj-btn" aria-expanded={open}
+                aria-label="Music controls" onClick={() => setOpen(!open)}>
+          <DecksIcon />
         </button>
-        <input type="range" min="0" max="1" step="0.05" value={vol} aria-label="Music volume"
-               onChange={(e) => { const v = Number(e.target.value); setVol(v); setMusicVolume(v) }} />
       </div>
   )
 }

@@ -373,21 +373,29 @@ body { overflow-x: hidden; }
 	.club-open .strobe, .club-arriving .book-area { animation: none; }
 }
 
-/* music on/off + volume for Pete's view */
-.sound-ctl {
-	position: fixed; right: 16px; bottom: 150px; z-index: 70;
-	display: flex; align-items: center; gap: 8px;
-	padding: 8px 12px; border-radius: 999px; background: #111;
-	box-shadow: 0 0 0 2px #ff2bd6, 0 0 16px rgba(0,229,255,.6);
+/* DJ decks music control (Pete's view) */
+.dj { position: fixed; right: 16px; bottom: 16px; z-index: 70; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.dj-btn {
+	border: 0; padding: 8px 10px; border-radius: 14px; background: #0b0b0b; cursor: pointer; line-height: 0;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.55);
 }
-.sound-ctl button { border: 0; background: none; font-size: 20px; cursor: pointer; padding: 0; }
-.sound-ctl input { width: 110px; accent-color: #ff2bd6; }
+.platter { transform-box: fill-box; transform-origin: center; }
+.dj-on .platter { animation: spin 1.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.dj-panel {
+	width: 230px; padding: 14px; border-radius: 14px; background: #0b0b0b; color: #fff;
+	display: flex; flex-direction: column; gap: 10px; font-size: 14px;
+	box-shadow: 0 0 0 2px #00e5ff, 0 10px 30px rgba(0,0,0,.6);
+}
+.dj-play { border: 0; border-radius: 999px; padding: 8px 12px; background: #ff2bd6; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.dj-vol { display: flex; flex-direction: column; gap: 4px; }
+.dj-vol input { accent-color: #ff2bd6; width: 100%; }
+.dj-panel a { color: #9ff; font-size: 12px; text-decoration: none; }
+@media (prefers-reduced-motion: reduce) { .dj-on .platter { animation: none; } }
 
-/* SoundCloud player for Pete's song */
+/* SoundCloud player: plays out of sight, the decks icon is the control */
 .sc-player {
-	position: fixed; left: 16px; bottom: 16px; z-index: 60;
-	width: min(420px, calc(100vw - 32px)); height: 120px;
-	border: 0; border-radius: 12px; background: #111;
-	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.5);
+	position: fixed; left: 0; bottom: 0; width: 1px; height: 1px;
+	opacity: 0; pointer-events: none; border: 0; z-index: -1;
 }
-.wall { padding-bottom: 160px; }
+.wall { padding-bottom: 90px; }
