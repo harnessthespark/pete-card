@@ -61,6 +61,16 @@ function loadOpened() {
 
 
 // Day photos live in frontend/public/advent/1.jpg ... 31.jpg (any missing day just shows the blessing)
+// Lisa's own photos are advent/1.jpg to advent/FOLDER_PHOTOS.jpg.
+// Friends' relics fill the windows after those, in the order they are approved.
+const FOLDER_PHOTOS = 17
+
+function photoFor(day, relics) {
+  if (day <= FOLDER_PHOTOS) return { src: `/advent/${day}.jpg`, relic: null }
+  const relic = relics[day - FOLDER_PHOTOS - 1]
+  return relic ? { src: `/media/${relic.media}`, relic } : { src: `/advent/${day}.jpg`, relic: null }
+}
+
 function loadScratched() {
   try { return JSON.parse(localStorage.getItem('petermasScratched') || '[]') } catch { return [] }
 }
@@ -199,12 +209,12 @@ export default function PetermasCalendar() {
               <div className="pane-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">Day {showDay} of 31</p>
                 <ScratchReveal key={showDay}
-                               src={relics[showDay - 1] ? `/media/${relics[showDay - 1].media}` : `/advent/${showDay}.jpg`}
+                               src={photoFor(showDay, relics).src}
                                done={scratched.includes(showDay)} onDone={() => markScratched(showDay)} />
-                {relics[showDay - 1] && (
+                {photoFor(showDay, relics).relic && (
                     <p className="relic-credit">
-                      A relic from {relics[showDay - 1].name}
-                      {relics[showDay - 1].text ? ` · ${relics[showDay - 1].text}` : ''}
+                      A relic from {photoFor(showDay, relics).relic.name}
+                      {photoFor(showDay, relics).relic.text ? ` · ${photoFor(showDay, relics).relic.text}` : ''}
                     </p>
                 )}
                 <p className="blessing">{BLESSINGS[showDay - 1]}</p>
