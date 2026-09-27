@@ -161,6 +161,78 @@ function SoundControls() {
   )
 }
 
+// The club entrance behind the ticket: neon wall, velvet rope, and a queue round the block.
+// Drawn in code (no stock photo), so there are no image rights to worry about.
+function QueueScene() {
+  // On a phone held upright, zoom in on the rope and the queue
+  const portrait = typeof window !== 'undefined' && window.innerWidth < window.innerHeight
+  const people = [
+    [980, 1.0], [1030, .95], [1075, 1.05], [1120, .9], [1160, 1.0], [1200, .92],
+    [1238, .98], [1272, .88], [1305, .95], [1335, .85], [1362, .9], [1388, .82],
+  ]
+  const bokeh = [
+    [1180, 180, 26, '#ff2bd6'], [1320, 140, 18, '#00e5ff'], [1450, 230, 22, '#ffd400'],
+    [1260, 260, 14, '#39ff14'], [1520, 120, 16, '#ff2bd6'], [1100, 110, 12, '#ffffff'],
+    [1400, 330, 12, '#ff6ad5'], [1540, 300, 20, '#00e5ff'], [1010, 220, 10, '#ffffff'],
+  ]
+  return (
+      <svg className="queue-scene" viewBox={portrait ? '560 120 860 780' : '0 0 1600 900'} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="qs-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#12020f" /><stop offset=".6" stopColor="#2a0624" /><stop offset="1" stopColor="#4a0a3c" />
+          </linearGradient>
+          <linearGradient id="qs-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#7a1463" /><stop offset="1" stopColor="#2b0724" />
+          </linearGradient>
+          <linearGradient id="qs-chrome" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#6d6d78" /><stop offset=".45" stopColor="#f2e9ff" /><stop offset="1" stopColor="#4b4452" />
+          </linearGradient>
+          <filter id="qs-blur8" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="8" /></filter>
+          <filter id="qs-blur3"><feGaussianBlur stdDeviation="3" /></filter>
+          <filter id="qs-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14" /></filter>
+        </defs>
+        <rect width="1600" height="900" fill="url(#qs-sky)" />
+        {/* neon wall on the left */}
+        <rect x="0" y="0" width="560" height="620" fill="#5c0a4f" />
+        {[70, 190, 310, 430].map((x) => (
+            <g key={x}>
+              <rect x={x} y="40" width="46" height="560" rx="23" fill="#ff2bd6" filter="url(#qs-glow)" opacity=".9" />
+              <rect x={x + 12} y="60" width="22" height="520" rx="11" fill="#ffe6fb" />
+            </g>
+        ))}
+        {/* club sign */}
+        <rect x="1030" y="330" width="300" height="64" rx="10" fill="#00e5ff" filter="url(#qs-glow)" opacity=".7" />
+        <text x="1180" y="376" textAnchor="middle" fontFamily="Impact, 'Arial Black', sans-serif" fontSize="44" fill="#e9ffff">ALL-IN CLUB</text>
+        {/* street lights in the distance */}
+        {bokeh.map(([x, y, r, c], i) => <circle key={i} cx={x} cy={y} r={r} fill={c} opacity=".75" filter="url(#qs-blur8)" />)}
+        {/* the floor */}
+        <rect x="0" y="600" width="1600" height="300" fill="url(#qs-floor)" />
+        <ellipse cx="300" cy="640" rx="420" ry="60" fill="#ff2bd6" opacity=".25" filter="url(#qs-glow)" />
+        {/* the queue, round the block */}
+        <g filter="url(#qs-blur3)" opacity=".85">
+          {people.map(([x, sc], i) => (
+              <g key={i} transform={`translate(${x} ${600 - 150 * sc}) scale(${sc * 0.9})`} fill="#14030f">
+                <circle cx="0" cy="18" r="16" />
+                <rect x="-20" y="36" width="40" height="120" rx="16" />
+              </g>
+          ))}
+        </g>
+        {/* velvet rope and chrome posts */}
+        <path d="M 230 690 Q 420 790 610 700 Q 780 770 930 690 Q 1060 740 1170 670"
+              fill="none" stroke="#8a0f2e" strokeWidth="18" strokeLinecap="round" />
+        <path d="M 230 684 Q 420 784 610 694 Q 780 764 930 684 Q 1060 734 1170 664"
+              fill="none" stroke="#e0476b" strokeWidth="4" strokeLinecap="round" opacity=".7" />
+        {[[230, 690, 1], [610, 700, .9], [930, 690, .8], [1170, 670, .7]].map(([x, y, sc], i) => (
+            <g key={i} transform={`translate(${x} ${y}) scale(${sc})`}>
+              <rect x="-11" y="0" width="22" height="200" fill="url(#qs-chrome)" />
+              <circle cx="0" cy="-4" r="18" fill="url(#qs-chrome)" />
+              <ellipse cx="0" cy="202" rx="48" ry="12" fill="url(#qs-chrome)" />
+            </g>
+        ))}
+      </svg>
+  )
+}
+
 // Pete's opening, in the style of Lisa's Elisa card:
 // a VIP ticket waits, tap it, the flyer card drops in, tap the card and it opens like a book,
 // then the lasers and the music kick in.
@@ -193,6 +265,11 @@ function PeteIntro({ onOpen, onDone }) {
 
   return (
       <div className={`club club-${stage}`}>
+        <QueueScene />
+        <div className="queue-msg" aria-hidden={stage === 'open' || stage === 'leaving'}>
+          <p className="queue-line1">The queue’s round the block…</p>
+          <p className="queue-line2">…but you’re on the guest list.</p>
+        </div>
         <div className="haze" aria-hidden="true" />
         <div className="lasers" aria-hidden="true">
           {BEAMS.map((b, i) => (
