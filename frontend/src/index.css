@@ -328,14 +328,14 @@ body { overflow-x: hidden; }
 }
 @keyframes pulse { 50% { opacity: .35; } }
 
-/* laser beams: thin glowing lines fanning up from the floor */
+/* laser beams: thin glowing lines fanning down from the ceiling */
 .lasers { position: absolute; inset: 0; z-index: 2; mix-blend-mode: screen; opacity: 0; transition: opacity .3s; }
 .club-open .lasers, .club-leaving .lasers { opacity: 1; }
 .beam {
-	position: absolute; bottom: -2vh; left: var(--x);
+	position: absolute; top: -2vh; left: var(--x);
 	width: 3px; height: 160vh; margin-left: -1.5px;
-	transform-origin: 50% 100%;
-	background: linear-gradient(to top, var(--c) 0%, var(--c) 40%, transparent 100%);
+	transform-origin: 50% 0;
+	background: linear-gradient(to bottom, var(--c) 0%, var(--c) 40%, transparent 100%);
 	box-shadow: 0 0 8px var(--c), 0 0 18px var(--c);
 	border-radius: 2px;
 	transform: rotate(var(--from));
