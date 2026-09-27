@@ -99,6 +99,50 @@ function AdminPage() {
   )
 }
 
+// Pete's opening moment: flyer on the front, tap to open, club lasers
+const BEAMS = [
+  { c: '#39ff14', x: '8%',  from: '-40deg', to: '25deg', d: '1.6s', delay: '0s' },
+  { c: '#ff2bd6', x: '22%', from: '30deg',  to: '-30deg', d: '2.1s', delay: '.2s' },
+  { c: '#00e5ff', x: '50%', from: '-25deg', to: '25deg', d: '1.3s', delay: '.1s' },
+  { c: '#39ff14', x: '78%', from: '30deg',  to: '-35deg', d: '1.9s', delay: '.3s' },
+  { c: '#ff3131', x: '92%', from: '40deg',  to: '-20deg', d: '1.5s', delay: '0s' },
+  { c: '#ffd400', x: '35%', from: '-15deg', to: '35deg', d: '2.4s', delay: '.5s' },
+  { c: '#00e5ff', x: '65%', from: '20deg',  to: '-40deg', d: '1.7s', delay: '.4s' },
+]
+
+function PeteIntro({ onDone }) {
+  const [stage, setStage] = useState('closed')
+
+  function start() {
+    if (stage !== 'closed') return
+    setStage('party')
+    setTimeout(() => setStage('leaving'), 5500)
+    setTimeout(onDone, 6300)
+  }
+
+  return (
+      <div className={`club club-${stage}`} onClick={start} role="button" tabIndex={0}
+           aria-label="Open Pete's birthday card"
+           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') start() }}>
+        <div className="haze" aria-hidden="true" />
+        <div className="lasers" aria-hidden="true">
+          {BEAMS.map((b, i) => (
+              <span key={i} className="beam" style={{
+                '--c': b.c, '--x': b.x, '--from': b.from, '--to': b.to, '--d': b.d, '--delay': b.delay,
+              }} />
+          ))}
+        </div>
+        <div className="strobe" aria-hidden="true" />
+        <div className="card-stage">
+          <img className="card-front" src="/cover.jpg"
+               alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+        </div>
+        <p className="tap">Tap to open your card</p>
+        <h1 className="club-title">Happy 50th, Pete!</h1>
+      </div>
+  )
+}
+
 function App() {
   const [messages, setMessages] = useState([])
   const [code, setCode] = useState('')
@@ -109,6 +153,7 @@ function App() {
   const [sending, setSending] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [codeError, setCodeError] = useState('')
+  const [introDone, setIntroDone] = useState(false)
 
   async function loadMessages() {
     const res = await fetch('/messages')
@@ -191,6 +236,10 @@ function App() {
     return <AdminPage />
   }
 
+  if (isPeteView && !introDone) {
+    return <PeteIntro onDone={() => setIntroDone(true)} />
+  }
+
   if (!isPeteView && !unlocked) {
     return (
         <main className="page gate">
@@ -219,7 +268,7 @@ function App() {
         <img className="cover" src={isPeteView ? '/cover.jpg' : '/vip-flyer.png'}
              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-        <p className="sub under-cover">Leave a message, a photo or a video</p>
+        <p className="sub under-cover">{isPeteView ? 'From all of us. Scroll down for your messages' : 'Leave a message, a photo or a video'}</p>
 
         {!isPeteView && (
             <div className="compose">
