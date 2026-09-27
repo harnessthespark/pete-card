@@ -34,14 +34,23 @@ let hintEl = null
 // If a track hasn't started, show that player so he can tap its play button.
 function showPlayer(el, text) {
   if (!el) return
+  hidePlayers() // only ever one player on screen
   el.classList.add('player-visible')
   if (!hintEl) {
-    hintEl = document.createElement('p')
+    hintEl = document.createElement('div')
     hintEl.className = 'player-hint'
+    const label = document.createElement('span')
+    const close = document.createElement('button')
+    close.type = 'button'
+    close.textContent = '✕'
+    close.setAttribute('aria-label', 'Hide the player')
+    close.onclick = hidePlayers
+    hintEl.append(label, close)
     document.body.appendChild(hintEl)
   }
-  hintEl.textContent = text
-  hintEl.style.display = 'block'
+  hintEl.firstChild.textContent = text
+  hintEl.dataset.for = el.id === 'yt-chapel' ? 'yt' : 'sc'
+  hintEl.style.display = 'flex'
 }
 function hidePlayers() {
   document.querySelectorAll('.player-visible').forEach((e) => e.classList.remove('player-visible'))

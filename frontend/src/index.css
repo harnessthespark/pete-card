@@ -517,19 +517,22 @@ body { overflow-x: hidden; }
 .chip-relic { background: #f3e2b3; color: #6b4a00; }
 .relic-credit { margin: 0 0 4px; color: #9ff; font-size: 13px; }
 
-/* When a phone blocks the music, the player pops up so Pete can tap play */
+/* When a phone blocks the music, a small player pops up bottom-left so Pete can tap play */
 iframe.sc-player.player-visible, iframe#yt-chapel.player-visible {
 	left: 12px !important; bottom: 12px !important; opacity: 1 !important; pointer-events: auto !important;
-	z-index: 90 !important; border-radius: 12px;
-	box-shadow: 0 0 0 2px #ff2bd6, 0 0 18px rgba(0,229,255,.55);
+	z-index: 90 !important; border-radius: 10px;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 12px rgba(0,229,255,.5);
 }
-iframe.sc-player.player-visible { width: min(360px, calc(100vw - 110px)) !important; height: 120px !important; }
-iframe#yt-chapel.player-visible { width: min(320px, calc(100vw - 110px)) !important; height: 180px !important; }
+iframe.sc-player.player-visible { width: 230px !important; height: 120px !important; }
+iframe#yt-chapel.player-visible { width: 192px !important; height: 108px !important; }
 .player-hint {
-	position: fixed; left: 12px; bottom: 200px; z-index: 91; margin: 0; display: none;
-	padding: 8px 12px; border-radius: 999px; background: #111; color: #fff; font-weight: 600; font-size: 14px;
-	box-shadow: 0 0 0 2px #ffd400; animation: pulse 1.6s ease-in-out infinite;
+	position: fixed; left: 12px; z-index: 91; display: none; align-items: center; gap: 8px;
+	padding: 5px 6px 5px 10px; border-radius: 999px; background: #111; color: #fff;
+	font-weight: 600; font-size: 12px; box-shadow: 0 0 0 1.5px #ffd400;
 }
+.player-hint[data-for="sc"] { bottom: 140px; }
+.player-hint[data-for="yt"] { bottom: 128px; }
+.player-hint button { border: 0; background: #333; color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; }
 
 /* Friends' message / relic box: bigger, roomier, and a proper card on phones too */
 .compose { margin: 28px 0 44px; gap: 20px; }
