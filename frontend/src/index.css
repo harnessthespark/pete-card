@@ -325,3 +325,12 @@ body { overflow-x: hidden; }
 	.card-front { transition: opacity .6s; }
 	.club-party .card-front { transform: none; }
 }
+
+/* music on/off for Pete's view */
+.sound-btn {
+	position: fixed; right: 16px; bottom: 16px; z-index: 40;
+	border: 0; border-radius: 999px; padding: 10px 16px;
+	background: #111; color: #fff; font: inherit; font-weight: 600;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 16px rgba(0,229,255,.6);
+	cursor: pointer;
+}

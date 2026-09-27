@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { startRave, stopRave } from './rave.js'
 
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
@@ -116,6 +117,7 @@ function PeteIntro({ onDone }) {
   function start() {
     if (stage !== 'closed') return
     setStage('party')
+    startRave()
     setTimeout(() => setStage('leaving'), 5500)
     setTimeout(onDone, 6300)
   }
@@ -137,7 +139,7 @@ function PeteIntro({ onDone }) {
           <img className="card-front" src="/cover.jpg"
                alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
         </div>
-        <p className="tap">Tap to open your card</p>
+        <p className="tap">Tap to open your card 🔊</p>
         <h1 className="club-title">Happy 50th, Pete!</h1>
       </div>
   )
@@ -154,6 +156,7 @@ function App() {
   const [unlocked, setUnlocked] = useState(false)
   const [codeError, setCodeError] = useState('')
   const [introDone, setIntroDone] = useState(false)
+  const [soundOn, setSoundOn] = useState(true)
 
   async function loadMessages() {
     const res = await fetch('/messages')
@@ -296,6 +299,13 @@ function App() {
                 <p>Longer video? Upload it to YouTube or Google Drive and paste the link in your message.</p>
               </aside>
             </div>
+        )}
+
+        {isPeteView && (
+            <button className="sound-btn" type="button"
+                    onClick={() => { if (soundOn) { stopRave() } else { startRave() } setSoundOn(!soundOn) }}>
+              {soundOn ? '🔊 Music on' : '🔇 Music off'}
+            </button>
         )}
 
         <section className="wall">
