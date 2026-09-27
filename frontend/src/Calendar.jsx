@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { enterChapel, enterClub } from './music.js'
 
 // The Feast of St Petermas: a stained-glass advent calendar for October.
 // One pane opens each day (UK time). Pane N shows the Nth message on the card
@@ -40,6 +41,18 @@ export default function PetermasCalendar({ messages }) {
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
   const canonised = daysOpen >= 31
+  const sectionRef = useRef(null)
+
+  // Two rooms: when the window is on screen, the music moves to the chapel track
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) enterChapel(); else enterClub()
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   function messagesFor(day) {
     return messages.filter((_, i) => (i % 31) + 1 === day)
@@ -71,7 +84,7 @@ export default function PetermasCalendar({ messages }) {
   const dayMsgs = showDay ? messagesFor(showDay) : []
 
   return (
-      <section className={`petermas ${canonised ? 'canonised' : ''}`}>
+      <section ref={sectionRef} className={`petermas ${canonised ? 'canonised' : ''}`}>
         <h2 className="petermas-title">The Feast of St Petermas</h2>
         <p className="petermas-sub">
           {daysOpen === 0 ? 'The feast begins on 1st October.'

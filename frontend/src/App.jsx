@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { startMusic, stopMusic, setMusicVolume, getMusicVolume } from './music.js'
+import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying } from './music.js'
 import PetermasCalendar from './Calendar.jsx'
 
 function AdminPage() {
@@ -149,8 +149,7 @@ function SoundControls() {
                 <input type="range" min="0" max="1" step="0.05" value={vol}
                        onChange={(e) => { const v = Number(e.target.value); setVol(v); setMusicVolume(v) }} />
               </label>
-              <a href="https://soundcloud.com/suddi-raval/hardcore-uproar-by-together"
-                 target="_blank" rel="noopener noreferrer">♪ Together – Hardcore Uproar (1990)</a>
+              <a href={nowPlaying().link} target="_blank" rel="noopener noreferrer">♪ {nowPlaying().title}</a>
             </div>
         )}
         <button type="button" className="dj-btn" aria-expanded={open}
