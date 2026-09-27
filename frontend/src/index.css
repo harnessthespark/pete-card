@@ -571,3 +571,12 @@ iframe#yt-chapel.player-visible { width: 192px !important; height: 108px !import
 .club-arriving .queue-msg, .club-standing .queue-msg, .club-displayed .queue-msg,
 .club-open .queue-msg, .club-leaving .queue-msg { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .queue-line2 { animation: none; opacity: 1; } }
+
+/* Lisa's own club-entrance image goes behind the ticket (frontend/public/club-entrance.jpg).
+   Until it exists, this layer is simply empty and the dark club background shows. */
+.club-bg {
+	position: absolute; inset: 0; z-index: 0;
+	background: url('/club-entrance.jpg') center / cover no-repeat;
+	transition: opacity 1s ease;
+}
+.club-open .club-bg, .club-leaving .club-bg { opacity: .12; }

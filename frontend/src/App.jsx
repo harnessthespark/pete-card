@@ -265,7 +265,7 @@ function PeteIntro({ onOpen, onDone }) {
 
   return (
       <div className={`club club-${stage}`}>
-        <QueueScene />
+        <div className="club-bg" aria-hidden="true" />
         <div className="queue-msg" aria-hidden={stage === 'open' || stage === 'leaving'}>
           <p className="queue-line1">The queue’s round the block…</p>
           <p className="queue-line2">…but you’re on the guest list.</p>
