@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -760,3 +760,31 @@ body { background: #0a0a0c; }
 }
 .arrival-tap { animation-delay: 3.4s, 4.2s; }
 @media (prefers-reduced-motion: reduce) { .neon { animation: none; opacity: 1; } }
+
+/* Neon sign mounted on a dark brick wall, lit by the sign itself */
+.arrival {
+	background:
+		/* the sign's own light spilling onto the wall, and dark edges */
+		radial-gradient(ellipse 60% 45% at 50% 42%, rgba(200,0,255,.28) 0%, rgba(120,0,200,.12) 45%, rgba(0,0,0,0) 75%),
+		radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 35%, rgba(0,0,0,.85) 100%),
+		/* mortar lines: horizontal, then staggered verticals */
+		repeating-linear-gradient(0deg, #120b0e 0 4px, transparent 4px 56px),
+		linear-gradient(90deg, #120b0e 4px, transparent 4px) 0 0 / 120px 112px,
+		linear-gradient(90deg, #120b0e 4px, transparent 4px) 60px 56px / 120px 112px,
+		/* the bricks: uneven dark reds */
+		repeating-linear-gradient(90deg, #3a1a1c 0 37px, #331618 37px 81px, #3d1c1a 81px 120px),
+		#2e1416;
+}
+.neon-sign { filter: drop-shadow(0 6px 14px rgba(0,0,0,.6)); }
+/* use a proper staggered brick texture */
+.arrival {
+	background:
+		radial-gradient(ellipse 60% 45% at 50% 42%, rgba(200,0,255,.30) 0%, rgba(120,0,200,.12) 45%, rgba(0,0,0,0) 75%),
+		radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.88) 100%),
+		url('/brick.jpg') center / 900px auto repeat,
+		#1a0d10;
+}
+/* thinner writing: Tilt Neon is drawn like real bent glass tubes */
+.neon-sign { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; }
+.neon-title { font-weight: 400; letter-spacing: .04em; }
+.neon-date { font-weight: 400; letter-spacing: .02em; }
