@@ -608,3 +608,21 @@ body { background: #0a0a0c; }
 @media (orientation: landscape) and (min-width: 760px) {
 	.queue-msg { left: 0; right: 46%; bottom: 14%; }
 }
+
+/* Ticket held in your hand at the bottom of the screen (not floating in mid-air) */
+.club-ticket .ticket, .ticket {
+	top: auto; bottom: -18px; left: 50%;
+	width: min(84vw, 420px); padding: 26px 22px 40px;
+	transform: translateX(-50%) rotate(-6deg);
+	animation: ticketHand 3.5s ease-in-out infinite;
+	box-shadow: 0 0 0 2px #ff2bd6, 0 0 26px rgba(255,43,214,.45), 0 -10px 40px rgba(0,0,0,.55);
+}
+@keyframes ticketHand { 50% { transform: translateX(-50%) translateY(-6px) rotate(-5deg); } }
+.club:not(.club-ticket) .ticket { transform: translateX(-50%) translateY(120%) rotate(-10deg); }
+.club-ticket .hint { bottom: calc(min(84vw, 420px) * .42 + 30px); left: 0; right: 0; }
+@media (orientation: portrait) { .queue-msg { bottom: auto; top: 38%; } }
+@media (orientation: landscape) and (min-width: 760px) {
+	.club-ticket .ticket, .ticket { left: 70%; }
+	.club-ticket .hint { left: 40%; right: 0; bottom: 210px; }
+}
+@media (prefers-reduced-motion: reduce) { .ticket { animation: none; } }
