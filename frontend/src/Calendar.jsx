@@ -194,8 +194,8 @@ export default function PetermasCalendar() {
       <section ref={sectionRef} className={`petermas ${canonised ? 'canonised' : ''}`}>
         <h2 className="petermas-title">The Feast of St Petermas</h2>
         <p className="petermas-sub">
-          {daysOpen === 0 ? 'The feast begins on Petermas Eve, Wednesday 30th September at 7pm.'
-              : daysOpen === 1 && Date.now() < new Date('2026-10-01T00:00:00+01:00').getTime() ? 'Petermas Eve · open the first window'
+          {daysOpen === 0 ? 'The feast begins on St Petermas Eve, Wednesday 30th September at 7pm.'
+              : daysOpen === 1 && Date.now() < new Date('2026-10-01T00:00:00+01:00').getTime() ? 'St Petermas Eve · open the first window'
               : canonised ? 'St Petermas, canonised 1 November 2026'
                   : `Day ${daysOpen} of 31 · open a window each day`}
         </p>

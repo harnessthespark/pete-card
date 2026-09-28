@@ -369,11 +369,11 @@ function PetermasEve() {
   if (!inside) {
     return (
         <div className="club club-arrive">
-          <div className="arrival" role="button" tabIndex={0} aria-label="Petermas Eve. Tap to enter the chapel"
+          <div className="arrival" role="button" tabIndex={0} aria-label="St Petermas Eve. Tap to enter the chapel"
                onClick={() => { startMusic(); enterChapel(); setInside(true) }}
                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { startMusic(); enterChapel(); setInside(true) } }}>
             <div className="neon-sign">
-              <h1 className="neon neon-title">PETERMAS EVE</h1>
+              <h1 className="neon neon-title">ST PETERMAS EVE</h1>
               <p className="neon neon-date">The first window is ready<br />The club opens at midnight</p>
             </div>
             <p className="arrival-tap">Tap to enter the chapel</p>
