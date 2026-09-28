@@ -788,3 +788,11 @@ body { background: #0a0a0c; }
 .neon-sign { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; }
 .neon-title { font-weight: 400; letter-spacing: .04em; }
 .neon-date { font-weight: 400; letter-spacing: .02em; }
+/* Lisa's brick wall photo behind the neon (darkened so the tubes glow) */
+.arrival {
+	background:
+		radial-gradient(ellipse 60% 45% at 50% 42%, rgba(200,0,255,.32) 0%, rgba(120,0,200,.14) 45%, rgba(0,0,0,0) 75%),
+		radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.85) 100%),
+		url('/arrival-bg.jpg') center / cover no-repeat,
+		#111;
+}
