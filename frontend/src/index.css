@@ -626,3 +626,18 @@ body { background: #0a0a0c; }
 	.club-ticket .hint { left: 40%; right: 0; bottom: 210px; }
 }
 @media (prefers-reduced-motion: reduce) { .ticket { animation: none; } }
+
+/* Pete is in the picture holding his ticket: the whole scene is the tap target,
+   and the drawn ticket stays invisible until the card takes over */
+.club-ticket .ticket, .club-ticket .ticket:hover {
+	inset: 0 !important; top: 0 !important; left: 0 !important; bottom: 0 !important;
+	width: auto !important; height: auto !important; padding: 0 !important;
+	transform: none !important; animation: none !important;
+	opacity: 0 !important; box-shadow: none !important; border: 0 !important; background: transparent !important;
+}
+.club-ticket .ticket > * { visibility: hidden; }
+.hint { pointer-events: none; }
+.club-ticket .hint, .club-ticket .hint { left: 0 !important; right: 0 !important; bottom: 6% !important; font-size: 14px; }
+@media (orientation: landscape) and (min-width: 760px) {
+	.queue-msg { right: 42%; }
+}

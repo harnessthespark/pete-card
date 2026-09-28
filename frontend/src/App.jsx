@@ -260,7 +260,7 @@ function PeteIntro({ onOpen, onDone }) {
     setTimeout(onDone, 800)
   }
 
-  const hint = stage === 'ticket' ? 'tap your ticket'
+  const hint = stage === 'ticket' ? 'tap to show your ticket at the door'
       : stage === 'displayed' ? 'Skip the queue, access the club 🔊' : ''
 
   return (
