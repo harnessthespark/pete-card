@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&family=Roboto:wght@300;400&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -784,8 +784,8 @@ body { background: #0a0a0c; }
 		url('/brick.jpg') center / 900px auto repeat,
 		#1a0d10;
 }
-/* thinner writing: Tilt Neon is drawn like real bent glass tubes */
-.neon-sign { font-family: 'Neonderthaw', cursive; }
+
+.neon-sign { font-family: 'Roboto', sans-serif; }
 .neon-title { font-weight: 400; letter-spacing: .04em; }
 .neon-date { font-weight: 400; letter-spacing: .02em; }
 /* Lisa's brick wall photo behind the neon (darkened so the tubes glow) */
@@ -802,3 +802,7 @@ body { background: #0a0a0c; }
 .eve-note { text-align: center; color: var(--paper); margin: 28px 0 90px; font-family: 'Caveat', cursive; font-size: 24px; }
 /* script neon for the title, clean tube lettering for the details (easier to read) */
 .neon-date { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; font-size: clamp(24px, 5vw, 60px); }
+/* Lisa's pick: Roboto for the whole neon sign, light weight so the tubes stay slim */
+.neon-sign, .neon-date { font-family: 'Roboto', sans-serif; }
+.neon-title { font-weight: 300; }
+.neon-date { font-weight: 300; }
