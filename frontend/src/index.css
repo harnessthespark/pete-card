@@ -660,3 +660,19 @@ body { background: #0a0a0c; }
 .pete-page .wall .note img, .pete-page .wall .note video { border-radius: 16px; }
 .pete-page .wall { column-gap: 16px; }
 .pete-page .wall .note { margin-bottom: 16px; }
+
+/* Card opens like a real greetings card: plain flyer on the front,
+   and once open the left-hand page is the VIP-stamped flyer */
+.book-cover { backface-visibility: visible; transform-style: preserve-3d; overflow: visible; box-shadow: none; }
+.cover-face { position: absolute; inset: 0; border-radius: 10px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.7); }
+.cover-face img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cover-back { transform: rotateY(180deg); }
+.club-open .book-cover, .club-leaving .book-cover { transform: rotateY(-180deg); }
+/* open card = two pages side by side, re-centred and scaled to fit */
+.club-open .book, .club-leaving .book { transform: rotateX(-4deg) translateX(45%) scale(.9); }
+@media (orientation: portrait), (max-width: 760px) {
+	.club-open .book, .club-leaving .book { transform: rotateX(-4deg) translateX(26%) scale(.52); }
+}
+/* new queue photo: keep the signs AND Pete's hand with his flyer in view */
+.club-bg { background-position: center 18%; }
+@media (orientation: portrait) { .club-bg { background-position: 82% 30%; } }

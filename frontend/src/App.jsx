@@ -296,7 +296,13 @@ function PeteIntro({ onOpen, onDone }) {
               <button type="button" className="enter-btn" onClick={enter}>Read your messages →</button>
             </div>
             <div className="book-cover">
-              <img src="/vip-flyer.png" alt="VIP flyer for the Rave Revival, Pete's 50th, 1st October" />
+              <div className="cover-face cover-front">
+                <img src="/cover.jpg" alt="Rave Revival flyer for Pete's 50th, 1st October" />
+              </div>
+              <div className="cover-face cover-back">
+                <img src="/vip-flyer.png" alt="The same flyer, stamped VIP"
+                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }} />
+              </div>
             </div>
           </div>
         </div>
