@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -785,7 +785,7 @@ body { background: #0a0a0c; }
 		#1a0d10;
 }
 /* thinner writing: Tilt Neon is drawn like real bent glass tubes */
-.neon-sign { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; }
+.neon-sign { font-family: 'Neonderthaw', cursive; }
 .neon-title { font-weight: 400; letter-spacing: .04em; }
 .neon-date { font-weight: 400; letter-spacing: .02em; }
 /* Lisa's brick wall photo behind the neon (darkened so the tubes glow) */
@@ -800,3 +800,5 @@ body { background: #0a0a0c; }
 /* Petermas Eve: just the chapel window */
 .eve-page { padding-top: 40px; }
 .eve-note { text-align: center; color: var(--paper); margin: 28px 0 90px; font-family: 'Caveat', cursive; font-size: 24px; }
+/* script neon for the title, clean tube lettering for the details (easier to read) */
+.neon-date { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; font-size: clamp(24px, 5vw, 60px); }

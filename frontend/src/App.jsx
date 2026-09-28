@@ -278,7 +278,7 @@ function PeteIntro({ onOpen, onDone }) {
                  aria-label="Rave Revival, tonight, 1st October. Tap to arrive"
                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapArrive() }}>
               <div className="neon-sign">
-                <h1 className="neon neon-title">RAVE REVIVAL</h1>
+                <h1 className="neon neon-title">Rave Revival</h1>
                 <p className="neon neon-date">Tonight · 1st October<br />50 years in the making</p>
               </div>
               <p className="arrival-tap">Tap to arrive</p>
@@ -356,7 +356,7 @@ function DoorsClosed() {
       <div className="club club-arrive">
         <div className="arrival" style={{ cursor: 'default' }}>
           <div className="neon-sign">
-            <h1 className="neon neon-title">DOORS CLOSED</h1>
+            <h1 className="neon neon-title">Doors Closed</h1>
             <p className="neon neon-date">St Petermas awaits<br />Wednesday · 7pm</p>
           </div>
         </div>
@@ -373,7 +373,7 @@ function PetermasEve() {
                onClick={() => { startMusic(); enterChapel(); setInside(true) }}
                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { startMusic(); enterChapel(); setInside(true) } }}>
             <div className="neon-sign">
-              <h1 className="neon neon-title">ST PETERMAS EVE</h1>
+              <h1 className="neon neon-title">St Petermas Eve</h1>
               <p className="neon neon-date">The first window is ready<br />The club opens at midnight</p>
             </div>
             <p className="arrival-tap">Tap to enter the chapel</p>
