@@ -641,3 +641,22 @@ body { background: #0a0a0c; }
 @media (orientation: landscape) and (min-width: 760px) {
 	.queue-msg { right: 42%; }
 }
+
+/* Pete's page: messages float on a laser-lit dance floor (Lisa's idea).
+   Uses /club-lasers.jpg if it's there; until then a laser-coloured glow. */
+.pete-page::before {
+	content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+	background:
+		linear-gradient(180deg, rgba(8,0,20,.25) 0%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.8) 100%),
+		url('/club-lasers.jpg') center / cover no-repeat,
+		radial-gradient(ellipse at 70% 60%, #ff2bd6 0%, rgba(255,43,214,0) 45%),
+		radial-gradient(ellipse at 25% 35%, #2b3bff 0%, rgba(43,59,255,0) 50%),
+		linear-gradient(160deg, #1a0660 0%, #5a0a8c 45%, #0a0014 100%);
+}
+.pete-page .wall .note {
+	border-radius: 26px; background: #ececec; padding: 14px;
+	transform: none !important; box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+.pete-page .wall .note img, .pete-page .wall .note video { border-radius: 16px; }
+.pete-page .wall { column-gap: 16px; }
+.pete-page .wall .note { margin-bottom: 16px; }

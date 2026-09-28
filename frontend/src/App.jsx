@@ -433,7 +433,7 @@ function App() {
   }
 
   return (
-      <main className="page">
+      <main className={isPeteView ? 'page pete-page' : 'page'}>
         <header className="hero">
           <p className="fifty">Pete's 50th · VIP Guest List</p>
         </header>
