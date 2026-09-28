@@ -146,3 +146,19 @@ export function setRaveVolume(v) {
     master.gain.setTargetAtTime(level, ctx.currentTime, 0.05)
   }
 }
+
+// One deep bass thud, like the club door opening
+export function bassThud() {
+  primeRave()
+  try {
+    const t0 = ctx.currentTime + 0.02
+    const o = ctx.createOscillator()
+    const g = ctx.createGain()
+    o.frequency.setValueAtTime(90, t0)
+    o.frequency.exponentialRampToValueAtTime(35, t0 + 0.6)
+    g.gain.setValueAtTime(0.9, t0)
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.9)
+    o.connect(g); g.connect(ctx.destination)
+    o.start(t0); o.stop(t0 + 1)
+  } catch { /* no sound available */ }
+}

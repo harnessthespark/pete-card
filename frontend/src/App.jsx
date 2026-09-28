@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying } from './music.js'
 import PetermasCalendar from './Calendar.jsx'
 
@@ -238,7 +239,14 @@ function QueueScene() {
 // then the lasers and the music kick in.
 function PeteIntro({ onOpen, onDone }) {
   // ticket -> arriving -> standing -> displayed -> open -> leaving
-  const [stage, setStage] = useState('ticket')
+  const [stage, setStage] = useState('arrive')
+
+  function tapArrive() {
+    if (stage !== 'arrive') return
+    bassThud()
+    setStage('entering')
+    setTimeout(() => setStage('ticket'), 1100)
+  }
 
   function tapTicket() {
     if (stage !== 'ticket') return
@@ -265,6 +273,14 @@ function PeteIntro({ onOpen, onDone }) {
 
   return (
       <div className={`club club-${stage}`}>
+        {(stage === 'arrive' || stage === 'entering') && (
+            <div className="arrival" onClick={tapArrive} role="button" tabIndex={0}
+                 aria-label="Rave Revival, tonight, 1st October. Tap to arrive"
+                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapArrive() }}>
+              <div className="arrival-sign" />
+              <p className="arrival-tap">Tap to arrive</p>
+            </div>
+        )}
         <div className="club-bg" aria-hidden="true" />
         <div className="queue-msg" aria-hidden={stage === 'open' || stage === 'leaving'}>
           <p className="queue-line1">The queue’s round the block…</p>

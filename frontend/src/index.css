@@ -676,3 +676,48 @@ body { background: #0a0a0c; }
 /* new queue photo: keep the signs AND Pete's hand with his flyer in view */
 .club-bg { background-position: center 18%; }
 @media (orientation: portrait) { .club-bg { background-position: 82% 30%; } }
+
+/* ===== Arrival screen: Lisa's neon sign flickers on, tap to arrive ===== */
+.arrival {
+	position: absolute; inset: 0; z-index: 100; background: #000; cursor: pointer;
+	display: flex; align-items: center; justify-content: center;
+}
+.arrival-sign {
+	position: absolute; inset: 0;
+	background: url('/arrival.jpg') center / contain no-repeat;
+	opacity: 0;
+	animation: neonOn 2.4s steps(1, end) .4s forwards, neonHum 3s ease-in-out 3s infinite;
+}
+@media (orientation: portrait) { .arrival-sign { background-size: 150% auto; } }
+/* flickers like a neon tube warming up, then stays on */
+@keyframes neonOn {
+	0% { opacity: 0; } 8% { opacity: .9; } 12% { opacity: 0; } 20% { opacity: .6; }
+	24% { opacity: 0; } 40% { opacity: 1; } 44% { opacity: .2; } 52% { opacity: 1; }
+	100% { opacity: 1; }
+}
+/* then a gentle buzz and glow */
+@keyframes neonHum {
+	0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(204,0,255,0)); }
+	50% { filter: brightness(1.12) drop-shadow(0 0 24px rgba(204,0,255,.55)); }
+	51% { filter: brightness(.9); } 52% { filter: brightness(1.1); }
+}
+.arrival-tap {
+	position: absolute; left: 0; right: 0; bottom: 7%; margin: 0; text-align: center;
+	color: #fff; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; font-size: 14px;
+	opacity: 0; animation: fadeUp .8s ease 3s forwards, pulse 1.6s ease-in-out 3.8s infinite;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* tap: the sign rushes towards you and the club appears behind */
+.club-entering .arrival { animation: arriveOut 1.1s ease forwards; pointer-events: none; }
+@keyframes arriveOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.35); } }
+
+/* the queue words only start once he's arrived */
+.club-arrive .queue-msg, .club-entering .queue-msg { opacity: 0; }
+.queue-line2 { animation: none; }
+.club-ticket .queue-line2 { animation: lineIn .8s ease 1.4s forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+	.arrival-sign { animation: none; opacity: 1; }
+	.arrival-tap { animation: none; opacity: 1; }
+	.club-ticket .queue-line2 { animation: none; opacity: 1; }
+}
