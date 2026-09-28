@@ -592,3 +592,19 @@ body { background: #0a0a0c; }
 /* Brighter queue photo: no dimming, lighter edges */
 .club-ticket .club-bg { filter: none; }
 .club::after { background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); }
+/* On wide screens the ticket waits in the empty GUEST LIST lane */
+@media (orientation: landscape) and (min-width: 760px) {
+	.ticket { left: 76%; }
+	@keyframes ticketFloat { 50% { transform: translate(-50%, -54%) rotate(-3deg); } }
+}
+/* keep the STANDARD / VIP / GUEST LIST signs in view, and the hint under the ticket */
+.club-bg { background-position: center top; }
+@media (orientation: portrait) { .club-bg { background-position: 80% top; } }
+@media (orientation: landscape) and (min-width: 760px) {
+	.club-ticket .hint { left: 52%; right: 0; }
+}
+/* queue message sits low over the crowd, leaving the signs clear */
+.queue-msg { top: auto; bottom: 20%; }
+@media (orientation: landscape) and (min-width: 760px) {
+	.queue-msg { left: 0; right: 46%; bottom: 14%; }
+}
