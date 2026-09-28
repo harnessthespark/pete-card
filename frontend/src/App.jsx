@@ -296,7 +296,7 @@ function PeteIntro({ onOpen, onDone }) {
               <button type="button" className="enter-btn" onClick={enter}>Read your messages →</button>
             </div>
             <div className="book-cover">
-              <img src="/cover.jpg" alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
+              <img src="/vip-flyer.png" alt="VIP flyer for the Rave Revival, Pete's 50th, 1st October" />
             </div>
           </div>
         </div>
