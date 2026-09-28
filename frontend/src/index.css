@@ -735,8 +735,8 @@ body { background: #0a0a0c; }
 	font-weight: 400; font-size: clamp(56px, 13vw, 170px); line-height: 1; letter-spacing: .02em;
 	color: #fbe6ff;
 	text-shadow:
-		0 0 4px #fff, 0 0 10px #f0f,
-		0 0 22px #d400ff, 0 0 44px #c000ff, 0 0 80px #a000ff, 0 0 120px #8a00ff;
+		0 0 4px #fff, 0 0 10px #6f6,
+		0 0 22px #00ff66, 0 0 44px #c000ff, 0 0 80px #a000ff, 0 0 120px #8a00ff;
 	animation: tubeOn 2.2s steps(1, end) .5s forwards, tubeHum 4s ease-in-out 3s infinite;
 }
 .neon-date {
@@ -796,3 +796,7 @@ body { background: #0a0a0c; }
 		url('/arrival-bg.jpg') center / cover no-repeat,
 		#111;
 }
+
+/* Petermas Eve: just the chapel window */
+.eve-page { padding-top: 40px; }
+.eve-note { text-align: center; color: var(--paper); margin: 28px 0 90px; font-family: 'Caveat', cursive; font-size: 24px; }

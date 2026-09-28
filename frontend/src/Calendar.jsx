@@ -48,6 +48,7 @@ const BLESSINGS = [
 
 function daysOpenNow() {
   // Preview any day with #pete-day-12 (for Lisa to test)
+  if (window.location.hash.startsWith('#pete-eve')) return 1
   const m = window.location.hash.match(/^#pete-day-(\d+)/)
   if (m) return Math.min(31, Math.max(0, Number(m[1])))
   if (Date.now() >= EVE.getTime() && Date.now() < START.getTime()) return 1
@@ -194,6 +195,7 @@ export default function PetermasCalendar() {
         <h2 className="petermas-title">The Feast of St Petermas</h2>
         <p className="petermas-sub">
           {daysOpen === 0 ? 'The feast begins on Petermas Eve, Wednesday 30th September at 7pm.'
+              : daysOpen === 1 && Date.now() < new Date('2026-10-01T00:00:00+01:00').getTime() ? 'Petermas Eve · open the first window'
               : canonised ? 'St Petermas, canonised 1 November 2026'
                   : `Day ${daysOpen} of 31 · open a window each day`}
         </p>

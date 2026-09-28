@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
-import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying } from './music.js'
+import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel } from './music.js'
 import PetermasCalendar from './Calendar.jsx'
 
 function AdminPage() {
@@ -331,6 +331,65 @@ function PeteIntro({ onOpen, onDone }) {
   )
 }
 
+
+// ---- Timing: what Pete can see, and when (UK time) ----
+// Before Wednesday 7pm: doors closed.
+// Wednesday 7pm to midnight: Petermas Eve, the St Petermas window only (pane 1).
+// From Thursday 1 October: the full card.
+// Previews for Lisa: #pete-closed, #pete-eve, #pete-day-N (full card on day N).
+const EVE_AT = new Date('2026-09-30T19:00:00+01:00').getTime()
+const CARD_AT = new Date('2026-10-01T00:00:00+01:00').getTime()
+
+function peteMode() {
+  const h = window.location.hash
+  if (h.startsWith('#pete-closed')) return 'closed'
+  if (h.startsWith('#pete-eve')) return 'eve'
+  if (h.startsWith('#pete-day-')) return 'open'
+  const now = Date.now()
+  if (now < EVE_AT) return 'closed'
+  if (now < CARD_AT) return 'eve'
+  return 'open'
+}
+
+function DoorsClosed() {
+  return (
+      <div className="club club-arrive">
+        <div className="arrival" style={{ cursor: 'default' }}>
+          <div className="neon-sign">
+            <h1 className="neon neon-title">DOORS CLOSED</h1>
+            <p className="neon neon-date">St Petermas awaits<br />Wednesday · 7pm</p>
+          </div>
+        </div>
+      </div>
+  )
+}
+
+function PetermasEve() {
+  const [inside, setInside] = useState(false)
+  if (!inside) {
+    return (
+        <div className="club club-arrive">
+          <div className="arrival" role="button" tabIndex={0} aria-label="Petermas Eve. Tap to enter the chapel"
+               onClick={() => { startMusic(); enterChapel(); setInside(true) }}
+               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { startMusic(); enterChapel(); setInside(true) } }}>
+            <div className="neon-sign">
+              <h1 className="neon neon-title">PETERMAS EVE</h1>
+              <p className="neon neon-date">The first window is ready<br />The club opens at midnight</p>
+            </div>
+            <p className="arrival-tap">Tap to enter the chapel</p>
+          </div>
+        </div>
+    )
+  }
+  return (
+      <main className="page pete-page eve-page">
+        <PetermasCalendar />
+        <p className="eve-note">The club doors open at midnight. Come back tomorrow for your card ✦</p>
+        <SoundControls />
+      </main>
+  )
+}
+
 function App() {
   const [messages, setMessages] = useState([])
   const [code, setCode] = useState('')
@@ -427,6 +486,9 @@ function App() {
   if (window.location.hash === '#admin') {
     return <AdminPage />
   }
+
+  if (isPeteView && peteMode() === 'closed') return <DoorsClosed />
+  if (isPeteView && peteMode() === 'eve') return <PetermasEve />
 
   if (isPeteView && !introDone) {
     return (
