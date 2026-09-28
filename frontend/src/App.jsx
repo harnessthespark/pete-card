@@ -373,8 +373,8 @@ function PetermasEve() {
                onClick={() => { startMusic(); enterChapel(); setInside(true) }}
                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { startMusic(); enterChapel(); setInside(true) } }}>
             <div className="neon-sign">
-              <h1 className="neon neon-title">St Petermas Eve</h1>
-              <p className="neon neon-date">The first window is ready<br />The club opens at midnight</p>
+              <h1 className="neon neon-title">Tonight, Pete is the DJ</h1>
+              <p className="neon neon-date">The first window is open<br />The congregation gathers at midnight</p>
             </div>
             <p className="arrival-tap">Tap to enter the chapel</p>
           </div>
