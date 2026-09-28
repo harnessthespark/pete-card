@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -721,3 +721,42 @@ body { background: #0a0a0c; }
 	.arrival-tap { animation: none; opacity: 1; }
 	.club-ticket .queue-line2 { animation: none; opacity: 1; }
 }
+
+
+/* ===== Real neon, drawn in CSS (replaces the arrival.jpg picture) ===== */
+.arrival { background: radial-gradient(ellipse at 50% 0%, #1b1f5c 0%, #07061a 45%, #000 80%); }
+.neon-sign {
+	position: relative; z-index: 1; text-align: center; padding: 0 16px;
+	font-family: 'Chewy', 'Instrument Sans', sans-serif;
+}
+.neon { margin: 0; opacity: 0; }
+/* each tube: white-hot core, coloured glow bleeding out around it */
+.neon-title {
+	font-weight: 400; font-size: clamp(56px, 13vw, 170px); line-height: 1; letter-spacing: .02em;
+	color: #fbe6ff;
+	text-shadow:
+		0 0 4px #fff, 0 0 10px #f0f,
+		0 0 22px #d400ff, 0 0 44px #c000ff, 0 0 80px #a000ff, 0 0 120px #8a00ff;
+	animation: tubeOn 2.2s steps(1, end) .5s forwards, tubeHum 4s ease-in-out 3s infinite;
+}
+.neon-date {
+	margin-top: clamp(20px, 5vh, 60px) !important;
+	font-size: clamp(28px, 6vw, 76px); line-height: 1.15;
+	color: #ffffff;
+	text-shadow:
+		0 0 3px #fff, 0 0 8px #fff,
+		0 0 18px #7fdcff, 0 0 36px #3fb8ff, 0 0 64px #1e90ff;
+	animation: tubeOn 1.8s steps(1, end) 1.7s forwards, tubeHum 5s ease-in-out 3.6s infinite;
+}
+@keyframes tubeOn {
+	0% { opacity: 0; } 6% { opacity: .85; } 10% { opacity: .05; } 18% { opacity: .6; }
+	22% { opacity: .1; } 36% { opacity: 1; } 40% { opacity: .3; } 48% { opacity: 1; } 100% { opacity: 1; }
+}
+/* the gentle buzz of a lit tube, with an occasional stutter */
+@keyframes tubeHum {
+	0%, 100% { opacity: 1; filter: brightness(1); }
+	45% { filter: brightness(1.15); }
+	70% { opacity: 1; } 71% { opacity: .55; } 72% { opacity: 1; } 74% { opacity: .75; } 75% { opacity: 1; }
+}
+.arrival-tap { animation-delay: 3.4s, 4.2s; }
+@media (prefers-reduced-motion: reduce) { .neon { animation: none; opacity: 1; } }

@@ -277,7 +277,10 @@ function PeteIntro({ onOpen, onDone }) {
             <div className="arrival" onClick={tapArrive} role="button" tabIndex={0}
                  aria-label="Rave Revival, tonight, 1st October. Tap to arrive"
                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapArrive() }}>
-              <div className="arrival-sign" />
+              <div className="neon-sign">
+                <h1 className="neon neon-title">RAVE REVIVAL</h1>
+                <p className="neon neon-date">Tonight · 1st October<br />50 years in the making</p>
+              </div>
               <p className="arrival-tap">Tap to arrive</p>
             </div>
         )}
