@@ -859,3 +859,22 @@ body { background: #0a0a0c; }
 @keyframes candles { 0% { opacity: .85; } 30% { opacity: 1; } 55% { opacity: .75; } 80% { opacity: .95; } 100% { opacity: .8; } }
 .petermas .stained { box-shadow: 0 0 0 5px #3b2a12, 0 0 0 9px #1c1612, 0 0 70px rgba(255,212,0,.28); }
 @media (prefers-reduced-motion: reduce) { .petermas::before, .petermas::after { animation: none; } }
+
+/* St Petermas sticker over a cheeky photo */
+.sticker-photo { position: relative; cursor: pointer; margin-bottom: 8px; }
+.sticker-photo img { margin-bottom: 0 !important; transition: filter .4s; }
+.sticker-photo:not(.peeking) img { filter: blur(14px) saturate(.6); }
+.sticker {
+	position: absolute; left: 50%; top: 50%; width: 72%; aspect-ratio: 1;
+	transform: translate(-50%, -50%) rotate(-12deg);
+	border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+	background: radial-gradient(circle at 35% 30%, #fff3a8, #ffd400 55%, #e0a800);
+	border: 5px dashed #8a0f6b; color: #4a0636; text-align: center;
+	box-shadow: 0 8px 18px rgba(0,0,0,.45);
+	transition: transform .5s cubic-bezier(.4,0,.2,1), opacity .5s;
+}
+.sticker-top, .sticker-bottom { font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+.sticker-main { font-family: 'Young Serif', Georgia, serif; font-size: clamp(18px, 5vw, 26px); line-height: 1; }
+/* peeling: it lifts and slides off the corner */
+.peeking .sticker { transform: translate(40%, -95%) rotate(28deg) scale(.55); opacity: .9; }
+@media (prefers-reduced-motion: reduce) { .sticker { transition: none; } }

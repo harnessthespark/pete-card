@@ -4,6 +4,24 @@ import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel } from './music.js'
 import PetermasCalendar, { daysOpenNow } from './Calendar.jsx'
 
+
+// A cheeky photo, covered by a St Petermas sticker. Tap to peek, tap again to cover up.
+function StickerPhoto({ src, name }) {
+  const [peek, setPeek] = useState(false)
+  return (
+      <div className={`sticker-photo ${peek ? 'peeking' : ''}`} onClick={() => setPeek(!peek)} role="button" tabIndex={0}
+           aria-label={peek ? 'Cover the photo again' : 'Peel the sticker to peek'}
+           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPeek(!peek) }}>
+        <img src={src} alt={`From ${name}`} />
+        <div className="sticker" aria-hidden="true">
+          <span className="sticker-top">CENSORED BY</span>
+          <span className="sticker-main">St Petermas</span>
+          <span className="sticker-bottom">✦ tap to peek ✦</span>
+        </div>
+      </div>
+  )
+}
+
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
     try { return sessionStorage.getItem('peteAdmin') || '' } catch { return '' }
@@ -30,6 +48,13 @@ function AdminPage() {
     if (adminCode) load(adminCode)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function toggleSticker(id) {
+    setBusy(true)
+    await fetch(`/admin/sticker/${id}?${q(adminCode)}`, { method: 'POST' })
+    await load(adminCode)
+    setBusy(false)
+  }
 
   async function approve(id) {
     setBusy(true)
@@ -81,6 +106,11 @@ function AdminPage() {
           <p className="from">— {m.name}</p>
           <div className="admin-actions">
             {!m.approved && <button disabled={busy} onClick={() => approve(m.id)}>Approve</button>}
+            {m.media && !isVideo(m.media) && (
+                <button disabled={busy} onClick={() => toggleSticker(m.id)}>
+                  {m.sticker ? 'Remove sticker' : '✦ Add sticker'}
+                </button>
+            )}
             <button disabled={busy} className="danger" onClick={() => remove(m.id)}>Delete</button>
           </div>
         </article>
@@ -621,7 +651,7 @@ function App() {
           <article className="note" key={m.id}>
             {m.media && (isVideo(m.media)
                 ? <video src={`/media/${m.media}`} controls playsInline />
-                : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
+                : (m.sticker ? <StickerPhoto src={`/media/${m.media}`} name={m.name} /> : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />))}
             <p>{m.text}</p>
             <p className="from">— {m.name}</p>
           </article>

@@ -38,6 +38,9 @@ with get_db() as conn:
     cols = [r["name"] for r in conn.execute("PRAGMA table_info(messages)").fetchall()]
     if "kind" not in cols:
         conn.execute("ALTER TABLE messages ADD COLUMN kind TEXT DEFAULT 'message'")
+    if "sticker" not in cols:
+        # 1 = a cheeky photo gets a St Petermas sticker over it (tap to peek)
+        conn.execute("ALTER TABLE messages ADD COLUMN sticker INTEGER DEFAULT 0")
 
 class Message(BaseModel):
     code: str
@@ -66,7 +69,7 @@ def add_message(msg: Message):
 def list_messages():
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media, created_at FROM messages "
+            "SELECT id, name, text, media, COALESCE(sticker, 0) AS sticker, created_at FROM messages "
             "WHERE approved = 1 AND COALESCE(kind, 'message') = 'message' ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
@@ -112,10 +115,23 @@ def admin_list(admin_code: str):
     check_admin(admin_code)
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media, approved, COALESCE(kind, 'message') AS kind, created_at "
+            "SELECT id, name, text, media, approved, COALESCE(kind, 'message') AS kind, "
+            "COALESCE(sticker, 0) AS sticker, created_at "
             "FROM messages ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
+
+
+@app.post("/admin/sticker/{message_id}")
+def admin_sticker(message_id: int, admin_code: str):
+    # Toggle the St Petermas sticker over a cheeky photo
+    check_admin(admin_code)
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE messages SET sticker = CASE WHEN COALESCE(sticker, 0) = 1 THEN 0 ELSE 1 END WHERE id = ?",
+            (message_id,),
+        )
+    return {"toggled": message_id}
 
 
 @app.post("/admin/approve/{message_id}")
