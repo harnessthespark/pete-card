@@ -5,22 +5,32 @@ import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, ente
 import PetermasCalendar, { daysOpenNow } from './Calendar.jsx'
 
 
-// A cheeky photo, covered by a St Petermas sticker. Tap to peek, tap again to cover up.
-function StickerPhoto({ src, name }) {
+// A cheeky photo with a St Petermas smiley over just the sensitive bit.
+// Pete: tap to peek, tap again to cover. Admin (onPlace): tap the photo to move the smiley there.
+function StickerPhoto({ src, name, x = 50, y = 50, onPlace }) {
   const [peek, setPeek] = useState(false)
+  function tap(e) {
+    if (onPlace) {
+      const r = e.currentTarget.getBoundingClientRect()
+      onPlace(((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100)
+    } else {
+      setPeek(!peek)
+    }
+  }
   return (
-      <div className={`sticker-photo ${peek ? 'peeking' : ''}`} onClick={() => setPeek(!peek)} role="button" tabIndex={0}
-           aria-label={peek ? 'Cover the photo again' : 'Peel the sticker to peek'}
-           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPeek(!peek) }}>
+      <div className={`sticker-photo ${peek ? 'peeking' : ''} ${onPlace ? 'placing' : ''}`} onClick={tap}
+           role="button" tabIndex={0}
+           aria-label={onPlace ? 'Tap where the sticker should go' : peek ? 'Cover the photo again' : 'Peel the sticker to peek'}
+           onKeyDown={(e) => { if (!onPlace && (e.key === 'Enter' || e.key === ' ')) setPeek(!peek) }}>
         <img src={src} alt={`From ${name}`} />
-        <div className="sticker" aria-hidden="true">
+        <div className="sticker" aria-hidden="true" style={{ left: `${x}%`, top: `${y}%` }}>
           <svg viewBox="0 0 100 100" className="smiley">
             <circle cx="50" cy="50" r="47" fill="#ffd400" stroke="#111" strokeWidth="4" />
             <ellipse cx="36" cy="38" rx="5.5" ry="10" fill="#111" />
             <ellipse cx="64" cy="38" rx="5.5" ry="10" fill="#111" />
             <path d="M24 58 Q50 86 76 58" fill="none" stroke="#111" strokeWidth="5" strokeLinecap="round" />
           </svg>
-          <span className="sticker-bottom">tap to peek</span>
+          {!onPlace && <span className="sticker-bottom">tap to peek</span>}
         </div>
       </div>
   )
@@ -52,6 +62,11 @@ function AdminPage() {
     if (adminCode) load(adminCode)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function placeSticker(id, x, y) {
+    setItems((list) => list.map((it) => (it.id === id ? { ...it, sticker_x: x, sticker_y: y } : it)))
+    await fetch(`/admin/sticker-pos/${id}?${q(adminCode)}&x=${x.toFixed(1)}&y=${y.toFixed(1)}`, { method: 'POST' })
+  }
 
   async function toggleSticker(id) {
     setBusy(true)
@@ -105,7 +120,10 @@ function AdminPage() {
           {m.kind === 'relic' && <p className="chip chip-relic">📿 Relic for the advent windows</p>}
           {m.media && (isVideo(m.media)
               ? <video src={`/media/${m.media}`} controls playsInline />
-              : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />)}
+              : (m.sticker
+                  ? <StickerPhoto src={`/media/${m.media}`} name={m.name} x={m.sticker_x} y={m.sticker_y}
+                                  onPlace={(x, y) => placeSticker(m.id, x, y)} />
+                  : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />))}
           <p>{m.text}</p>
           <p className="from">— {m.name}</p>
           <div className="admin-actions">
@@ -668,7 +686,7 @@ function App() {
           <article className="note" key={m.id}>
             {m.media && (isVideo(m.media)
                 ? <video src={`/media/${m.media}`} controls playsInline />
-                : (m.sticker ? <StickerPhoto src={`/media/${m.media}`} name={m.name} /> : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />))}
+                : (m.sticker ? <StickerPhoto src={`/media/${m.media}`} name={m.name} x={m.sticker_x} y={m.sticker_y} /> : <img src={`/media/${m.media}`} alt={`From ${m.name}`} />))}
             <p>{m.text}</p>
             <p className="from">— {m.name}</p>
           </article>

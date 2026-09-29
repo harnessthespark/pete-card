@@ -41,6 +41,10 @@ with get_db() as conn:
     if "sticker" not in cols:
         # 1 = a cheeky photo gets a St Petermas sticker over it (tap to peek)
         conn.execute("ALTER TABLE messages ADD COLUMN sticker INTEGER DEFAULT 0")
+    if "sticker_x" not in cols:
+        # where the sticker sits on the photo, as % across and down
+        conn.execute("ALTER TABLE messages ADD COLUMN sticker_x REAL DEFAULT 50")
+        conn.execute("ALTER TABLE messages ADD COLUMN sticker_y REAL DEFAULT 50")
 
 class Message(BaseModel):
     code: str
@@ -69,7 +73,8 @@ def add_message(msg: Message):
 def list_messages():
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media, COALESCE(sticker, 0) AS sticker, created_at FROM messages "
+            "SELECT id, name, text, media, COALESCE(sticker, 0) AS sticker, "
+            "COALESCE(sticker_x, 50) AS sticker_x, COALESCE(sticker_y, 50) AS sticker_y, created_at FROM messages "
             "WHERE approved = 1 AND COALESCE(kind, 'message') = 'message' ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
@@ -116,7 +121,8 @@ def admin_list(admin_code: str):
     with get_db() as conn:
         rows = conn.execute(
             "SELECT id, name, text, media, approved, COALESCE(kind, 'message') AS kind, "
-            "COALESCE(sticker, 0) AS sticker, created_at "
+            "COALESCE(sticker, 0) AS sticker, COALESCE(sticker_x, 50) AS sticker_x, "
+            "COALESCE(sticker_y, 50) AS sticker_y, created_at "
             "FROM messages ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
@@ -132,6 +138,17 @@ def admin_sticker(message_id: int, admin_code: str):
             (message_id,),
         )
     return {"toggled": message_id}
+
+
+@app.post("/admin/sticker-pos/{message_id}")
+def admin_sticker_pos(message_id: int, admin_code: str, x: float, y: float):
+    # Move the sticker to where Lisa tapped on the photo
+    check_admin(admin_code)
+    x = max(0.0, min(100.0, x))
+    y = max(0.0, min(100.0, y))
+    with get_db() as conn:
+        conn.execute("UPDATE messages SET sticker_x = ?, sticker_y = ? WHERE id = ?", (x, y, message_id))
+    return {"moved": message_id, "x": x, "y": y}
 
 
 @app.post("/admin/approve/{message_id}")

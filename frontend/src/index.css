@@ -899,3 +899,9 @@ body { background: #0a0a0c; }
 	cursor: pointer; padding: 8px 0;
 }
 .chapel-back:hover { text-decoration: underline; }
+/* no blur: the smiley covers just the sensitive bit, wherever it's placed */
+.sticker-photo:not(.peeking) img { filter: none; }
+.sticker { width: 30%; min-width: 64px; max-width: 120px; transform: translate(-50%, -50%) rotate(-12deg); }
+.peeking .sticker { transform: translate(40%, -140%) rotate(28deg) scale(.55); }
+.placing { cursor: crosshair; }
+.placing::after { content: "Tap the photo where the smiley should go"; display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
