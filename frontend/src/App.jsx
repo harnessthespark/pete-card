@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
-import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel } from './music.js'
+import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub } from './music.js'
 import PetermasCalendar, { daysOpenNow } from './Calendar.jsx'
 
 
@@ -371,29 +371,24 @@ function PeteIntro({ onOpen, onDone }) {
 
 // Take Pete straight to the St Petermas window
 function goToChapel() {
-  const el = document.getElementById('st-petermas')
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  window.dispatchEvent(new Event('petermas:chapel'))
 }
 
 // Small glowing stained-glass badge: "Day 3 · a new window is ready"
 function ChapelBadge() {
   const day = daysOpenNow()
   const [opened, setOpened] = useState(false)
-  const [hidden, setHidden] = useState(false)
   useEffect(() => {
     const check = () => {
       let list = []
       try { list = JSON.parse(localStorage.getItem('petermasOpened') || '[]') } catch { list = [] }
       setOpened(list.includes(day))
-      const el = document.getElementById('st-petermas')
-      if (el) { const r = el.getBoundingClientRect(); setHidden(r.top < window.innerHeight * 0.6 && r.bottom > 0) }
     }
     check()
     const t = setInterval(check, 1000)
-    window.addEventListener('scroll', check, { passive: true })
-    return () => { clearInterval(t); window.removeEventListener('scroll', check) }
+    return () => clearInterval(t)
   }, [day])
-  if (day < 1 || hidden) return null
+  if (day < 1) return null
   return (
       <button type="button" className={`chapel-badge ${opened ? '' : 'chapel-badge-new'}`} onClick={goToChapel}>
         ✦ Day {day} · {opened ? 'visit St Petermas' : 'a new window is ready'}
@@ -470,6 +465,12 @@ function App() {
   const [unlocked, setUnlocked] = useState(false)
   const [codeError, setCodeError] = useState('')
   const [introDone, setIntroDone] = useState(false)
+  const [inChapel, setInChapel] = useState(false)
+  useEffect(() => {
+    const go = () => { setInChapel(true); window.scrollTo(0, 0); enterChapel() }
+    window.addEventListener('petermas:chapel', go)
+    return () => window.removeEventListener('petermas:chapel', go)
+  }, [])
   const [musicStarted, setMusicStarted] = useState(false)
   const [mode, setMode] = useState('message') // 'message' or 'relic'
 
@@ -562,9 +563,22 @@ function App() {
   if (isPeteView && !introDone) {
     return (
         <>
-          <PeteIntro onOpen={() => setMusicStarted(true)} onDone={(where) => { setIntroDone(true); if (where === 'chapel') setTimeout(goToChapel, 150) }} />
+          <PeteIntro onOpen={() => setMusicStarted(true)} onDone={(where) => { setIntroDone(true); if (where === 'chapel') setTimeout(goToChapel, 50) }} />
           {musicStarted && <SoundControls />}
         </>
+    )
+  }
+
+  if (isPeteView && introDone && inChapel) {
+    return (
+        <main className="page pete-page chapel-page">
+          <button type="button" className="chapel-back"
+                  onClick={() => { setInChapel(false); window.scrollTo(0, 0); enterClub() }}>
+            ← Back to the club
+          </button>
+          <PetermasCalendar />
+          {musicStarted && <SoundControls />}
+        </main>
     )
   }
 
@@ -596,7 +610,7 @@ function App() {
         <img className="cover" src={isPeteView ? '/cover.jpg' : '/vip-flyer.png'}
              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
-        <p className="sub under-cover">{isPeteView ? 'From all of us. Scroll down to the window' : 'Leave a message, a photo or a video'}</p>
+        <p className="sub under-cover">{isPeteView ? 'From all of us, with love' : 'Leave a message, a photo or a video'}</p>
 
         {!isPeteView && (
             <div className="compose">
@@ -648,7 +662,6 @@ function App() {
         {isPeteView && musicStarted && <SoundControls />}
         {isPeteView && <ChapelBadge />}
 
-        {isPeteView && <PetermasCalendar />}
         {isPeteView && <h2 className="petermas-title offerings-h">Offerings from the congregation</h2>}
         <section className="wall">
       {messages.map((m) => (

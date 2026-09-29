@@ -890,3 +890,12 @@ body { background: #0a0a0c; }
 	font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
 }
 .sticker { aspect-ratio: auto; }
+
+/* St Petermas as its own area */
+.chapel-page { padding-top: 16px; }
+.chapel-page .petermas { margin-top: 12px; min-height: calc(100vh - 90px); }
+.chapel-back {
+	border: 0; background: none; color: #ffe9a8; font: inherit; font-weight: 600; font-size: 15px;
+	cursor: pointer; padding: 8px 0;
+}
+.chapel-back:hover { text-decoration: underline; }
