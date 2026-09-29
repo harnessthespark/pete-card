@@ -9,6 +9,7 @@ const CLUB = { title: 'Together – Hardcore Uproar (1990)', link: 'https://soun
 // The chapel set: plays in order, then loops. Add more official YouTube videos here.
 const CHAPEL_SET = [
   { id: 'bhSB8EEnCAM', title: 'Faithless – God Is a DJ' },
+  { id: '1mb3cXHH6QQ', title: 'Like a Prayer (Infernum dark techno remix)' },
   { id: 'yJu7smlJNYU', title: 'Moguai – Viola' },
 ]
 let setIndex = 0
@@ -110,6 +111,10 @@ function loadYouTube() {
           if (f) f.classList.add('sc-player')
           applyLevels()
           if (ytWaiting) { const w = ytWaiting; ytWaiting = null; w() }
+        },
+        onError: () => { // video blocked or removed: skip to the next track
+          setIndex = (setIndex + 1) % CHAPEL_SET.length
+          if (yt && ytReady) yt.loadVideoById(CHAPEL_SET[setIndex].id)
         },
         onStateChange: (e) => {
           if (e.data === 1) setTimeout(hidePlayers, 1200)
