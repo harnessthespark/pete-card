@@ -922,3 +922,25 @@ body { background: #0a0a0c; }
 		radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255,170,80,.10), rgba(0,0,0,0) 70%),
 		radial-gradient(ellipse 90% 70% at 50% 35%, #2a1e14 0%, #120d09 60%, #070504 100%);
 }
+
+/* ...but the club bleeds through: coloured lights drifting and flickering round the chapel */
+.eve-page::after, .chapel-page::after {
+	content: ""; position: fixed; inset: -10%; z-index: -1; pointer-events: none;
+	background:
+		radial-gradient(ellipse 30% 40% at 12% 30%, rgba(255,43,214,.35), rgba(255,43,214,0) 70%),
+		radial-gradient(ellipse 30% 40% at 88% 60%, rgba(43,90,255,.35), rgba(43,90,255,0) 70%),
+		radial-gradient(ellipse 35% 30% at 20% 85%, rgba(140,40,255,.3), rgba(140,40,255,0) 70%),
+		radial-gradient(ellipse 25% 35% at 85% 15%, rgba(0,220,200,.22), rgba(0,220,200,0) 70%);
+	mix-blend-mode: screen;
+	animation: clubDrift 14s ease-in-out infinite alternate, clubFlicker 3.2s steps(1) infinite;
+}
+@keyframes clubDrift {
+	0%   { transform: translate(0, 0) rotate(0deg); filter: hue-rotate(0deg); }
+	50%  { transform: translate(3%, -2%) rotate(2deg); filter: hue-rotate(60deg); }
+	100% { transform: translate(-3%, 2%) rotate(-2deg); filter: hue-rotate(-40deg); }
+}
+@keyframes clubFlicker {
+	0% { opacity: .9; } 12% { opacity: .55; } 18% { opacity: 1; } 40% { opacity: .7; }
+	46% { opacity: .95; } 70% { opacity: .6; } 76% { opacity: 1; } 100% { opacity: .85; }
+}
+@media (prefers-reduced-motion: reduce) { .eve-page::after, .chapel-page::after { animation: none; opacity: .8; } }
