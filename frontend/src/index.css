@@ -882,3 +882,11 @@ body { background: #0a0a0c; }
 .sticker { width: 42%; min-width: 96px; max-width: 150px; border-width: 3px; gap: 2px; }
 .sticker-top, .sticker-bottom { font-size: 8px; letter-spacing: .08em; }
 .sticker-main { font-size: clamp(13px, 3.4vw, 17px); }
+/* 90s acid house smiley sticker */
+.sticker { background: none; border: 0; box-shadow: none; gap: 4px; }
+.sticker .smiley { width: 100%; height: auto; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); }
+.sticker-bottom {
+	background: #111; color: #ffd400; padding: 2px 8px; border-radius: 999px;
+	font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.sticker { aspect-ratio: auto; }

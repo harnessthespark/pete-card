@@ -14,9 +14,13 @@ function StickerPhoto({ src, name }) {
            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPeek(!peek) }}>
         <img src={src} alt={`From ${name}`} />
         <div className="sticker" aria-hidden="true">
-          <span className="sticker-top">CENSORED BY</span>
-          <span className="sticker-main">St Petermas</span>
-          <span className="sticker-bottom">✦ tap to peek ✦</span>
+          <svg viewBox="0 0 100 100" className="smiley">
+            <circle cx="50" cy="50" r="47" fill="#ffd400" stroke="#111" strokeWidth="4" />
+            <ellipse cx="36" cy="38" rx="5.5" ry="10" fill="#111" />
+            <ellipse cx="64" cy="38" rx="5.5" ry="10" fill="#111" />
+            <path d="M24 58 Q50 86 76 58" fill="none" stroke="#111" strokeWidth="5" strokeLinecap="round" />
+          </svg>
+          <span className="sticker-bottom">tap to peek</span>
         </div>
       </div>
   )
