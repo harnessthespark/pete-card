@@ -6,9 +6,18 @@
 import { primeRave, startRave, stopRave, setRaveVolume } from './rave.js'
 
 const CLUB = { title: 'Together – Hardcore Uproar (1990)', link: 'https://soundcloud.com/suddi-raval/hardcore-uproar-by-together' }
-const CHAPEL = { title: 'Moguai – Viola', link: 'https://www.youtube.com/watch?v=yJu7smlJNYU' }
+// The chapel set: plays in order, then loops. Add more official YouTube videos here.
+const CHAPEL_SET = [
+  { id: 'bhSB8EEnCAM', title: 'Faithless – God Is a DJ' },
+  { id: 'yJu7smlJNYU', title: 'Moguai – Viola' },
+]
+let setIndex = 0
+const chapelNow = () => {
+  const t = CHAPEL_SET[setIndex]
+  return { title: t.title, link: 'https://www.youtube.com/watch?v=' + t.id }
+}
 const SC_TRACK = 'https://api.soundcloud.com/tracks/20039560'
-const YT_ID = 'yJu7smlJNYU'
+const YT_ID = CHAPEL_SET[0].id
 
 let volume = 0.7
 let started = false
@@ -93,7 +102,7 @@ function loadYouTube() {
   const make = () => {
     yt = new window.YT.Player('yt-chapel', {
       videoId: YT_ID,
-      playerVars: { autoplay: 0, controls: 1, loop: 1, playlist: YT_ID, playsinline: 1 },
+      playerVars: { autoplay: 0, controls: 1, playsinline: 1 },
       events: {
         onReady: () => {
           ytReady = true
@@ -104,6 +113,10 @@ function loadYouTube() {
         },
         onStateChange: (e) => {
           if (e.data === 1) setTimeout(hidePlayers, 1200)
+          if (e.data === 0) { // track ended: next one in the set
+            setIndex = (setIndex + 1) % CHAPEL_SET.length
+            yt.loadVideoById(CHAPEL_SET[setIndex].id)
+          }
           if (e.data === 1 && room === 'chapel') { // playing
             stopRave()
             fade('chapel', 2000, () => { if (widget) widget.pause() })
@@ -196,4 +209,4 @@ export function setMusicVolume(v) {
 }
 
 export function getMusicVolume() { return volume }
-export function nowPlaying() { return room === 'chapel' ? CHAPEL : CLUB }
+export function nowPlaying() { return room === 'chapel' ? chapelNow() : CLUB }
