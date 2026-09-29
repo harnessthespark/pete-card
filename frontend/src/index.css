@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&family=Roboto:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Almendra:wght@400;700&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&family=Roboto:wght@300;400&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -826,10 +826,11 @@ body { background: #0a0a0c; }
 	margin: 36px -16px 0; padding: 48px 16px 64px;
 	border-radius: 50% 50% 0 0 / 90px 90px 0 0; /* the whole chapel sits under a gothic arch */
 	background:
-		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(255,210,120,.18), rgba(0,0,0,0) 70%),
-		linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.35) 75%, rgba(0,0,0,.85) 100%),
-		url('/stone.jpg') center top / 600px auto repeat,
-		#141117;
+		radial-gradient(ellipse 45% 90px at 50% 70px, rgba(0,0,0,.55), rgba(0,0,0,0)),
+		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(255,210,120,.12), rgba(0,0,0,0) 70%),
+		linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.2) 30%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.8) 100%),
+		url('/church-wall.jpg') center top / 100% auto no-repeat,
+		#17120d;
 	box-shadow: inset 0 0 0 6px #2a2320, inset 0 0 60px rgba(0,0,0,.8);
 }
 /* rays of coloured light falling from the window */
@@ -845,15 +846,13 @@ body { background: #0a0a0c; }
 	animation: raysDrift 9s ease-in-out infinite alternate;
 }
 @keyframes raysDrift { to { transform: translateX(-50%) rotate(2deg); opacity: .8; } }
-/* candlelight flickering at the foot of the window */
+/* the photo has real candles: just a soft flicker of light over each flame */
 .petermas::after {
-	content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; height: 45%;
+	content: ""; position: absolute; z-index: -1; left: 0; top: 0; width: 100%; aspect-ratio: 1200 / 1620;
 	background:
-		radial-gradient(circle at 12% 88%, rgba(255,170,60,.55), rgba(255,120,30,.12) 12%, rgba(0,0,0,0) 26%),
-		radial-gradient(circle at 88% 88%, rgba(255,170,60,.55), rgba(255,120,30,.12) 12%, rgba(0,0,0,0) 26%),
-		radial-gradient(circle at 30% 96%, rgba(255,180,80,.35), rgba(0,0,0,0) 14%),
-		radial-gradient(circle at 70% 96%, rgba(255,180,80,.35), rgba(0,0,0,0) 14%);
-	pointer-events: none;
+		radial-gradient(circle at 13% 23%, rgba(255,170,60,.35), rgba(255,120,30,.08) 9%, rgba(0,0,0,0) 18%),
+		radial-gradient(circle at 87% 22%, rgba(255,170,60,.35), rgba(255,120,30,.08) 9%, rgba(0,0,0,0) 18%);
+	mix-blend-mode: screen; pointer-events: none;
 	animation: candles 2.6s ease-in-out infinite alternate;
 }
 @keyframes candles { 0% { opacity: .85; } 30% { opacity: 1; } 55% { opacity: .75; } 80% { opacity: .95; } 100% { opacity: .8; } }
@@ -905,3 +904,14 @@ body { background: #0a0a0c; }
 .peeking .sticker { transform: translate(40%, -140%) rotate(28deg) scale(.55); }
 .placing { cursor: crosshair; }
 .placing::after { content: "Tap the photo where the smiley should go"; display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* The caption as a brass-and-oak plaque on the chapel wall */
+.petermas .petermas-caption {
+	display: inline-block; margin: 22px auto 0; padding: 12px 22px;
+	font-family: 'Almendra', Georgia, serif; font-variant: normal; font-weight: 400;
+	font-size: clamp(16px, 4.2vw, 19px); line-height: 1.3; text-align: left;
+	color: #f0b429; text-shadow: 0 1px 0 rgba(0,0,0,.6);
+	background: linear-gradient(180deg, #5a3a22, #3f2716);
+	clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+	filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
+}
