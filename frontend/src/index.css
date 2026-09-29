@@ -819,3 +819,43 @@ body { background: #0a0a0c; }
 .chapel-badge-new { animation: badgeGlow 1.8s ease-in-out infinite; }
 @keyframes badgeGlow { 50% { box-shadow: 0 0 0 2px #ffd400, 0 0 26px rgba(255,212,0,.8); } }
 @media (prefers-reduced-motion: reduce) { .chapel-badge-new { animation: none; } }
+
+/* ===== The Chapel of St Petermas: stone walls, light through the glass, candles ===== */
+.petermas {
+	position: relative; isolation: isolate; overflow: hidden;
+	margin: 36px -16px 0; padding: 48px 16px 64px;
+	border-radius: 50% 50% 0 0 / 90px 90px 0 0; /* the whole chapel sits under a gothic arch */
+	background:
+		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(255,210,120,.18), rgba(0,0,0,0) 70%),
+		linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.35) 75%, rgba(0,0,0,.85) 100%),
+		url('/stone.jpg') center top / 600px auto repeat,
+		#141117;
+	box-shadow: inset 0 0 0 6px #2a2320, inset 0 0 60px rgba(0,0,0,.8);
+}
+/* rays of coloured light falling from the window */
+.petermas::before {
+	content: ""; position: absolute; z-index: -1; left: 50%; top: 22%;
+	width: 160%; height: 90%; transform: translateX(-50%);
+	background:
+		conic-gradient(from 160deg at 50% 0%,
+			rgba(0,0,0,0) 0deg, rgba(255,200,90,.10) 8deg, rgba(0,0,0,0) 14deg,
+			rgba(120,80,255,.09) 20deg, rgba(0,0,0,0) 26deg, rgba(255,90,160,.08) 32deg,
+			rgba(0,0,0,0) 38deg, rgba(255,210,120,.10) 44deg, rgba(0,0,0,0) 52deg);
+	filter: blur(6px); pointer-events: none;
+	animation: raysDrift 9s ease-in-out infinite alternate;
+}
+@keyframes raysDrift { to { transform: translateX(-50%) rotate(2deg); opacity: .8; } }
+/* candlelight flickering at the foot of the window */
+.petermas::after {
+	content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; height: 45%;
+	background:
+		radial-gradient(circle at 12% 88%, rgba(255,170,60,.55), rgba(255,120,30,.12) 12%, rgba(0,0,0,0) 26%),
+		radial-gradient(circle at 88% 88%, rgba(255,170,60,.55), rgba(255,120,30,.12) 12%, rgba(0,0,0,0) 26%),
+		radial-gradient(circle at 30% 96%, rgba(255,180,80,.35), rgba(0,0,0,0) 14%),
+		radial-gradient(circle at 70% 96%, rgba(255,180,80,.35), rgba(0,0,0,0) 14%);
+	pointer-events: none;
+	animation: candles 2.6s ease-in-out infinite alternate;
+}
+@keyframes candles { 0% { opacity: .85; } 30% { opacity: 1; } 55% { opacity: .75; } 80% { opacity: .95; } 100% { opacity: .8; } }
+.petermas .stained { box-shadow: 0 0 0 5px #3b2a12, 0 0 0 9px #1c1612, 0 0 70px rgba(255,212,0,.28); }
+@media (prefers-reduced-motion: reduce) { .petermas::before, .petermas::after { animation: none; } }
