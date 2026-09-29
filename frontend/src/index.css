@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&family=Roboto:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&family=Chewy&family=Tilt+Neon&family=Neonderthaw&family=Roboto:wght@300;400&display=swap');
 
 :root {
 	--ground: #eef0e6;
@@ -735,8 +735,8 @@ body { background: #0a0a0c; }
 	font-weight: 400; font-size: clamp(56px, 13vw, 170px); line-height: 1; letter-spacing: .02em;
 	color: #fbe6ff;
 	text-shadow:
-		0 0 4px #fff, 0 0 10px #6f6,
-		0 0 22px #00ff66, 0 0 44px #c000ff, 0 0 80px #a000ff, 0 0 120px #8a00ff;
+		0 0 4px #fff, 0 0 10px #66ffc9,
+		0 0 22px #66ffc9, 0 0 44px #c000ff, 0 0 80px #a000ff, 0 0 120px #8a00ff;
 	animation: tubeOn 2.2s steps(1, end) .5s forwards, tubeHum 4s ease-in-out 3s infinite;
 }
 .neon-date {
@@ -791,7 +791,7 @@ body { background: #0a0a0c; }
 /* Lisa's brick wall photo behind the neon (darkened so the tubes glow) */
 .arrival {
 	background:
-		radial-gradient(ellipse 60% 45% at 50% 42%, rgb(200 0 255 / 0.82) 0%, rgb(238 16 148 / 0.14) 45%, rgba(0,0,0,0) 75%),
+		radial-gradient(ellipse 60% 45% at 50% 42%, rgba(200,0,255,.32) 0%, rgba(120,0,200,.14) 45%, rgba(0,0,0,0) 75%),
 		radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.85) 100%),
 		url('/arrival-bg.jpg') center / cover no-repeat,
 		#111;
@@ -804,3 +804,18 @@ body { background: #0a0a0c; }
 .neon-date { font-family: 'Tilt Neon', 'Instrument Sans', sans-serif; font-size: clamp(24px, 5vw, 60px); }
 /* Lisa's pick: Roboto for the whole neon sign, light weight so the tubes stay slim */
 .neon-sign, .neon-date { font-family: 'Roboto', sans-serif; }
+.neon-title { font-weight: 300; }
+.neon-date { font-weight: 300; }
+
+/* Links to St Petermas */
+.chapel-btn { margin-top: 6px; background: #1a0f2e; box-shadow: 0 0 0 2px #ffd400, 0 0 16px rgba(255,212,0,.45); }
+.chapel-badge {
+	position: fixed; left: 16px; bottom: 16px; z-index: 65;
+	border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer;
+	font: inherit; font-weight: 600; font-size: 14px; color: #ffe9a8;
+	background: linear-gradient(135deg, #3b0a57, #0d2a6b 50%, #5a0a2a);
+	box-shadow: 0 0 0 2px #ffd400, 0 6px 20px rgba(0,0,0,.5);
+}
+.chapel-badge-new { animation: badgeGlow 1.8s ease-in-out infinite; }
+@keyframes badgeGlow { 50% { box-shadow: 0 0 0 2px #ffd400, 0 0 26px rgba(255,212,0,.8); } }
+@media (prefers-reduced-motion: reduce) { .chapel-badge-new { animation: none; } }

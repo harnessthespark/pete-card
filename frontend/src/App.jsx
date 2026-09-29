@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel } from './music.js'
-import PetermasCalendar from './Calendar.jsx'
+import PetermasCalendar, { daysOpenNow } from './Calendar.jsx'
 
 function AdminPage() {
   const [adminCode, setAdminCode] = useState(() => {
@@ -262,11 +262,12 @@ function PeteIntro({ onOpen, onDone }) {
     onOpen()
   }
 
-  function enter(e) {
+  function enter(e, where) {
     e.stopPropagation()
     setStage('leaving')
-    setTimeout(onDone, 800)
+    setTimeout(() => onDone(where), 800)
   }
+
 
   const hint = stage === 'ticket' ? 'tap to show your ticket at the door'
       : stage === 'displayed' ? 'Skip the queue, access the club 🔊' : ''
@@ -312,7 +313,8 @@ function PeteIntro({ onOpen, onDone }) {
             <div className="book-inside">
               <h1>Happy 50th, Pete!</h1>
               <p>Love from everyone on the dance floor</p>
-              <button type="button" className="enter-btn" onClick={enter}>Read your messages →</button>
+              <button type="button" className="enter-btn" onClick={(e) => enter(e, 'messages')}>Read your messages →</button>
+              <button type="button" className="enter-btn chapel-btn" onClick={(e) => enter(e, 'chapel')}>✦ Visit St Petermas</button>
             </div>
             <div className="book-cover">
               <div className="cover-face cover-front">
@@ -331,6 +333,39 @@ function PeteIntro({ onOpen, onDone }) {
   )
 }
 
+
+
+// Take Pete straight to the St Petermas window
+function goToChapel() {
+  const el = document.getElementById('st-petermas')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// Small glowing stained-glass badge: "Day 3 · a new window is ready"
+function ChapelBadge() {
+  const day = daysOpenNow()
+  const [opened, setOpened] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  useEffect(() => {
+    const check = () => {
+      let list = []
+      try { list = JSON.parse(localStorage.getItem('petermasOpened') || '[]') } catch { list = [] }
+      setOpened(list.includes(day))
+      const el = document.getElementById('st-petermas')
+      if (el) { const r = el.getBoundingClientRect(); setHidden(r.top < window.innerHeight * 0.6 && r.bottom > 0) }
+    }
+    check()
+    const t = setInterval(check, 1000)
+    window.addEventListener('scroll', check, { passive: true })
+    return () => { clearInterval(t); window.removeEventListener('scroll', check) }
+  }, [day])
+  if (day < 1 || hidden) return null
+  return (
+      <button type="button" className={`chapel-badge ${opened ? '' : 'chapel-badge-new'}`} onClick={goToChapel}>
+        ✦ Day {day} · {opened ? 'visit St Petermas' : 'a new window is ready'}
+      </button>
+  )
+}
 
 // ---- Timing: what Pete can see, and when (UK time) ----
 // Before Wednesday 7pm: doors closed.
@@ -493,7 +528,7 @@ function App() {
   if (isPeteView && !introDone) {
     return (
         <>
-          <PeteIntro onOpen={() => setMusicStarted(true)} onDone={() => setIntroDone(true)} />
+          <PeteIntro onOpen={() => setMusicStarted(true)} onDone={(where) => { setIntroDone(true); if (where === 'chapel') setTimeout(goToChapel, 150) }} />
           {musicStarted && <SoundControls />}
         </>
     )
@@ -577,6 +612,7 @@ function App() {
         )}
 
         {isPeteView && musicStarted && <SoundControls />}
+        {isPeteView && <ChapelBadge />}
 
         {isPeteView && <PetermasCalendar />}
         {isPeteView && <h2 className="petermas-title offerings-h">Offerings from the congregation</h2>}
