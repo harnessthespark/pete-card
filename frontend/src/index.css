@@ -915,3 +915,10 @@ body { background: #0a0a0c; }
 	clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
 	filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
 }
+
+/* St Petermas pages: no club lasers round the chapel, just a dim stone nave */
+.eve-page::before, .chapel-page::before {
+	background:
+		radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255,170,80,.10), rgba(0,0,0,0) 70%),
+		radial-gradient(ellipse 90% 70% at 50% 35%, #2a1e14 0%, #120d09 60%, #070504 100%);
+}
