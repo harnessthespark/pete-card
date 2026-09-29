@@ -10,6 +10,7 @@ const CLUB = { title: 'Together – Hardcore Uproar (1990)', link: 'https://soun
 const CHAPEL_SET = [
   { id: 'bhSB8EEnCAM', title: 'Faithless – God Is a DJ' },
   { id: '1mb3cXHH6QQ', title: 'Like a Prayer (Infernum dark techno remix)' },
+  { id: '6WekPJIx2YU', title: "DC Project – Mary's Prayer (Club Mix)" },
   { id: 'yJu7smlJNYU', title: 'Moguai – Viola' },
 ]
 let setIndex = 0
