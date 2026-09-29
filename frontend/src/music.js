@@ -8,6 +8,7 @@ import { primeRave, startRave, stopRave, setRaveVolume } from './rave.js'
 const CLUB = { title: 'Together – Hardcore Uproar (1990)', link: 'https://soundcloud.com/suddi-raval/hardcore-uproar-by-together' }
 // The chapel set: plays in order, then loops. Add more official YouTube videos here.
 const CHAPEL_SET = [
+  { id: 'hr9nbe_bcg8', title: 'ABBA – Dancing Queen (techno remix) · No.1 the week Pete was born' },
   { id: 'bhSB8EEnCAM', title: 'Faithless – God Is a DJ' },
   { id: '1mb3cXHH6QQ', title: 'Like a Prayer (Infernum dark techno remix)' },
   { id: '6WekPJIx2YU', title: "DC Project – Mary's Prayer (Club Mix)" },
