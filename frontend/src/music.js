@@ -4,6 +4,7 @@
 // YouTube's own play button, so on phones the player pops up with "Tap ▶ for the music".
 const SET = [
   { id: 'hr9nbe_bcg8', title: 'ABBA – Dancing Queen (club remix) · No.1 the week Pete was born' },
+  { id: 'wKduhUXa0rg', title: 'Messiah – Temple of Dreams (1992)' },
   { id: 'bhSB8EEnCAM', title: 'Faithless – God Is a DJ' },
   { id: '1mb3cXHH6QQ', title: 'Like a Prayer (Infernum dark techno remix)' },
   { id: '6WekPJIx2YU', title: "DC Project – Mary's Prayer (Club Mix)" },
