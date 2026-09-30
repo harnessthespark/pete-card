@@ -978,3 +978,6 @@ body { background: #0a0a0c; }
 
 /* Tall photos get trimmed to fit: keep the top (where the faces are) rather than the middle */
 .scratch img, .revealed-tile img { object-position: 50% 18%; }
+
+/* Message photos: show the whole photo, no square crop (nobody gets their head or chin cut off) */
+.note img { aspect-ratio: auto; height: auto; object-fit: contain; }
