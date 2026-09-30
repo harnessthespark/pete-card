@@ -72,7 +72,13 @@ const LAST_DAY = 31
 const RELIC_WINDOWS = LAST_DAY - FOLDER_PHOTOS // 15 (windows 16-30)
 const SPARE_WINDOW = 13
 
+// Special windows: Lisa and Pete, young, open the month on window 1
+const SPECIAL = { 1: '/advent/young.jpg' }
+// Folder photos bumped by the special ones: they still show in the 'Unveiled' gallery
+const BONUS_PHOTOS = ['/advent/2.jpg']
+
 function photoFor(day, relics) {
+  if (SPECIAL[day]) return { src: SPECIAL[day], relic: null }
   if (day === LAST_DAY) return { src: '/advent/1.jpg', relic: null }
   if (day === SPARE_WINDOW && relics[RELIC_WINDOWS]) {
     const relic = relics[RELIC_WINDOWS]
@@ -291,6 +297,12 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
                 </figure>
             )
           })}
+          {BONUS_PHOTOS.map((src) => (
+              <figure className="revealed-tile" key={src}>
+                <img src={src} alt="A bonus St Petermas photo" loading="lazy" />
+                <figcaption><span className="revealed-day">Bonus</span></figcaption>
+              </figure>
+          ))}
           {bonus.map((r) => (
               <figure className="revealed-tile" key={`bonus-${r.id}`}>
                 <img src={`/media/${r.media}`} alt={`A relic from ${r.name}`} loading="lazy" />
