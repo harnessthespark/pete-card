@@ -119,14 +119,18 @@ function loadYouTube() {
           if (yt && ytReady) yt.loadVideoById(CHAPEL_SET[setIndex].id)
         },
         onStateChange: (e) => {
-          if (e.data === 1) setTimeout(hidePlayers, 1200)
+          if (e.data === 2 && room === 'chapel' && started && !muted) startRave() // blocked or paused: the beat carries on
           if (e.data === 0) { // track ended: next one in the set
             setIndex = (setIndex + 1) % CHAPEL_SET.length
             yt.loadVideoById(CHAPEL_SET[setIndex].id)
           }
-          if (e.data === 1 && room === 'chapel') { // playing
-            stopRave()
-            fade('chapel', 2000, () => { if (widget) widget.pause() })
+          if (e.data === 1 && room === 'chapel') { // playing: check it's still going before handing over
+            setTimeout(() => {
+              if (room !== 'chapel' || !yt.getPlayerState || yt.getPlayerState() !== 1) return
+              stopRave()
+              hidePlayers()
+              fade('chapel', 2000, () => { if (widget) widget.pause() })
+            }, 1500)
           }
         },
       },
@@ -172,8 +176,21 @@ export function startMusic() {
     const E = window.SC.Widget.Events
     widget = window.SC.Widget(frame)
     widget.bind(E.READY, () => { applyLevels(); if (room === 'club' && !muted) widget.play() })
-    widget.bind(E.PLAY, () => { scPlaying = true; stopRave(); setTimeout(hidePlayers, 1200) })
-    widget.bind(E.PAUSE, () => { scPlaying = false })
+    // Phones often report 'play' and then get blocked a moment later: only hand over from the beat
+    // once SoundCloud is still playing after a second and a half.
+    widget.bind(E.PLAY, () => {
+      setTimeout(() => {
+        widget.isPaused((paused) => {
+          if (paused) return
+          scPlaying = true
+          if (room === 'club') { stopRave(); hidePlayers() }
+        })
+      }, 1500)
+    })
+    widget.bind(E.PAUSE, () => {
+      scPlaying = false
+      if (room === 'club' && started && !muted) startRave() // blocked or paused: the beat carries on
+    })
     widget.bind(E.FINISH, () => { widget.seekTo(0); widget.play() }) // loop
   }).catch(() => startRave())
 
@@ -202,6 +219,7 @@ export function enterClub() {
   room = 'club'
   hidePlayers()
   if (!started || muted) return
+  if (!scPlaying) startRave() // SoundCloud not actually playing (phones): the beat keeps the club going
   if (widget) { widget.play(); fade('club', 1500, () => { if (yt && ytReady) yt.pauseVideo() }) }
 }
 

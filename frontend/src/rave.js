@@ -102,7 +102,11 @@ let beat = null
 const onPhone = () => !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
 function phoneBeat() {
   if (!beat) {
-    beat = new Audio('/rave-loop.mp3')
+    // Lisa's own music file (frontend/public/club.mp3) if it's there; otherwise the recorded beat
+    beat = new Audio('/club.mp3')
+    beat.addEventListener('error', () => {
+      if (!beat.src.endsWith('/rave-loop.mp3')) { beat.src = '/rave-loop.mp3'; beat.play().catch(() => {}) }
+    }, { once: true })
     beat.loop = true
     beat.preload = 'auto'
     beat.setAttribute('playsinline', '')
