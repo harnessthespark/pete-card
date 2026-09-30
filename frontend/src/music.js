@@ -138,10 +138,15 @@ function loadYouTube() {
   loadScript('https://www.youtube.com/iframe_api', () => false).catch(() => {})
 }
 
+// Phones: start the home-made beat straight away, inside the tap, so there is always music.
+// If SoundCloud or YouTube manage to play, they take over and the beat fades out.
+const isPhone = () => window.matchMedia && window.matchMedia('(pointer: coarse)').matches
+
 export function startMusic() {
   primeRave()
   started = true
   muted = false
+  if (isPhone() && !scPlaying) startRave()
   if (room === 'chapel') { enterChapel(); return }
   if (frame) {
     if (widget) { scLevel = 1; applyLevels(); widget.play() } else startRave()

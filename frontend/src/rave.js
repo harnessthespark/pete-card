@@ -94,7 +94,33 @@ function schedule() {
 }
 
 // Call this inside a tap so phones allow sound later
+// iPhones mute web audio when the silent switch is on. Telling Safari this is media playback,
+// and keeping a silent <audio> element running, lets the music play anyway.
+let keepAlive = null
+let stopTimer = null
+function unlockPhoneAudio() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback' } catch { /* older phones */ }
+  try {
+    if (!keepAlive) {
+      const rate = 8000, n = rate // one second of silence as a tiny WAV
+      const buf = new ArrayBuffer(44 + n)
+      const v = new DataView(buf)
+      const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)) }
+      w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt ')
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true)
+      v.setUint32(24, rate, true); v.setUint32(28, rate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true)
+      w(36, 'data'); v.setUint32(40, n, true)
+      for (let i = 0; i < n; i++) v.setUint8(44 + i, 128)
+      keepAlive = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })))
+      keepAlive.loop = true
+      keepAlive.setAttribute('playsinline', '')
+    }
+    keepAlive.play().catch(() => {})
+  } catch { /* no audio element support */ }
+}
+
 export function primeRave() {
+  unlockPhoneAudio()
   try {
     if (!ctx) {
       ctx = new (window.AudioContext || window.webkitAudioContext)()
@@ -121,6 +147,7 @@ export function startRave() {
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
     }
     ctx.resume()
+    clearTimeout(stopTimer) // a fade-out in progress must not cut the restarted beat
     if (!timer) {
       nextTime = ctx.currentTime + 0.05
       timer = setInterval(schedule, 25)
@@ -136,7 +163,9 @@ export function stopRave() {
   master.gain.cancelScheduledValues(ctx.currentTime)
   master.gain.setValueAtTime(master.gain.value, ctx.currentTime)
   master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6)
-  setTimeout(() => { clearInterval(timer); timer = null; ctx.suspend() }, 700)
+  // stay 'awake' (no suspend): phones won't let it wake up again without another tap
+  clearTimeout(stopTimer)
+  stopTimer = setTimeout(() => { clearInterval(timer); timer = null }, 700)
 }
 
 export function setRaveVolume(v) {
