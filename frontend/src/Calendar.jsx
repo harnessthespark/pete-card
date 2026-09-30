@@ -69,7 +69,6 @@ const LAST_DAY = 31
 
 // Relics beyond the 15 relic windows: the first spare takes window 13 (it had a duplicate photo),
 // any others join the 'Unveiled' gallery as bonus relics.
-const RELIC_WINDOWS = LAST_DAY - FOLDER_PHOTOS // 15 (windows 16-30)
 const SPARE_WINDOW = 13
 
 // Special windows: Lisa and Pete, young, open the month on window 1
@@ -77,17 +76,69 @@ const SPECIAL = { 1: '/advent/young.jpg' }
 // Folder photos bumped by the special ones: they still show in the 'Unveiled' gallery
 const BONUS_PHOTOS = ['/advent/2.jpg']
 
+// Who goes behind which window.
+// Relics Lisa has pinned to a window (from #admin) take that window.
+// Other relics fill windows 16-30 in the order approved, then the spare window 13; any left over are bonus relics.
+function allocate(relics) {
+  const pinned = {}
+  relics.forEach((r) => { if (r.window) pinned[r.window] = r })
+  const slots = []
+  for (let w = FOLDER_PHOTOS; w < LAST_DAY; w++) if (!pinned[w]) slots.push(w)
+  if (!pinned[SPARE_WINDOW]) slots.push(SPARE_WINDOW)
+  const assigned = {}
+  const overflow = []
+  relics.filter((r) => !r.window).forEach((r) => {
+    const w = slots.shift()
+    if (w) assigned[w] = r; else overflow.push(r)
+  })
+  return { pinned, assigned, overflow }
+}
+
+function basePhoto(day) {
+  if (SPECIAL[day]) return SPECIAL[day]
+  if (day === LAST_DAY) return '/advent/1.jpg'
+  if (day < FOLDER_PHOTOS) return `/advent/${day + 1}.jpg`
+  return null
+}
+
 function photoFor(day, relics) {
-  if (SPECIAL[day]) return { src: SPECIAL[day], relic: null }
-  if (day === LAST_DAY) return { src: '/advent/1.jpg', relic: null }
-  if (day === SPARE_WINDOW && relics[RELIC_WINDOWS]) {
-    const relic = relics[RELIC_WINDOWS]
-    return { src: `/media/${relic.media}`, relic }
-  }
-  if (day < FOLDER_PHOTOS) return { src: `/advent/${day + 1}.jpg`, relic: null }
-  const relic = relics[day - FOLDER_PHOTOS]
-  // no relic yet for this window: it shows just the blessing
-  return relic ? { src: `/media/${relic.media}`, relic } : { src: `/advent/extra-${day}.jpg`, relic: null }
+  const { pinned, assigned } = allocate(relics)
+  const relic = pinned[day] || (!SPECIAL[day] && day !== LAST_DAY && assigned[day])
+  if (relic) return { src: `/media/${relic.media}`, relic }
+  // no photo for this window: it shows just the blessing
+  return { src: basePhoto(day) || `/advent/extra-${day}.jpg`, relic: null }
+}
+
+// Everything that lost its window: spare relics, plus folder photos bumped by special or pinned windows
+function bonusItems(relics) {
+  const { pinned, assigned, overflow } = allocate(relics)
+  const photos = [...BONUS_PHOTOS]
+  Object.keys(pinned).map(Number).forEach((w) => {
+    const bumped = w === SPARE_WINDOW ? null : basePhoto(w)
+    if (bumped && !photos.includes(bumped)) photos.push(bumped)
+  })
+  // the spare window's own folder photo is already covered by a relic when one is assigned there
+  return { photos, relics: overflow, assigned }
+}
+
+// The St Petermas smiley over a cheeky photo: tap to peek
+function Sticker({ relic, children }) {
+  const [peek, setPeek] = useState(false)
+  if (!relic || !relic.sticker) return children
+  return (
+      <div className={`sticker-photo ${peek ? 'peeking' : ''}`} onClick={() => setPeek(!peek)} role="button" tabIndex={0}>
+        {children}
+        <div className="sticker" aria-hidden="true" style={{ left: `${relic.sticker_x}%`, top: `${relic.sticker_y}%` }}>
+          <svg viewBox="0 0 100 100" className="smiley">
+            <circle cx="50" cy="50" r="47" fill="#ffd400" stroke="#111" strokeWidth="4" />
+            <ellipse cx="36" cy="38" rx="5.5" ry="10" fill="#111" />
+            <ellipse cx="64" cy="38" rx="5.5" ry="10" fill="#111" />
+            <path d="M24 58 Q50 86 76 58" fill="none" stroke="#111" strokeWidth="5" strokeLinecap="round" />
+          </svg>
+          <span className="sticker-bottom">tap to peek</span>
+        </div>
+      </div>
+  )
 }
 
 function isPreview() {
@@ -99,7 +150,7 @@ function loadScratched() {
 }
 
 // A gold scratch-card layer over the day's photo. Scratch with a finger or the mouse.
-function ScratchReveal({ src, done, onDone }) {
+function ScratchReveal({ src, done, onDone, relic }) {
   const canvasRef = useRef(null)
   const [missing, setMissing] = useState(false)
   const [cleared, setCleared] = useState(done)
@@ -153,8 +204,10 @@ function ScratchReveal({ src, done, onDone }) {
   if (missing) return null
   return (
       <div className="scratch">
-        <img src={src} alt="A photo for today" onLoad={(e) => paint(e.currentTarget)}
-             onError={() => { setMissing(true); onDone() }} />
+        {cleared
+            ? <Sticker relic={relic}><img src={src} alt="A photo for today" onError={() => { setMissing(true); onDone() }} /></Sticker>
+            : <img src={src} alt="A photo for today" onLoad={(e) => paint(e.currentTarget)}
+                   onError={() => { setMissing(true); onDone() }} />}
         {!cleared && (
             <canvas ref={canvasRef} className="scratch-foil"
                     onPointerDown={(e) => { e.preventDefault(); try { e.currentTarget.setPointerCapture(e.pointerId) } catch {} last.current = null; scratchAt(e) }}
@@ -249,7 +302,7 @@ export default function PetermasCalendar() {
               <div className="pane-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">Day {showDay} of 31</p>
                 <ScratchReveal key={showDay}
-                               src={photoFor(showDay, relics).src}
+                               src={photoFor(showDay, relics).src} relic={photoFor(showDay, relics).relic}
                                done={scratched.includes(showDay)} onDone={() => markScratched(showDay)} />
                 {photoFor(showDay, relics).relic && (
                     <p className="relic-credit">
@@ -278,7 +331,8 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
     fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
   }, [])
   const shown = days.filter((d) => !missing.includes(d))
-  const bonus = relics.slice(RELIC_WINDOWS + 1) // relics with no window left
+  const extras = bonusItems(relics)
+  const bonus = extras.relics // relics with no window left
   if (!shown.length) return null
   return (
       <section className="revealed">
@@ -288,8 +342,10 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
             const p = photoFor(d, relics)
             return (
                 <figure className="revealed-tile" key={d}>
-                  <img src={p.src} alt={`St Petermas window ${d}`} loading="lazy"
-                       onError={() => setMissing((m) => [...m, d])} />
+                  <Sticker relic={p.relic}>
+                    <img src={p.src} alt={`St Petermas window ${d}`} loading="lazy"
+                         onError={() => setMissing((m) => [...m, d])} />
+                  </Sticker>
                   <figcaption>
                     <span className="revealed-day">Day {d}</span>
                     {p.relic && <span className="revealed-from"> · a relic from {p.relic.name}</span>}
@@ -297,7 +353,7 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
                 </figure>
             )
           })}
-          {BONUS_PHOTOS.map((src) => (
+          {extras.photos.map((src) => (
               <figure className="revealed-tile" key={src}>
                 <img src={src} alt="A bonus St Petermas photo" loading="lazy" />
                 <figcaption><span className="revealed-day">Bonus</span></figcaption>
@@ -305,7 +361,7 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
           ))}
           {bonus.map((r) => (
               <figure className="revealed-tile" key={`bonus-${r.id}`}>
-                <img src={`/media/${r.media}`} alt={`A relic from ${r.name}`} loading="lazy" />
+                <Sticker relic={r}><img src={`/media/${r.media}`} alt={`A relic from ${r.name}`} loading="lazy" /></Sticker>
                 <figcaption>
                   <span className="revealed-day">Bonus relic</span>
                   <span className="revealed-from"> · from {r.name}</span>

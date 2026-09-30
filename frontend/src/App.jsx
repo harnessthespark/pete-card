@@ -75,6 +75,28 @@ function AdminPage() {
     setBusy(false)
   }
 
+  async function toAdvent(id, win) {
+    const w = Number(win)
+    if (!(w >= 1 && w <= 31)) { setError('Pick a window from 1 to 31'); return }
+    setBusy(true)
+    const res = await fetch(`/admin/to-advent/${id}?${q(adminCode)}&window=${w}`, { method: 'POST' })
+    setError(res.ok ? `Done: that photo is now behind window ${w}` : 'Could not move that photo')
+    await load(adminCode)
+    setBusy(false)
+  }
+
+  async function replacePhoto(id, file) {
+    if (!file) return
+    setBusy(true)
+    const form = new FormData()
+    form.append('admin_code', adminCode)
+    form.append('file', file)
+    const res = await fetch(`/admin/replace-media/${id}`, { method: 'POST', body: form })
+    setError(res.ok ? 'Photo swapped' : 'Could not swap that photo')
+    await load(adminCode)
+    setBusy(false)
+  }
+
   async function approve(id) {
     setBusy(true)
     await fetch(`/admin/approve/${id}?${q(adminCode)}`, { method: 'POST' })
@@ -135,6 +157,21 @@ function AdminPage() {
             )}
             <button disabled={busy} className="danger" onClick={() => remove(m.id)}>Delete</button>
           </div>
+          {m.kind === 'relic' && m.window && <p className="chip chip-relic">Pinned to window {m.window}</p>}
+          {m.media && !isVideo(m.media) && m.kind !== 'relic' && (
+              <form className="admin-actions admin-advent"
+                    onSubmit={(e) => { e.preventDefault(); toAdvent(m.id, e.currentTarget.elements.win.value) }}>
+                <input name="win" type="number" min="1" max="31" placeholder="Window" aria-label="Advent window number" />
+                <button disabled={busy}>📿 Also put this photo in the advent</button>
+              </form>
+          )}
+          {m.media && (
+              <label className="admin-actions admin-replace">
+                <span>Swap photo:</span>
+                <input type="file" accept="image/*,video/*,.mov,.mp4,.gif" disabled={busy}
+                       onChange={(e) => replacePhoto(m.id, e.target.files[0])} />
+              </label>
+          )}
         </article>
     )
   }
@@ -145,6 +182,7 @@ function AdminPage() {
           <p className="fifty">Card admin</p>
           <p className="sub">{waiting.length} waiting · {live.length} on the card</p>
           <button className="refresh" onClick={() => load(adminCode)}>Refresh</button>
+          {error && <p className="status admin-status">{error}</p>}
         </header>
         <h2 className="admin-h">Waiting for you</h2>
         {waiting.length === 0 && <p className="sub">Nothing waiting. All caught up.</p>}

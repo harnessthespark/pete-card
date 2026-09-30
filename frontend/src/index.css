@@ -970,3 +970,8 @@ body { background: #0a0a0c; }
 .revealed-tile img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 2px; }
 .revealed-tile figcaption { margin-top: 6px; font-family: 'Caveat', cursive; font-size: 17px; color: #2a1a10; line-height: 1.1; }
 .revealed-from { font-size: 14px; }
+
+/* admin: move a photo into the advent, swap a photo */
+.admin-advent input { width: 90px; }
+.admin-replace { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.admin-replace input { font-size: 12px; }

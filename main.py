@@ -46,6 +46,9 @@ with get_db() as conn:
         # where the sticker sits on the photo, as % across and down
         conn.execute("ALTER TABLE messages ADD COLUMN sticker_x REAL DEFAULT 50")
         conn.execute("ALTER TABLE messages ADD COLUMN sticker_y REAL DEFAULT 50")
+    if "window" not in cols:
+        # a relic pinned to one advent window (1-31); empty = fill the relic windows in order
+        conn.execute("ALTER TABLE messages ADD COLUMN window INTEGER")
 
     # advent windows Pete has scratched: their photos then appear in his card for everyone
     conn.execute("""
@@ -108,7 +111,7 @@ def list_relics():
     # Approved old photos, in order: the first fills window 1, the second window 2, and so on
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, name, text, media FROM messages "
+            "SELECT id, name, text, media, sticker, sticker_x, sticker_y, window FROM messages "
             "WHERE approved = 1 AND kind = 'relic' ORDER BY id"
         ).fetchall()
     return [dict(row) for row in rows]
@@ -193,6 +196,44 @@ def admin_delete(message_id: int, admin_code: str):
                 os.remove(path)
         conn.execute("DELETE FROM messages WHERE id = ?", (message_id,))
     return {"deleted": message_id}
+
+
+@app.post("/admin/to-advent/{message_id}")
+def admin_to_advent(message_id: int, admin_code: str, window: int):
+    # Copy a message's photo (sticker and all) into an advent window as a relic
+    check_admin(admin_code)
+    if window < 1 or window > 31:
+        raise HTTPException(status_code=400, detail="Window must be 1 to 31")
+    with get_db() as conn:
+        row = conn.execute("SELECT * FROM messages WHERE id = ?", (message_id,)).fetchone()
+        if not row or not row["media"]:
+            raise HTTPException(status_code=404, detail="No photo on that message")
+        # its own copy of the file, so deleting one never breaks the other
+        new_name = uuid.uuid4().hex + os.path.splitext(row["media"])[1].lower()
+        shutil.copyfile(os.path.join(UPLOAD_DIR, row["media"]), os.path.join(UPLOAD_DIR, new_name))
+        # one relic per pinned window
+        conn.execute("UPDATE messages SET window = NULL WHERE kind = 'relic' AND window = ?", (window,))
+        cur = conn.execute(
+            "INSERT INTO messages (name, text, media, approved, kind, sticker, sticker_x, sticker_y, window) "
+            "VALUES (?, '', ?, 1, 'relic', ?, ?, ?, ?)",
+            (row["name"], new_name, row["sticker"] or 0, row["sticker_x"] or 50, row["sticker_y"] or 50, window),
+        )
+    return {"relic": cur.lastrowid, "window": window}
+
+
+@app.post("/admin/replace-media/{message_id}")
+def admin_replace_media(message_id: int, admin_code: str = Form(...), file: UploadFile = File(...)):
+    # Swap the photo on a message (the old file is kept on disk, just no longer shown)
+    check_admin(admin_code)
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED:
+        raise HTTPException(status_code=400, detail="Photos and videos only")
+    new_name = uuid.uuid4().hex + ext
+    with open(os.path.join(UPLOAD_DIR, new_name), "wb") as saved:
+        shutil.copyfileobj(file.file, saved)
+    with get_db() as conn:
+        conn.execute("UPDATE messages SET media = ?, sticker = 0 WHERE id = ?", (new_name, message_id))
+    return {"media": new_name}
 
 
 @app.get("/revealed")
