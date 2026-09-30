@@ -137,9 +137,9 @@ function AdminPage() {
     return (
         <article className="note admin-note">
           <p className={m.approved ? 'chip chip-live' : 'chip chip-wait'}>
-            {m.approved ? 'On the card' : 'Waiting for you'}
+            {!m.approved ? 'Waiting for you' : m.kind === 'relic' ? 'Approved · in the advent' : 'On the card'}
           </p>
-          {m.kind === 'relic' && <p className="chip chip-relic">📿 Relic for the advent windows</p>}
+          {m.kind === 'relic' && <p className="chip chip-relic">📿 Relic · behind an advent window, not in the messages</p>}
           {m.media && (isVideo(m.media)
               ? <video src={`/media/${m.media}`} controls playsInline />
               : (m.sticker
