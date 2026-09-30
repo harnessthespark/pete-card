@@ -829,7 +829,7 @@ body { background: #0a0a0c; }
 		radial-gradient(ellipse 45% 90px at 50% 70px, rgba(0,0,0,.55), rgba(0,0,0,0)),
 		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(160,80,255,.10), rgba(0,0,0,0) 70%),
 		linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.2) 30%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.8) 100%),
-		url('/church-wall-night.jpg') center top / 100% auto no-repeat,
+		url('/church-wall-warm.jpg') center top / 100% auto no-repeat,
 		#17120d;
 	box-shadow: inset 0 0 0 6px #2a2320, inset 0 0 60px rgba(0,0,0,.8);
 }
