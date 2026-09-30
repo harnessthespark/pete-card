@@ -420,7 +420,7 @@ body { overflow-x: hidden; }
 .stained::before {
 	content: ""; position: absolute; inset: 14px; border-radius: inherit;
 	background-image:
-		url('/st-petermas.jpg'),
+		url('/st-petermasnow.jpg'),
 		conic-gradient(from 20deg at 50% 38%, #c1121f, #f4a261, #ffd60a, #2a9d8f, #1d3557, #7b2cbf, #c1121f);
 	background-size: cover, cover; background-position: center, center;
 }
@@ -474,7 +474,7 @@ body { overflow-x: hidden; }
 }
 
 /* On the 31st he returns in his 90s raver glory */
-.canonised .stained::before { background-image: url('/st-petermas-90s.jpg'), url('/st-petermas.jpg'); }
+.canonised .stained::before { background-image: url('/st-petermas-90s.jpg'), url('/st-petermasnow.jpg'); }
 .petermas-caption {
 	margin: 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-variant: small-caps;
 	font-size: clamp(20px, 5.5vw, 28px); line-height: 1.2; color: #f5b700;
