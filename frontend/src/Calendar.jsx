@@ -67,8 +67,17 @@ function loadOpened() {
 const FOLDER_PHOTOS = 16
 const LAST_DAY = 31
 
+// Relics beyond the 15 relic windows: the first spare takes window 13 (it had a duplicate photo),
+// any others join the 'Unveiled' gallery as bonus relics.
+const RELIC_WINDOWS = LAST_DAY - FOLDER_PHOTOS // 15 (windows 16-30)
+const SPARE_WINDOW = 13
+
 function photoFor(day, relics) {
   if (day === LAST_DAY) return { src: '/advent/1.jpg', relic: null }
+  if (day === SPARE_WINDOW && relics[RELIC_WINDOWS]) {
+    const relic = relics[RELIC_WINDOWS]
+    return { src: `/media/${relic.media}`, relic }
+  }
   if (day < FOLDER_PHOTOS) return { src: `/advent/${day + 1}.jpg`, relic: null }
   const relic = relics[day - FOLDER_PHOTOS]
   // no relic yet for this window: it shows just the blessing
@@ -263,6 +272,7 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
     fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
   }, [])
   const shown = days.filter((d) => !missing.includes(d))
+  const bonus = relics.slice(RELIC_WINDOWS + 1) // relics with no window left
   if (!shown.length) return null
   return (
       <section className="revealed">
@@ -281,6 +291,15 @@ export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
                 </figure>
             )
           })}
+          {bonus.map((r) => (
+              <figure className="revealed-tile" key={`bonus-${r.id}`}>
+                <img src={`/media/${r.media}`} alt={`A relic from ${r.name}`} loading="lazy" />
+                <figcaption>
+                  <span className="revealed-day">Bonus relic</span>
+                  <span className="revealed-from"> · from {r.name}</span>
+                </figcaption>
+              </figure>
+          ))}
         </div>
       </section>
   )
