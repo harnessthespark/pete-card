@@ -13,7 +13,7 @@ DB = os.path.join(DATA_DIR, "petebirthday.db")
 SECRET_CODE = os.environ.get("SECRET_CODE", "allin76")
 ADMIN_CODE = os.environ.get("ADMIN_CODE", "scruttock")
 UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
-ALLOWED = {".jpg", ".jpeg", ".png", ".heic", ".mp4", ".mov"}
+ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app.mount("/media", StaticFiles(directory=UPLOAD_DIR), name="media")
