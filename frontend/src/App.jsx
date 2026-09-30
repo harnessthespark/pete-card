@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
-import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub } from './music.js'
+import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub, preloadMusic } from './music.js'
 import PetermasCalendar, { daysOpenNow, RevealedGallery } from './Calendar.jsx'
 
 
@@ -522,6 +522,8 @@ function App() {
   const [codeError, setCodeError] = useState('')
   const [introDone, setIntroDone] = useState(false)
   const [inChapel, setInChapel] = useState(false)
+  // Pete's view: get the music player loaded in the background so it's ready when the card opens
+  useEffect(() => { if (window.location.hash.startsWith('#pete')) preloadMusic() }, [])
   useEffect(() => {
     const go = () => { setInChapel(true); window.scrollTo(0, 0); enterChapel() }
     window.addEventListener('petermas:chapel', go)

@@ -981,3 +981,7 @@ body { background: #0a0a0c; }
 
 /* Message photos: show the whole photo, no square crop (nobody gets their head or chin cut off) */
 .note img { aspect-ratio: auto; height: auto; object-fit: contain; }
+
+/* Phones: YouTube's own player pops up, big enough to tap ▶ easily */
+iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !important; }
+.player-hint[data-for="yt"] { bottom: 164px; font-size: 14px; padding: 7px 8px 7px 12px; }
