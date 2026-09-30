@@ -474,7 +474,7 @@ body { overflow-x: hidden; }
 }
 
 /* On the 31st he returns in his 90s raver glory */
-.canonised .stained::before { background-image: url('/st-petermas-90s.jpg'), url('/st-petermasnow.jpg'); }
+/* day 31: he stays short-haired (that's how he raved); the whole window lights up with the halo */
 .petermas-caption {
 	margin: 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-variant: small-caps;
 	font-size: clamp(20px, 5.5vw, 28px); line-height: 1.2; color: #f5b700;
