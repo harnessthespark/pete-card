@@ -975,3 +975,6 @@ body { background: #0a0a0c; }
 .admin-advent input { width: 90px; }
 .admin-replace { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
 .admin-replace input { font-size: 12px; }
+
+/* Tall photos get trimmed to fit: keep the top (where the faces are) rather than the middle */
+.scratch img, .revealed-tile img { object-position: 50% 18%; }
