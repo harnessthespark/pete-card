@@ -2,6 +2,7 @@ import os
 import shutil
 import sqlite3
 import uuid
+from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
@@ -45,6 +46,28 @@ with get_db() as conn:
         # where the sticker sits on the photo, as % across and down
         conn.execute("ALTER TABLE messages ADD COLUMN sticker_x REAL DEFAULT 50")
         conn.execute("ALTER TABLE messages ADD COLUMN sticker_y REAL DEFAULT 50")
+
+    # advent windows Pete has scratched: their photos then appear in his card for everyone
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS revealed (
+            day INTEGER PRIMARY KEY,
+            revealed_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+# Window 1 opens on St Petermas Eve (Wed 30 Sept, 7pm UK); window N on N October (midnight UK)
+EVE = datetime(2026, 9, 30, 18, 0, tzinfo=timezone.utc)
+START = datetime(2026, 9, 30, 23, 0, tzinfo=timezone.utc)
+
+
+def days_open_now():
+    now = datetime.now(timezone.utc)
+    if now < EVE:
+        return 0
+    if now < START:
+        return 1
+    return min(31, (now - START).days + 1)
+
 
 class Message(BaseModel):
     code: str
@@ -170,6 +193,23 @@ def admin_delete(message_id: int, admin_code: str):
                 os.remove(path)
         conn.execute("DELETE FROM messages WHERE id = ?", (message_id,))
     return {"deleted": message_id}
+
+
+@app.get("/revealed")
+def list_revealed():
+    with get_db() as conn:
+        rows = conn.execute("SELECT day FROM revealed ORDER BY day").fetchall()
+    return [row["day"] for row in rows]
+
+
+@app.post("/revealed/{day}")
+def add_revealed(day: int):
+    # nobody can reveal a window before its day
+    if day < 1 or day > days_open_now():
+        raise HTTPException(status_code=403, detail="That window isn't open yet")
+    with get_db() as conn:
+        conn.execute("INSERT OR IGNORE INTO revealed (day) VALUES (?)", (day,))
+    return {"ok": True}
 
 
 class CodeCheck(BaseModel):

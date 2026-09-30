@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub } from './music.js'
-import PetermasCalendar, { daysOpenNow } from './Calendar.jsx'
+import PetermasCalendar, { daysOpenNow, RevealedGallery } from './Calendar.jsx'
 
 
 // A cheeky photo with a St Petermas smiley over just the sensitive bit.
@@ -692,6 +692,7 @@ function App() {
           </article>
       ))}
     </section>
+        <RevealedGallery title={isPeteView ? 'Unveiled in St Petermas' : 'Unveiled so far in St Petermas'} />
       </main>
   )
 }

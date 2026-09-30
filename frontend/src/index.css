@@ -957,3 +957,16 @@ body { background: #0a0a0c; }
 	75%  { opacity: 1;   filter: hue-rotate(300deg) saturate(1.6); }
 	87%  { opacity: .35; }
 }
+
+/* Photos Pete has scratched in the chapel, collected in his card */
+.revealed { padding-bottom: 90px; }
+.revealed-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 420px) { .revealed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.revealed-tile {
+	margin: 0; padding: 6px 6px 8px; background: #f6efe2; border-radius: 4px;
+	box-shadow: 0 6px 14px rgba(0,0,0,.45); transform: rotate(-1.5deg);
+}
+.revealed-tile:nth-child(even) { transform: rotate(1.5deg); }
+.revealed-tile img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 2px; }
+.revealed-tile figcaption { margin-top: 6px; font-family: 'Caveat', cursive; font-size: 17px; color: #2a1a10; line-height: 1.1; }
+.revealed-from { font-size: 14px; }

@@ -75,6 +75,10 @@ function photoFor(day, relics) {
   return relic ? { src: `/media/${relic.media}`, relic } : { src: `/advent/extra-${day}.jpg`, relic: null }
 }
 
+function isPreview() {
+  return /^#pete-(eve|day-|closed)/.test(window.location.hash)
+}
+
 function loadScratched() {
   try { return JSON.parse(localStorage.getItem('petermasScratched') || '[]') } catch { return [] }
 }
@@ -181,6 +185,8 @@ export default function PetermasCalendar() {
       try { localStorage.setItem('petermasScratched', JSON.stringify(next)) } catch { /* ignore */ }
       return next
     })
+    // Pete's real link (not Lisa's #pete-eve / #pete-day-N previews): the photo joins his card for everyone
+    if (!isPreview()) fetch(`/revealed/${day}`, { method: 'POST' }).catch(() => {})
   }
 
   function openPane(day) {
@@ -242,6 +248,40 @@ export default function PetermasCalendar() {
             </div>
         )}
 
+      </section>
+  )
+}
+
+
+// The photos Pete has scratched so far, shown in his card (and to friends)
+export function RevealedGallery({ title = 'Unveiled in St Petermas' }) {
+  const [days, setDays] = useState([])
+  const [relics, setRelics] = useState([])
+  const [missing, setMissing] = useState([])
+  useEffect(() => {
+    fetch('/revealed').then((r) => (r.ok ? r.json() : [])).then(setDays).catch(() => {})
+    fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
+  }, [])
+  const shown = days.filter((d) => !missing.includes(d))
+  if (!shown.length) return null
+  return (
+      <section className="revealed">
+        <h2 className="petermas-title offerings-h">{title}</h2>
+        <div className="revealed-grid">
+          {shown.map((d) => {
+            const p = photoFor(d, relics)
+            return (
+                <figure className="revealed-tile" key={d}>
+                  <img src={p.src} alt={`St Petermas window ${d}`} loading="lazy"
+                       onError={() => setMissing((m) => [...m, d])} />
+                  <figcaption>
+                    <span className="revealed-day">Day {d}</span>
+                    {p.relic && <span className="revealed-from"> · a relic from {p.relic.name}</span>}
+                  </figcaption>
+                </figure>
+            )
+          })}
+        </div>
       </section>
   )
 }
