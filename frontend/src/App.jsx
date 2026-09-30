@@ -655,7 +655,7 @@ function App() {
                                 onChange={(e) => setText(e.target.value)} required />
                     : <input placeholder="Where and when? e.g. Ibiza, 1998 (optional)" value={text} maxLength={120}
                              onChange={(e) => setText(e.target.value)} />}
-                <input type="file" accept={mode === 'relic' ? 'image/*' : 'image/*,video/*'}
+                <input type="file" accept={mode === 'relic' ? 'image/*' : 'image/*,video/*,video/quicktime,video/mp4,.mov,.mp4'}
                        required={mode === 'relic'}
                        onChange={(e) => setFile(e.target.files[0])} />
                 <button disabled={sending}>
