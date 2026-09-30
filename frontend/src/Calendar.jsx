@@ -62,9 +62,9 @@ function loadOpened() {
 
 
 // Day photos live in frontend/public/advent/1.jpg ... 31.jpg (any missing day just shows the blessing)
-// Lisa's photos: advent/2.jpg ... advent/17.jpg are windows 1-16, and advent/1.jpg is saved for the last window (31).
-// Friends' relics fill windows 17-30, in the order they are approved.
-const FOLDER_PHOTOS = 17
+// Lisa's photos: advent/2.jpg ... advent/16.jpg are windows 1-15, and advent/1.jpg is saved for the last window (31).
+// Friends' relics fill windows 16-30, in the order they are approved.
+const FOLDER_PHOTOS = 16
 const LAST_DAY = 31
 
 function photoFor(day, relics) {
