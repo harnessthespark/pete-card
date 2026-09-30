@@ -97,9 +97,22 @@ function schedule() {
 // iPhones mute web audio when the silent switch is on. Telling Safari this is media playback,
 // and keeping a silent <audio> element running, lets the music play anyway.
 let keepAlive = null
+// Phones: a recorded copy of this same beat, played as a normal audio file (iPhones trust that far more)
+let beat = null
+const onPhone = () => !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+function phoneBeat() {
+  if (!beat) {
+    beat = new Audio('/rave-loop.mp3')
+    beat.loop = true
+    beat.preload = 'auto'
+    beat.setAttribute('playsinline', '')
+  }
+  return beat
+}
 let stopTimer = null
 function unlockPhoneAudio() {
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback' } catch { /* older phones */ }
+  if (onPhone()) return // on phones the recorded beat itself is the audio element
   try {
     if (!keepAlive) {
       const rate = 8000, n = rate // one second of silence as a tiny WAV
@@ -136,6 +149,13 @@ export function primeRave() {
 }
 
 export function startRave() {
+  if (onPhone()) {
+    clearTimeout(stopTimer)
+    const b = phoneBeat()
+    b.volume = Math.min(1, level * 2)
+    b.play().catch(() => {})
+    return
+  }
   try {
     if (!ctx) {
       ctx = new (window.AudioContext || window.webkitAudioContext)()
@@ -159,6 +179,7 @@ export function startRave() {
 }
 
 export function stopRave() {
+  if (beat) beat.pause()
   if (!ctx) return
   master.gain.cancelScheduledValues(ctx.currentTime)
   master.gain.setValueAtTime(master.gain.value, ctx.currentTime)
@@ -170,6 +191,7 @@ export function stopRave() {
 
 export function setRaveVolume(v) {
   level = 0.5 * v
+  if (beat) beat.volume = Math.min(1, level * 2)
   if (ctx && timer) {
     master.gain.cancelScheduledValues(ctx.currentTime)
     master.gain.setTargetAtTime(level, ctx.currentTime, 0.05)
