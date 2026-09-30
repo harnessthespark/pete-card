@@ -827,9 +827,9 @@ body { background: #0a0a0c; }
 	border-radius: 50% 50% 0 0 / 90px 90px 0 0; /* the whole chapel sits under a gothic arch */
 	background:
 		radial-gradient(ellipse 45% 90px at 50% 70px, rgba(0,0,0,.55), rgba(0,0,0,0)),
-		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(255,210,120,.12), rgba(0,0,0,0) 70%),
+		radial-gradient(ellipse 70% 40% at 50% 38%, rgba(160,80,255,.10), rgba(0,0,0,0) 70%),
 		linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.2) 30%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.8) 100%),
-		url('/church-wall.jpg') center top / 100% auto no-repeat,
+		url('/church-wall-night.jpg') center top / 100% auto no-repeat,
 		#17120d;
 	box-shadow: inset 0 0 0 6px #2a2320, inset 0 0 60px rgba(0,0,0,.8);
 }
@@ -850,11 +850,12 @@ body { background: #0a0a0c; }
 .petermas::after {
 	content: ""; position: absolute; z-index: -1; left: 0; top: 0; width: 100%; aspect-ratio: 1200 / 1620;
 	background:
-		radial-gradient(circle at 13% 23%, rgba(255,170,60,.35), rgba(255,120,30,.08) 9%, rgba(0,0,0,0) 18%),
-		radial-gradient(circle at 87% 22%, rgba(255,170,60,.35), rgba(255,120,30,.08) 9%, rgba(0,0,0,0) 18%);
+		radial-gradient(circle at 13% 23%, rgba(255,43,214,.95), rgba(255,43,214,.5) 7%, rgba(255,43,214,.2) 16%, rgba(0,0,0,0) 30%),
+		radial-gradient(circle at 87% 22%, rgba(40,120,255,.95), rgba(40,120,255,.5) 7%, rgba(40,120,255,.2) 16%, rgba(0,0,0,0) 30%);
 	mix-blend-mode: screen; pointer-events: none;
-	animation: candles 2.6s ease-in-out infinite alternate;
+	animation: candles 2.6s ease-in-out infinite alternate, clubCandles 10s linear infinite;
 }
+@keyframes clubCandles { to { filter: hue-rotate(360deg); } }
 @keyframes candles { 0% { opacity: .85; } 30% { opacity: 1; } 55% { opacity: .75; } 80% { opacity: .95; } 100% { opacity: .8; } }
 .petermas .stained { box-shadow: 0 0 0 5px #3b2a12, 0 0 0 9px #1c1612, 0 0 70px rgba(255,212,0,.28); }
 @media (prefers-reduced-motion: reduce) { .petermas::before, .petermas::after { animation: none; } }

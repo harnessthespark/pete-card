@@ -62,14 +62,17 @@ function loadOpened() {
 
 
 // Day photos live in frontend/public/advent/1.jpg ... 31.jpg (any missing day just shows the blessing)
-// Lisa's own photos are advent/1.jpg to advent/FOLDER_PHOTOS.jpg.
-// Friends' relics fill the windows after those, in the order they are approved.
+// Lisa's photos: advent/2.jpg ... advent/17.jpg are windows 1-16, and advent/1.jpg is saved for the last window (31).
+// Friends' relics fill windows 17-30, in the order they are approved.
 const FOLDER_PHOTOS = 17
+const LAST_DAY = 31
 
 function photoFor(day, relics) {
-  if (day <= FOLDER_PHOTOS) return { src: `/advent/${day}.jpg`, relic: null }
-  const relic = relics[day - FOLDER_PHOTOS - 1]
-  return relic ? { src: `/media/${relic.media}`, relic } : { src: `/advent/${day}.jpg`, relic: null }
+  if (day === LAST_DAY) return { src: '/advent/1.jpg', relic: null }
+  if (day < FOLDER_PHOTOS) return { src: `/advent/${day + 1}.jpg`, relic: null }
+  const relic = relics[day - FOLDER_PHOTOS]
+  // no relic yet for this window: it shows just the blessing
+  return relic ? { src: `/media/${relic.media}`, relic } : { src: `/advent/extra-${day}.jpg`, relic: null }
 }
 
 function loadScratched() {
@@ -85,7 +88,8 @@ function ScratchReveal({ src, done, onDone }) {
   function paint(img) {
     const c = canvasRef.current
     if (!c || cleared) return
-    const w = img.clientWidth, h = img.clientHeight
+    const w = c.offsetWidth || img.clientWidth || img.naturalWidth, h = c.offsetHeight || img.clientHeight || img.naturalHeight
+    if (!w || !h) { requestAnimationFrame(() => paint(img)); return } // modal still opening: try again next frame
     c.width = w; c.height = h
     const ctx = c.getContext('2d')
     const g = ctx.createLinearGradient(0, 0, w, h)
@@ -96,23 +100,35 @@ function ScratchReveal({ src, done, onDone }) {
     ctx.fillText('Scratch the glass ✦', w / 2, h / 2)
   }
 
+  const last = useRef(null)
+  const moves = useRef(0)
+
+  // Scratch with a finger or the mouse: draw a thick line from the last point so fast swipes leave no gaps
   function scratchAt(e) {
     const c = canvasRef.current
     if (!c || cleared) return
     const r = c.getBoundingClientRect()
-    const p = e.touches ? e.touches[0] : e
+    const x = (e.clientX - r.left) * (c.width / r.width), y = (e.clientY - r.top) * (c.height / r.height)
     const ctx = c.getContext('2d')
     ctx.globalCompositeOperation = 'destination-out'
-    ctx.beginPath(); ctx.arc(p.clientX - r.left, p.clientY - r.top, 24, 0, Math.PI * 2); ctx.fill()
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'
+    ctx.lineWidth = e.pointerType === 'touch' ? 64 : 48
+    ctx.beginPath()
+    const from = last.current || { x, y }
+    ctx.moveTo(from.x, from.y); ctx.lineTo(x + 0.1, y + 0.1); ctx.stroke()
+    last.current = { x, y }
+    if (++moves.current % 8 === 0) check() // reveal as soon as enough is scratched, no need to lift the finger
   }
+
+  function end() { last.current = null; check() }
 
   function check() {
     const c = canvasRef.current
-    if (!c || cleared) return
+    if (!c || cleared || !c.width) return
     const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data
     let clear = 0, total = 0
     for (let i = 3; i < data.length; i += 4 * 40) { total++; if (data[i] === 0) clear++ }
-    if (clear / total > 0.5) { setCleared(true); onDone() }
+    if (clear / total > 0.45) { setCleared(true); onDone() }
   }
 
   if (missing) return null
@@ -122,9 +138,10 @@ function ScratchReveal({ src, done, onDone }) {
              onError={() => { setMissing(true); onDone() }} />
         {!cleared && (
             <canvas ref={canvasRef} className="scratch-foil"
-                    onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); scratchAt(e) }}
+                    onPointerDown={(e) => { e.preventDefault(); try { e.currentTarget.setPointerCapture(e.pointerId) } catch {} last.current = null; scratchAt(e) }}
                     onPointerMove={(e) => { if (e.buttons || e.pointerType === 'touch') scratchAt(e) }}
-                    onPointerUp={check} onPointerLeave={check} />
+                    onPointerUp={end} onPointerCancel={end} onPointerLeave={end}
+                    onTouchMove={(e) => e.preventDefault()} />
         )}
         {!cleared && <button type="button" className="scratch-skip" onClick={() => { setCleared(true); onDone() }}>just open it</button>}
       </div>
