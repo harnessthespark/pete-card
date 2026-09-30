@@ -850,10 +850,10 @@ body { background: #0a0a0c; }
 .petermas::after {
 	content: ""; position: absolute; z-index: -1; left: 0; top: 0; width: 100%; aspect-ratio: 1200 / 1620;
 	background:
-		radial-gradient(circle at 13% 23%, rgba(255,43,214,.95), rgba(255,43,214,.5) 7%, rgba(255,43,214,.2) 16%, rgba(0,0,0,0) 30%),
-		radial-gradient(circle at 87% 22%, rgba(40,120,255,.95), rgba(40,120,255,.5) 7%, rgba(40,120,255,.2) 16%, rgba(0,0,0,0) 30%);
+		radial-gradient(circle at 13% 23%, rgba(255,250,235,.45), rgba(255,250,235,.12) 7%, rgba(0,0,0,0) 18%),
+		radial-gradient(circle at 87% 22%, rgba(255,250,235,.45), rgba(255,250,235,.12) 7%, rgba(0,0,0,0) 18%);
 	mix-blend-mode: screen; pointer-events: none;
-	animation: candles 2.6s ease-in-out infinite alternate, clubCandles 10s linear infinite;
+	animation: candles 2.6s ease-in-out infinite alternate;
 }
 @keyframes clubCandles { to { filter: hue-rotate(360deg); } }
 @keyframes candles { 0% { opacity: .85; } 30% { opacity: 1; } 55% { opacity: .75; } 80% { opacity: .95; } 100% { opacity: .8; } }
@@ -928,20 +928,32 @@ body { background: #0a0a0c; }
 .eve-page::after, .chapel-page::after {
 	content: ""; position: fixed; inset: -10%; z-index: -1; pointer-events: none;
 	background:
-		radial-gradient(ellipse 30% 40% at 12% 30%, rgba(255,43,214,.35), rgba(255,43,214,0) 70%),
-		radial-gradient(ellipse 30% 40% at 88% 60%, rgba(43,90,255,.35), rgba(43,90,255,0) 70%),
-		radial-gradient(ellipse 35% 30% at 20% 85%, rgba(140,40,255,.3), rgba(140,40,255,0) 70%),
-		radial-gradient(ellipse 25% 35% at 85% 15%, rgba(0,220,200,.22), rgba(0,220,200,0) 70%);
+		radial-gradient(ellipse 30% 40% at 12% 30%, rgba(255,43,214,.55), rgba(255,43,214,0) 70%),
+		radial-gradient(ellipse 30% 40% at 88% 60%, rgba(43,90,255,.55), rgba(43,90,255,0) 70%),
+		radial-gradient(ellipse 35% 30% at 20% 85%, rgba(140,40,255,.5), rgba(140,40,255,0) 70%),
+		radial-gradient(ellipse 25% 35% at 85% 15%, rgba(0,220,200,.4), rgba(0,220,200,0) 70%);
 	mix-blend-mode: screen;
-	animation: clubDrift 14s ease-in-out infinite alternate, clubFlicker 3.2s steps(1) infinite;
+	animation: clubDrift 14s ease-in-out infinite alternate, clubStrobe 4s steps(1) infinite;
 }
 @keyframes clubDrift {
-	0%   { transform: translate(0, 0) rotate(0deg); filter: hue-rotate(0deg); }
-	50%  { transform: translate(3%, -2%) rotate(2deg); filter: hue-rotate(60deg); }
-	100% { transform: translate(-3%, 2%) rotate(-2deg); filter: hue-rotate(-40deg); }
+	0%   { transform: translate(0, 0) rotate(0deg); }
+	50%  { transform: translate(3%, -2%) rotate(2deg); }
+	100% { transform: translate(-3%, 2%) rotate(-2deg); }
 }
 @keyframes clubFlicker {
 	0% { opacity: .9; } 12% { opacity: .55; } 18% { opacity: 1; } 40% { opacity: .7; }
 	46% { opacity: .95; } 70% { opacity: .6; } 76% { opacity: 1; } 100% { opacity: .85; }
 }
 @media (prefers-reduced-motion: reduce) { .eve-page::after, .chapel-page::after { animation: none; opacity: .8; } }
+
+/* strobe: the club lights jump between colours (kept under 3 flashes a second) */
+@keyframes clubStrobe {
+	0%   { opacity: 1;   filter: hue-rotate(0deg) saturate(1.6); }
+	12%  { opacity: .25; }
+	25%  { opacity: 1;   filter: hue-rotate(110deg) saturate(1.6); }
+	37%  { opacity: .3; }
+	50%  { opacity: 1;   filter: hue-rotate(220deg) saturate(1.6); }
+	62%  { opacity: .25; }
+	75%  { opacity: 1;   filter: hue-rotate(300deg) saturate(1.6); }
+	87%  { opacity: .35; }
+}
