@@ -44,7 +44,7 @@ export function ConfessionalForm({ code }) {
         <p className="confess-sub">Not shown on the card. Only Pete can open it.</p>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" maxLength={60} required />
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} maxLength={4000} required
-                  placeholder="Forgive me Pete, for I have raved… share a memory, or say the thing you'd only say at 4am" />
+                  placeholder="Forgive me Pete, for I have…" />
         <input value={contact} onChange={(e) => setContact(e.target.value)} maxLength={200}
                placeholder="Your number or email, if you'd like him to get in touch (optional)" />
         <div className="confess-actions">
