@@ -161,7 +161,7 @@ function ScratchReveal({ src, done, onDone, relic }) {
     const w = c.offsetWidth || img.clientWidth || img.naturalWidth, h = c.offsetHeight || img.clientHeight || img.naturalHeight
     if (!w || !h) { requestAnimationFrame(() => paint(img)); return } // modal still opening: try again next frame
     c.width = w; c.height = h
-    const ctx = c.getContext('2d')
+    const ctx = c.getContext('2d', { willReadFrequently: true })
     const g = ctx.createLinearGradient(0, 0, w, h)
     g.addColorStop(0, '#b8862a'); g.addColorStop(.5, '#ffe28a'); g.addColorStop(1, '#a8741c')
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h)
@@ -179,7 +179,7 @@ function ScratchReveal({ src, done, onDone, relic }) {
     if (!c || cleared) return
     const r = c.getBoundingClientRect()
     const x = (e.clientX - r.left) * (c.width / r.width), y = (e.clientY - r.top) * (c.height / r.height)
-    const ctx = c.getContext('2d')
+    const ctx = c.getContext('2d', { willReadFrequently: true })
     ctx.globalCompositeOperation = 'destination-out'
     ctx.lineCap = 'round'; ctx.lineJoin = 'round'
     ctx.lineWidth = e.pointerType === 'touch' ? 64 : 48
@@ -195,7 +195,7 @@ function ScratchReveal({ src, done, onDone, relic }) {
   function check() {
     const c = canvasRef.current
     if (!c || cleared || !c.width) return
-    const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data
+    const data = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height).data
     let clear = 0, total = 0
     for (let i = 3; i < data.length; i += 4 * 40) { total++; if (data[i] === 0) clear++ }
     if (clear / total > 0.45) { setCleared(true); onDone() }
