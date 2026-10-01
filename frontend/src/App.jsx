@@ -85,6 +85,16 @@ function AdminPage() {
     setBusy(false)
   }
 
+  async function moveRelic(id, win) {
+    const w = Number(win || 0)
+    if (!(w >= 0 && w <= 31)) { setError('Pick a window from 1 to 31'); return }
+    setBusy(true)
+    const res = await fetch(`/admin/relic-window/${id}?${q(adminCode)}&window=${w}`, { method: 'POST' })
+    setError(res.ok ? (w ? `Done: that relic is now behind window ${w}` : 'Done: that relic fills in with the others again') : 'Could not move that relic')
+    await load(adminCode)
+    setBusy(false)
+  }
+
   async function replacePhoto(id, file) {
     if (!file) return
     setBusy(true)
@@ -158,6 +168,14 @@ function AdminPage() {
             <button disabled={busy} className="danger" onClick={() => remove(m.id)}>Delete</button>
           </div>
           {m.kind === 'relic' && m.window && <p className="chip chip-relic">Pinned to window {m.window}</p>}
+          {m.kind === 'relic' && m.approved && (
+              <form className="admin-actions admin-advent"
+                    onSubmit={(e) => { e.preventDefault(); moveRelic(m.id, e.currentTarget.elements.win.value) }}>
+                <input name="win" type="number" min="1" max="31" placeholder="Window" aria-label="Move to advent window" />
+                <button disabled={busy}>📿 Move to window</button>
+                {m.window && <button type="button" disabled={busy} onClick={() => moveRelic(m.id, 0)}>Unpin</button>}
+              </form>
+          )}
           {m.media && !isVideo(m.media) && m.kind !== 'relic' && (
               <form className="admin-actions admin-advent"
                     onSubmit={(e) => { e.preventDefault(); toAdvent(m.id, e.currentTarget.elements.win.value) }}>

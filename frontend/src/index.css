@@ -985,3 +985,6 @@ body { background: #0a0a0c; }
 /* Phones: YouTube's own player pops up, big enough to tap ▶ easily */
 iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !important; }
 .player-hint[data-for="yt"] { bottom: 164px; font-size: 14px; padding: 7px 8px 7px 12px; }
+
+/* Smaller smiley: just enough to cover the cheeky bit */
+.sticker { width: 17%; min-width: 40px; max-width: 80px; }

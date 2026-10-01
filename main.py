@@ -222,6 +222,21 @@ def admin_to_advent(message_id: int, admin_code: str, window: int):
     return {"relic": cur.lastrowid, "window": window}
 
 
+@app.post("/admin/relic-window/{message_id}")
+def admin_relic_window(message_id: int, admin_code: str, window: int = 0):
+    # Move a relic to a chosen advent window (1-31); 0 = no fixed window (fills in order again)
+    check_admin(admin_code)
+    if window < 0 or window > 31:
+        raise HTTPException(status_code=400, detail="Window must be 1 to 31")
+    with get_db() as conn:
+        if window:
+            conn.execute("UPDATE messages SET window = NULL WHERE kind = 'relic' AND window = ? AND id != ?",
+                         (window, message_id))
+        conn.execute("UPDATE messages SET window = ? WHERE id = ? AND kind = 'relic'",
+                     (window or None, message_id))
+    return {"relic": message_id, "window": window or None}
+
+
 @app.post("/admin/replace-media/{message_id}")
 def admin_replace_media(message_id: int, admin_code: str = Form(...), file: UploadFile = File(...)):
     # Swap the photo on a message (the old file is kept on disk, just no longer shown)
