@@ -10,7 +10,7 @@ const SET = [
   { id: '6WekPJIx2YU', title: "DC Project – Mary's Prayer (Club Mix)" },
   { id: 'yJu7smlJNYU', title: 'Moguai – Viola' },
 ]
-// Shuffle: Dancing Queen always opens, then the rest play in a random order, reshuffled each time round
+// Shuffle: the set plays in a random order, reshuffled each time round
 let order = [0]
 let pos = 0
 function shuffledRest() {
@@ -18,11 +18,24 @@ function shuffledRest() {
   for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]] }
   return rest
 }
-order = [0, ...shuffledRest()]
-let index = 0
+// Dancing Queen opens the music on his birthday (and the Eve). From 2 October every visit starts
+// on a random track, so each day's window comes with a different tune.
+function birthdayOrLater() {
+  const m = window.location.hash.match(/^#pete-day-(\d+)/) // Lisa's previews: #pete-day-N
+  if (m) return Number(m[1]) <= 1
+  if (window.location.hash.startsWith('#pete-eve')) return true
+  return Date.now() < new Date('2026-10-02T00:00:00+01:00').getTime()
+}
+function shuffledAll() {
+  const all = SET.map((_, i) => i)
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]] }
+  return all
+}
+order = birthdayOrLater() ? [0, ...shuffledRest()] : shuffledAll()
+let index = order[0]
 function nextTrack() {
   pos += 1
-  if (pos >= order.length) { order = shuffledRest(); pos = 0 } // a fresh shuffle for the next time round
+  if (pos >= order.length) { order = shuffledAll(); pos = 0 } // a fresh shuffle for the next time round
   index = order[pos]
   yt.loadVideoById(SET[index].id)
 }
@@ -77,7 +90,7 @@ export function preloadMusic() {
   document.body.appendChild(holder)
   const make = () => {
     yt = new window.YT.Player('yt-chapel', {
-      videoId: SET[0].id,
+      videoId: SET[index].id,
       playerVars: { autoplay: 0, controls: 1, playsinline: 1 },
       events: {
         onReady: () => {
