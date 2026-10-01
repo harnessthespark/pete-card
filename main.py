@@ -11,7 +11,8 @@ app = FastAPI()
 DATA_DIR = os.environ.get("DATA_DIR", ".")
 DB = os.path.join(DATA_DIR, "petebirthday.db")
 SECRET_CODE = os.environ.get("SECRET_CODE", "allin76")
-ADMIN_CODE = os.environ.get("ADMIN_CODE", "scruttock")
+# The admin code lives only in Coolify (Environment Variables → ADMIN_CODE), never in this file
+ADMIN_CODE = os.environ.get("ADMIN_CODE", "")
 UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -137,7 +138,7 @@ def upload(code: str = Form(...), file: UploadFile = File(...)):
     return {"file": new_name}
 
 def check_admin(admin_code: str):
-    if admin_code != ADMIN_CODE:
+    if not ADMIN_CODE or admin_code != ADMIN_CODE:
         raise HTTPException(status_code=403, detail="Not allowed")
 
 
