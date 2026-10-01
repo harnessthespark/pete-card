@@ -13,6 +13,8 @@ DB = os.path.join(DATA_DIR, "petebirthday.db")
 SECRET_CODE = os.environ.get("SECRET_CODE", "allin76")
 # The admin code lives only in Coolify (Environment Variables → ADMIN_CODE), never in this file
 ADMIN_CODE = os.environ.get("ADMIN_CODE", "")
+# Pete's own secret word for the Confessional, also only in Coolify (Environment Variables → PETE_CODE)
+PETE_CODE = os.environ.get("PETE_CODE", "")
 UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -56,6 +58,16 @@ with get_db() as conn:
         CREATE TABLE IF NOT EXISTS revealed (
             day INTEGER PRIMARY KEY,
             revealed_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    # The Confessional: private memories and deep-and-meaningfuls, for Pete's eyes only
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS confessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            text TEXT NOT NULL,
+            contact TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -250,6 +262,46 @@ def admin_replace_media(message_id: int, admin_code: str = Form(...), file: Uplo
     with get_db() as conn:
         conn.execute("UPDATE messages SET media = ?, sticker = 0 WHERE id = ?", (new_name, message_id))
     return {"media": new_name}
+
+
+class Confession(BaseModel):
+    code: str
+    name: str = Field(min_length=1, max_length=60)
+    text: str = Field(min_length=1, max_length=4000)
+    contact: str | None = Field(default=None, max_length=200)
+
+
+@app.post("/confessions")
+def add_confession(c: Confession):
+    # Friends (with the invite code) leave a private word for Pete. Never shown on the card.
+    if c.code.strip() != SECRET_CODE:
+        raise HTTPException(status_code=403, detail="That code isn't right")
+    with get_db() as conn:
+        conn.execute("INSERT INTO confessions (name, text, contact) VALUES (?, ?, ?)",
+                     (c.name.strip(), c.text.strip(), (c.contact or "").strip() or None))
+    return {"ok": True}
+
+
+@app.get("/confessions/count")
+def confession_count():
+    # Only the number: the chapel door glows when something is waiting
+    with get_db() as conn:
+        n = conn.execute("SELECT COUNT(*) AS n FROM confessions").fetchone()["n"]
+    return {"count": n}
+
+
+class PeteCode(BaseModel):
+    pete_code: str
+
+
+@app.post("/confessions/open")
+def open_confessions(body: PeteCode):
+    # Only Pete's secret word opens them (not even the admin code)
+    if not PETE_CODE or body.pete_code.strip().lower() != PETE_CODE.strip().lower():
+        raise HTTPException(status_code=403, detail="That's not the word")
+    with get_db() as conn:
+        rows = conn.execute("SELECT id, name, text, contact, created_at FROM confessions ORDER BY id").fetchall()
+    return [dict(r) for r in rows]
 
 
 @app.get("/revealed")

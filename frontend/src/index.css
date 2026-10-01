@@ -987,3 +987,36 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 
 /* Smaller smiley: just enough to cover the cheeky bit */
 .sticker { width: 17%; min-width: 40px; max-width: 80px; }
+/* The 4am Confessional */
+.confess-open {
+	display: flex; gap: 12px; align-items: center; width: 100%; margin: 18px 0; padding: 14px 16px;
+	border: 1px solid #5a3a22; border-radius: 14px; background: linear-gradient(180deg, #2a1a10, #140c07);
+	color: #f3e2b3; font: inherit; font-size: 14px; line-height: 1.35; text-align: left; cursor: pointer;
+	box-shadow: 0 0 22px rgba(255,170,60,.15);
+}
+.confess-open strong { font-family: 'Almendra', Georgia, serif; font-size: 18px; color: #f0b429; }
+.confess-candle { font-size: 28px; animation: candles 2.6s ease-in-out infinite alternate; }
+.confess-box {
+	margin: 18px 0; padding: 16px; border-radius: 14px; background: linear-gradient(180deg, #2a1a10, #140c07);
+	color: #f3e2b3; border: 1px solid #5a3a22; display: grid; gap: 10px;
+}
+.confess-box p { margin: 0; }
+.confess-title { font-family: 'Almendra', Georgia, serif; font-size: 20px; color: #f0b429; }
+.confess-sub { font-size: 13px; opacity: .8; }
+.confess-box input, .confess-box textarea { width: 100%; box-sizing: border-box; font: inherit; }
+.confess-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.confess-cancel { background: transparent !important; color: #f3e2b3 !important; border: 1px solid #5a3a22 !important; }
+.confess-door-wrap { text-align: center; margin: 22px 0 8px; }
+.confess-door {
+	font-family: 'Almendra', Georgia, serif; font-size: 18px; color: #f0b429; background: linear-gradient(180deg, #5a3a22, #3f2716);
+	border: 0; border-radius: 40px 40px 10px 10px; padding: 14px 26px; cursor: pointer;
+	box-shadow: 0 0 0 2px #2a1a10, 0 0 26px rgba(255,170,60,.45); animation: badgeGlow 2.4s ease-in-out infinite;
+}
+.confess-door small { font-family: 'Instrument Sans', sans-serif; font-size: 12px; color: #f3e2b3; }
+.confess-card { background: #140c07; box-shadow: 0 0 0 2px #f0b429, 0 0 30px rgba(255,170,60,.35); }
+.confess-word { display: grid; gap: 10px; }
+.confess-list { display: grid; gap: 12px; max-height: 60vh; overflow-y: auto; }
+.confess-item { background: #2a1a10; border-radius: 10px; padding: 12px; color: #f3e2b3; }
+.confess-text { margin: 0 0 6px; white-space: pre-wrap; line-height: 1.4; }
+.confess-contact a { color: #ffd400; }
+@media (prefers-reduced-motion: reduce) { .confess-candle, .confess-door { animation: none; } }

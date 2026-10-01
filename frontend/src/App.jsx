@@ -3,6 +3,7 @@ import './App.css'
 import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub, preloadMusic } from './music.js'
 import PetermasCalendar, { daysOpenNow, RevealedGallery } from './Calendar.jsx'
+import { ConfessionalForm, ConfessionalDoor } from './Confessional.jsx'
 
 
 // A cheeky photo with a St Petermas smiley over just the sensitive bit.
@@ -34,6 +35,14 @@ function StickerPhoto({ src, name, x = 50, y = 50, onPlace }) {
         </div>
       </div>
   )
+}
+
+// Admin sees only how many confessions there are, never what they say
+function ConfessionCount() {
+  const [n, setN] = useState(null)
+  useEffect(() => { fetch('/confessions/count').then((r) => r.json()).then((d) => setN(d.count)).catch(() => {}) }, [])
+  if (n === null) return null
+  return <p className="sub">🕯️ {n} in the 4am Confessional (private to Pete)</p>
 }
 
 function AdminPage() {
@@ -200,6 +209,7 @@ function AdminPage() {
           <p className="fifty">Card admin</p>
           <p className="sub">{waiting.length} waiting · {live.length} on the card</p>
           <button className="refresh" onClick={() => load(adminCode)}>Refresh</button>
+          <ConfessionCount />
           {error && <p className="status admin-status">{error}</p>}
         </header>
         <h2 className="admin-h">Waiting for you</h2>
@@ -653,6 +663,7 @@ function App() {
             ← Back to the club
           </button>
           <PetermasCalendar />
+          <ConfessionalDoor />
           {musicStarted && <SoundControls />}
         </main>
     )
@@ -734,6 +745,7 @@ function App() {
               </aside>
             </div>
         )}
+        {!isPeteView && <ConfessionalForm code={code} />}
 
         {isPeteView && musicStarted && <SoundControls />}
         {isPeteView && <ChapelBadge />}
