@@ -78,15 +78,23 @@ export function ConfessionalDoor() {
     fetch('/confessions/count').then((r) => (r.ok ? r.json() : { count: 0 })).then((d) => setCount(d.count || 0)).catch(() => {})
   }, [])
 
+  const [choosing, setChoosing] = useState(false)
+  const [newWord, setNewWord] = useState('')
+
   async function enter(e) {
     if (e) e.preventDefault()
     setError('')
     const res = await fetch('/confessions/open', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pete_code: word }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pete_code: word, new_word: choosing ? newWord : null }),
     })
-    if (!res.ok) { setError("That's not the word. Ask Lisa."); return }
-    setItems(await res.json())
-    try { sessionStorage.setItem('peteWord', word) } catch { /* ignore */ }
+    if (!res.ok) { setError(choosing ? 'Something went wrong. Try again.' : "That's not the word."); return }
+    const data = await res.json()
+    if (data.choose_word) { setChoosing(true); return }
+    const myWord = choosing ? newWord : word
+    setChoosing(false)
+    setItems(data.confessions || [])
+    try { sessionStorage.setItem('peteWord', myWord) } catch { /* ignore */ }
   }
 
   if (!count) return null
@@ -100,7 +108,17 @@ export function ConfessionalDoor() {
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setOpen(false)}>
               <div className="pane-card confess-card" onClick={(e) => e.stopPropagation()}>
                 <p className="pane-day">The 4am Confessional</p>
-                {!items ? (
+                {!items && choosing ? (
+                    <form onSubmit={enter} className="confess-word">
+                      <p><strong>Welcome to the booth, Pete.</strong><br />
+                        Choose your own secret word. Only you will know it, not even Lisa,
+                        and from now on it's the only thing that opens the Confessional.</p>
+                      <input type="password" value={newWord} onChange={(e) => setNewWord(e.target.value)}
+                             placeholder="Your new secret word" minLength={3} autoFocus required />
+                      <button className="enter-btn">Seal the booth</button>
+                      {error && <p className="status">{error}</p>}
+                    </form>
+                ) : !items ? (
                     <form onSubmit={enter} className="confess-word">
                       <p>Speak the word to enter.</p>
                       <input type="password" value={word} onChange={(e) => setWord(e.target.value)} placeholder="Your secret word" autoFocus required />

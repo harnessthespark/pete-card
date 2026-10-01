@@ -2,6 +2,8 @@ import os
 import shutil
 import sqlite3
 import uuid
+import hashlib
+import secrets
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
@@ -61,6 +63,8 @@ with get_db() as conn:
         )
     """)
     # The Confessional: private memories and deep-and-meaningfuls, for Pete's eyes only
+    # Pete's own secret word for the Confessional (only a salted hash is stored; nobody else knows it)
+    conn.execute("CREATE TABLE IF NOT EXISTS pete_word (id INTEGER PRIMARY KEY CHECK (id = 1), salt TEXT, hash TEXT)")
     conn.execute("""
         CREATE TABLE IF NOT EXISTS confessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -292,16 +296,47 @@ def confession_count():
 
 class PeteCode(BaseModel):
     pete_code: str
+    new_word: str | None = Field(default=None, max_length=100)
+
+
+def _hash(word: str, salt: str) -> str:
+    return hashlib.pbkdf2_hmac("sha256", word.strip().lower().encode(), salt.encode(), 200_000).hex()
+
+
+def _pete_word():
+    with get_db() as conn:
+        return conn.execute("SELECT salt, hash FROM pete_word WHERE id = 1").fetchone()
 
 
 @app.post("/confessions/open")
 def open_confessions(body: PeteCode):
-    # Only Pete's secret word opens them (not even the admin code)
-    if not PETE_CODE or body.pete_code.strip().lower() != PETE_CODE.strip().lower():
-        raise HTTPException(status_code=403, detail="That's not the word")
+    # Once Pete has chosen his own word, only that word opens the Confessional.
+    # Before then, Lisa's one-time key (PETE_CODE) lets him in once, to choose his word.
+    row = _pete_word()
+    if row:
+        if not secrets.compare_digest(_hash(body.pete_code, row["salt"]), row["hash"]):
+            raise HTTPException(status_code=403, detail="That's not the word")
+    else:
+        if not PETE_CODE or body.pete_code.strip().lower() != PETE_CODE.strip().lower():
+            raise HTTPException(status_code=403, detail="That's not the word")
+        if not body.new_word or len(body.new_word.strip()) < 3:
+            return {"choose_word": True}  # first visit: ask Pete to choose his own word
+        salt = secrets.token_hex(16)
+        with get_db() as conn:
+            conn.execute("INSERT OR REPLACE INTO pete_word (id, salt, hash) VALUES (1, ?, ?)",
+                         (salt, _hash(body.new_word, salt)))
     with get_db() as conn:
         rows = conn.execute("SELECT id, name, text, contact, created_at FROM confessions ORDER BY id").fetchall()
-    return [dict(r) for r in rows]
+    return {"confessions": [dict(r) for r in rows]}
+
+
+@app.post("/admin/reset-pete-word")
+def admin_reset_pete_word(admin_code: str):
+    # If Pete forgets his word: clears it, so the one-time key works again and he chooses a new one
+    check_admin(admin_code)
+    with get_db() as conn:
+        conn.execute("DELETE FROM pete_word")
+    return {"reset": True}
 
 
 @app.get("/revealed")

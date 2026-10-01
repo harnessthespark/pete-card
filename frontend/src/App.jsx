@@ -210,6 +210,11 @@ function AdminPage() {
           <p className="sub">{waiting.length} waiting · {live.length} on the card</p>
           <button className="refresh" onClick={() => load(adminCode)}>Refresh</button>
           <ConfessionCount />
+          <button type="button" className="refresh" onClick={async () => {
+            if (!window.confirm("Only if Pete has forgotten his Confessional word: reset it so your one-time key works again and he chooses a new one?")) return
+            const res = await fetch(`/admin/reset-pete-word?${q(adminCode)}`, { method: 'POST' })
+            setError(res.ok ? "Pete's word is reset. Give him the one-time key again." : 'Could not reset')
+          }}>Reset Pete's Confessional word</button>
           {error && <p className="status admin-status">{error}</p>}
         </header>
         <h2 className="admin-h">Waiting for you</h2>
