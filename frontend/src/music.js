@@ -10,7 +10,22 @@ const SET = [
   { id: '6WekPJIx2YU', title: "DC Project – Mary's Prayer (Club Mix)" },
   { id: 'yJu7smlJNYU', title: 'Moguai – Viola' },
 ]
+// Shuffle: Dancing Queen always opens, then the rest play in a random order, reshuffled each time round
+let order = [0]
+let pos = 0
+function shuffledRest() {
+  const rest = SET.map((_, i) => i).slice(1)
+  for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]] }
+  return rest
+}
+order = [0, ...shuffledRest()]
 let index = 0
+function nextTrack() {
+  pos += 1
+  if (pos >= order.length) { order = shuffledRest(); pos = 0 } // a fresh shuffle for the next time round
+  index = order[pos]
+  yt.loadVideoById(SET[index].id)
+}
 let volume = 0.7
 let started = false
 let muted = false
@@ -70,13 +85,10 @@ export function preloadMusic() {
           yt.setVolume(Math.round(volume * 100))
           if (waiting) { const w = waiting; waiting = null; w() }
         },
-        onError: () => { // video blocked or removed: skip to the next track
-          index = (index + 1) % SET.length
-          yt.loadVideoById(SET[index].id)
-        },
+        onError: () => nextTrack(), // video blocked or removed: skip to the next track
         onStateChange: (e) => {
           if (e.data === 1) setTimeout(() => { if (playing()) hidePlayer() }, 800)
-          if (e.data === 0) { index = (index + 1) % SET.length; yt.loadVideoById(SET[index].id) } // next in the set
+          if (e.data === 0) nextTrack() // track finished: next one
         },
       },
     })

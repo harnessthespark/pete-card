@@ -2,7 +2,7 @@
 
 ## Changing the music
 
-The music is one YouTube playlist in `frontend/src/music.js`. It plays in order, then loops.
+The music is one YouTube set in `frontend/src/music.js`. Dancing Queen opens, then the rest play on shuffle, reshuffled each time round.
 Dancing Queen (club remix) plays first when the card opens.
 
 To change the songs, you only need to edit the `SET` list. Each YouTube link has an ID after
