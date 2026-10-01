@@ -1020,3 +1020,16 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 .confess-text { margin: 0 0 6px; white-space: pre-wrap; line-height: 1.4; }
 .confess-contact a { color: #ffd400; }
 @media (prefers-reduced-motion: reduce) { .confess-candle, .confess-door { animation: none; } }
+
+/* Pete's thank-you, pinned at the top of the card */
+.thanks-note {
+	margin: 16px auto 22px; max-width: 560px; padding: 16px 18px; border-radius: 14px;
+	background: linear-gradient(180deg, #fff8e1, #f6efe2); color: #2a1a10;
+	box-shadow: 0 0 0 2px #f0b429, 0 8px 22px rgba(0,0,0,.35); transform: rotate(-0.4deg);
+}
+.thanks-text { margin: 0 0 6px; white-space: pre-wrap; font-size: 16px; line-height: 1.45; }
+.thanks-editor { display: grid; gap: 8px; margin: 14px 0; padding: 12px; border-radius: 12px; background: #2a1a10; color: #f3e2b3; }
+.admin-h + .thanks-editor, main .thanks-editor { background: #fff8e1; color: #2a1a10; }
+.confess-list .thanks-editor { background: #2a1a10; color: #f3e2b3; }
+.thanks-editor p { margin: 0; }
+.thanks-editor textarea { width: 100%; box-sizing: border-box; font: inherit; }

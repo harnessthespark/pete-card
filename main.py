@@ -64,6 +64,8 @@ with get_db() as conn:
     """)
     # The Confessional: private memories and deep-and-meaningfuls, for Pete's eyes only
     # Pete's own secret word for the Confessional (only a salted hash is stored; nobody else knows it)
+    # Pete's thank-you note, pinned at the top of the card (one note, can be edited)
+    conn.execute("CREATE TABLE IF NOT EXISTS thanks (id INTEGER PRIMARY KEY CHECK (id = 1), text TEXT, updated_at TEXT)")
     conn.execute("CREATE TABLE IF NOT EXISTS pete_word (id INTEGER PRIMARY KEY CHECK (id = 1), salt TEXT, hash TEXT)")
     conn.execute("""
         CREATE TABLE IF NOT EXISTS confessions (
@@ -328,6 +330,34 @@ def open_confessions(body: PeteCode):
     with get_db() as conn:
         rows = conn.execute("SELECT id, name, text, contact, created_at FROM confessions ORDER BY id").fetchall()
     return {"confessions": [dict(r) for r in rows]}
+
+
+class Thanks(BaseModel):
+    text: str = Field(max_length=2000)
+    pete_code: str | None = None
+    admin_code: str | None = None
+
+
+@app.get("/thanks")
+def get_thanks():
+    with get_db() as conn:
+        row = conn.execute("SELECT text FROM thanks WHERE id = 1").fetchone()
+    return {"text": row["text"] if row and row["text"] else ""}
+
+
+@app.post("/thanks")
+def set_thanks(body: Thanks):
+    # Pete (with his Confessional word) or Lisa (admin code) can post or edit the thank-you. Empty text removes it.
+    ok = bool(ADMIN_CODE) and body.admin_code == ADMIN_CODE
+    if not ok and body.pete_code:
+        row = _pete_word()
+        ok = bool(row) and secrets.compare_digest(_hash(body.pete_code, row["salt"]), row["hash"])
+    if not ok:
+        raise HTTPException(status_code=403, detail="Not allowed")
+    with get_db() as conn:
+        conn.execute("INSERT OR REPLACE INTO thanks (id, text, updated_at) VALUES (1, ?, CURRENT_TIMESTAMP)",
+                     (body.text.strip(),))
+    return {"ok": True}
 
 
 @app.post("/admin/reset-pete-word")

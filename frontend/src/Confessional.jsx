@@ -92,6 +92,7 @@ export function ConfessionalDoor() {
     const data = await res.json()
     if (data.choose_word) { setChoosing(true); return }
     const myWord = choosing ? newWord : word
+    setWord(myWord)
     setChoosing(false)
     setItems(data.confessions || [])
     try { sessionStorage.setItem('peteWord', myWord) } catch { /* ignore */ }
@@ -134,6 +135,8 @@ export function ConfessionalDoor() {
                             {c.contact && <p className="confess-contact"><ContactLink value={c.contact} /></p>}
                           </article>
                       ))}
+                      <ThanksEditor auth={{ pete_code: word }}
+                                    intro="Only if you fancy it, no pressure. One note for everyone, signed from you. You can change or remove it any time." />
                     </div>
                 )}
                 <button type="button" className="enter-btn pane-close" onClick={() => setOpen(false)}>Leave the booth</button>
@@ -141,5 +144,47 @@ export function ConfessionalDoor() {
             </div>
         )}
       </section>
+  )
+}
+
+
+// Pete's thank-you, pinned at the top of the card for everyone
+export function ThanksNote() {
+  const [text, setText] = useState('')
+  useEffect(() => {
+    fetch('/thanks').then((r) => (r.ok ? r.json() : { text: '' })).then((d) => setText(d.text || '')).catch(() => {})
+  }, [])
+  if (!text) return null
+  return (
+      <aside className="thanks-note">
+        <p className="thanks-text">{text}</p>
+        <p className="from">— Pete 💛</p>
+      </aside>
+  )
+}
+
+// Write or edit the thank-you (Pete inside the Confessional, or Lisa in #admin)
+export function ThanksEditor({ auth, intro }) {
+  const [text, setText] = useState('')
+  const [state, setState] = useState('')
+  useEffect(() => {
+    fetch('/thanks').then((r) => (r.ok ? r.json() : { text: '' })).then((d) => setText(d.text || '')).catch(() => {})
+  }, [])
+  async function save(e) {
+    e.preventDefault()
+    setState('saving')
+    const res = await fetch('/thanks', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, ...auth }),
+    })
+    setState(res.ok ? (text.trim() ? 'Pinned to the top of the card 💛' : 'Removed from the card') : 'Could not save, try again')
+  }
+  return (
+      <form className="thanks-editor" onSubmit={save}>
+        <p><strong>✍️ A thank-you on the card</strong>{intro ? <><br />{intro}</> : null}</p>
+        <textarea rows={4} maxLength={2000} value={text} onChange={(e) => { setText(e.target.value); setState('') }}
+                  placeholder="Thank you all for…" />
+        <button disabled={state === 'saving'}>Pin to the card</button>
+        {state && state !== 'saving' && <p className="status">{state}</p>}
+      </form>
   )
 }

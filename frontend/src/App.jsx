@@ -3,7 +3,7 @@ import './App.css'
 import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub, preloadMusic } from './music.js'
 import PetermasCalendar, { daysOpenNow, RevealedGallery } from './Calendar.jsx'
-import { ConfessionalForm, ConfessionalDoor } from './Confessional.jsx'
+import { ConfessionalForm, ConfessionalDoor, ThanksNote, ThanksEditor } from './Confessional.jsx'
 
 
 // A cheeky photo with a St Petermas smiley over just the sensitive bit.
@@ -217,6 +217,7 @@ function AdminPage() {
           }}>Reset Pete's Confessional word</button>
           {error && <p className="status admin-status">{error}</p>}
         </header>
+        <ThanksEditor auth={{ admin_code: adminCode }} intro="Pete's words, pinned at the top of the card. Leave it empty to remove it." />
         <h2 className="admin-h">Waiting for you</h2>
         {waiting.length === 0 && <p className="sub">Nothing waiting. All caught up.</p>}
         <section className="wall">{waiting.map((m) => <Row key={m.id} m={m} />)}</section>
@@ -703,6 +704,7 @@ function App() {
              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cover.jpg' }}
              alt="All-In Revival Rave poster for Pete's 50th, 1st October" />
         <p className="sub under-cover">{isPeteView ? 'From all of us, with love' : 'Leave a message, a photo or a video'}</p>
+        <ThanksNote />
 
         {!isPeteView && (
             <div className="compose">
