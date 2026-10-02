@@ -1033,3 +1033,10 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 .confess-list .thanks-editor { background: #2a1a10; color: #f3e2b3; }
 .thanks-editor p { margin: 0; }
 .thanks-editor textarea { width: 100%; box-sizing: border-box; font: inherit; }
+
+/* Confessional: only glow when something new is waiting */
+.confess-door { animation: none; }
+.confess-door.confess-new { animation: badgeGlow 2.4s ease-in-out infinite; }
+.confess-item-new { box-shadow: 0 0 0 1.5px #f0b429; }
+.confess-new-tag { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #ffd400; }
+@media (prefers-reduced-motion: reduce) { .confess-door.confess-new { animation: none; } }

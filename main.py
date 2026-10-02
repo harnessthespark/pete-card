@@ -76,6 +76,9 @@ with get_db() as conn:
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    ccols = [r["name"] for r in conn.execute("PRAGMA table_info(confessions)").fetchall()]
+    if "seen" not in ccols:
+        conn.execute("ALTER TABLE confessions ADD COLUMN seen INTEGER DEFAULT 0")  # 1 once Pete has opened it
 
 # Window 1 opens on St Petermas Eve (Wed 30 Sept, 7pm UK); window N on N October (midnight UK)
 EVE = datetime(2026, 9, 30, 18, 0, tzinfo=timezone.utc)
@@ -293,7 +296,8 @@ def confession_count():
     # Only the number: the chapel door glows when something is waiting
     with get_db() as conn:
         n = conn.execute("SELECT COUNT(*) AS n FROM confessions").fetchone()["n"]
-    return {"count": n}
+        unread = conn.execute("SELECT COUNT(*) AS n FROM confessions WHERE COALESCE(seen, 0) = 0").fetchone()["n"]
+    return {"count": n, "unread": unread}
 
 
 class PeteCode(BaseModel):
@@ -328,7 +332,10 @@ def open_confessions(body: PeteCode):
             conn.execute("INSERT OR REPLACE INTO pete_word (id, salt, hash) VALUES (1, ?, ?)",
                          (salt, _hash(body.new_word, salt)))
     with get_db() as conn:
-        rows = conn.execute("SELECT id, name, text, contact, created_at FROM confessions ORDER BY id").fetchall()
+        rows = conn.execute(
+            "SELECT id, name, text, contact, created_at, COALESCE(seen, 0) AS seen FROM confessions ORDER BY id"
+        ).fetchall()
+        conn.execute("UPDATE confessions SET seen = 1 WHERE COALESCE(seen, 0) = 0")  # Pete has now read them
     return {"confessions": [dict(r) for r in rows]}
 
 

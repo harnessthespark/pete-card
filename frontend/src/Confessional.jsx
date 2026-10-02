@@ -69,13 +69,14 @@ function ContactLink({ value }) {
 // Pete's chapel: the Confessional door, opened with his secret word
 export function ConfessionalDoor() {
   const [count, setCount] = useState(0)
+  const [unread, setUnread] = useState(0)
   const [open, setOpen] = useState(false)
   const [word, setWord] = useState(() => { try { return sessionStorage.getItem('peteWord') || '' } catch { return '' } })
   const [items, setItems] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/confessions/count').then((r) => (r.ok ? r.json() : { count: 0 })).then((d) => setCount(d.count || 0)).catch(() => {})
+    fetch('/confessions/count').then((r) => (r.ok ? r.json() : { count: 0 })).then((d) => { setCount(d.count || 0); setUnread(d.unread || 0) }).catch(() => {})
   }, [])
 
   const [choosing, setChoosing] = useState(false)
@@ -95,15 +96,18 @@ export function ConfessionalDoor() {
     setWord(myWord)
     setChoosing(false)
     setItems(data.confessions || [])
+    setUnread(0) // he's read them now
     try { sessionStorage.setItem('peteWord', myWord) } catch { /* ignore */ }
   }
 
   if (!count) return null
   return (
       <section className="confess-door-wrap">
-        <button type="button" className="confess-door" onClick={() => setOpen(true)}>
+        <button type="button" className={`confess-door ${unread ? 'confess-new' : ''}`} onClick={() => setOpen(true)}>
           🕯️ The 4am Confessional<br />
-          <small>{count === 1 ? '1 confession awaits' : `${count} confessions await`}</small>
+          <small>{unread
+              ? (unread === 1 ? '1 new confession awaits' : `${unread} new confessions await`)
+              : (count === 1 ? '1 confession' : `${count} confessions`)}</small>
         </button>
         {open && (
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setOpen(false)}>
@@ -129,7 +133,8 @@ export function ConfessionalDoor() {
                 ) : (
                     <div className="confess-list">
                       {items.map((c) => (
-                          <article key={c.id} className="confess-item">
+                          <article key={c.id} className={`confess-item ${c.seen ? '' : 'confess-item-new'}`}>
+                            {!c.seen && <p className="confess-new-tag">New</p>}
                             <p className="confess-text">{c.text}</p>
                             <p className="from">— {c.name}</p>
                             {c.contact && <p className="confess-contact"><ContactLink value={c.contact} /></p>}
