@@ -21,6 +21,13 @@ UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Private birthday card: tell search engines not to index any page, photo or video
+@app.middleware("http")
+async def no_index(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Robots-Tag"] = "noindex, nofollow, noimageindex"
+    return response
+
 app.mount("/media", StaticFiles(directory=UPLOAD_DIR), name="media")
 
 def get_db():
