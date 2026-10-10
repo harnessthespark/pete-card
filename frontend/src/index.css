@@ -475,6 +475,11 @@ body { overflow-x: hidden; }
 	.pane-today, .canonised .halo { animation: none; }
 }
 
+/* Canonised: the line above the window takes the plaque's lettering */
+.canonised .petermas-sub {
+	font-family: 'Almendra', Georgia, serif; font-size: clamp(16px, 4.2vw, 19px);
+	color: #f0b429; text-shadow: 0 1px 0 rgba(0,0,0,.6);
+}
 /* Canonised: the window slowly changes into long-haired St Petermas */
 .canonised .stained::after {
 	content: ""; position: absolute; inset: 14px; border-radius: inherit;
