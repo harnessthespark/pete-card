@@ -768,6 +768,7 @@ function App() {
       ))}
     </section>
         <RevealedGallery title={isPeteView ? 'Unveiled in St Petermas' : 'Unveiled so far in St Petermas'} />
+        <p className="logout"><a href="/logout">Log out</a></p>
       </main>
   )
 }

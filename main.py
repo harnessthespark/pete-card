@@ -4,10 +4,9 @@ import sqlite3
 import uuid
 import hashlib
 import secrets
-import base64
 from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from fastapi.responses import Response
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
+from fastapi.responses import Response, HTMLResponse, JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
@@ -24,19 +23,80 @@ UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Private birthday card: the whole site sits behind the guest code (any username, code as password)
+# Private birthday card: the whole site sits behind the guest code.
+# Logging in sets a cookie; changing SECRET_CODE in Coolify logs everyone out.
+AUTH_COOKIE = "petermas_door"
+OPEN_PATHS = {"/login", "/logout", "/cover.jpg", "/favicon.svg"}
+
+LOGIN_PAGE = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pete's 50th</title><link rel="icon" href="/favicon.svg">
+<style>
+body { margin: 0; background: #1f3a2e; color: #1f3a2e; font-family: system-ui, sans-serif; }
+main { max-width: 480px; margin: 0 auto; padding: 24px 16px 64px; }
+.fifty { text-align: center; color: #eef0e6; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; }
+img { width: 100%; border-radius: 6px; display: block; margin-bottom: 18px; }
+form { display: grid; gap: 14px; background: #fffdf7; padding: 18px 16px 8px; border-radius: 6px; border: 5px dashed #1f3a2e; }
+p.note { margin: 0; text-align: center; color: #5c6b61; }
+input { font: inherit; font-size: 16px; padding: 12px; border: 1.5px solid #d6dacb; border-radius: 10px; background: #fffdf7; color: #1f3a2e; }
+button { font: inherit; font-weight: 600; font-size: 17px; padding: 14px; border: 0; border-radius: 999px; background: #1f3a2e; color: #eef0e6; margin-bottom: 10px; cursor: pointer; }
+#err { margin: 0; text-align: center; color: #c95a40; min-height: 1.2em; }
+</style></head><body><main>
+<p class="fifty">Pete's 50th · VIP Guest List</p>
+<img src="/cover.jpg" alt="All-In Revival Rave poster for Pete's 50th, 1st October">
+<form id="door">
+  <p class="note">Enter the invite code you were sent</p>
+  <input id="code" type="password" placeholder="Door code" autocomplete="current-password" autocapitalize="none" autocorrect="off" autofocus required>
+  <button>Open the card</button>
+  <p id="err"></p>
+</form>
+<script>
+document.getElementById('door').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const res = await fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: document.getElementById('code').value }) })
+  if (res.ok) location.reload()
+  else document.getElementById('err').textContent = "That code isn't right. Check the message you were sent."
+})
+</script>
+</main></body></html>"""
+
+
+def door_token():
+    return hashlib.sha256(f"petermas-door:{SECRET_CODE}".encode()).hexdigest()
+
+
 @app.middleware("http")
 async def lock_site(request, call_next):
-    header = request.headers.get("authorization", "")
-    if SECRET_CODE and header.startswith("Basic "):
-        try:
-            _, _, given = base64.b64decode(header[6:]).decode().partition(":")
-        except Exception:
-            given = ""
-        if secrets.compare_digest(given.strip(), SECRET_CODE):
-            return await call_next(request)
-    return Response("Pete's card is private.", status_code=401,
-                    headers={"WWW-Authenticate": 'Basic realm="Pete\'s 50th"'})
+    path = request.url.path
+    given = request.cookies.get(AUTH_COOKIE, "")
+    if path in OPEN_PATHS or (SECRET_CODE and secrets.compare_digest(given, door_token())):
+        return await call_next(request)
+    if request.method == "GET" and "text/html" in request.headers.get("accept", ""):
+        return HTMLResponse(LOGIN_PAGE, status_code=401)
+    return JSONResponse({"detail": "Pete's card is private."}, status_code=401)
+
+
+class DoorLogin(BaseModel):
+    code: str
+
+
+@app.post("/login")
+def login(body: DoorLogin):
+    if not SECRET_CODE or not secrets.compare_digest(body.code.strip(), SECRET_CODE):
+        raise HTTPException(status_code=403, detail="That code isn't right")
+    response = JSONResponse({"ok": True})
+    response.set_cookie(AUTH_COOKIE, door_token(), max_age=60 * 60 * 24 * 90,
+                        httponly=True, secure=True, samesite="lax")
+    return response
+
+
+@app.get("/logout")
+def logout():
+    response = RedirectResponse("/", status_code=303)
+    response.delete_cookie(AUTH_COOKIE)
+    return response
 
 # Private birthday card: tell search engines not to index any page, photo or video
 @app.middleware("http")
