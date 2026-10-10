@@ -568,7 +568,8 @@ function App() {
 
   async function loadMessages() {
     const res = await fetch('/messages')
-    setMessages(await res.json())
+    // Locked out (e.g. on Lisa's Mac): show an empty wall rather than crash the card
+    if (res.ok) setMessages(await res.json())
   }
 
   async function checkCode(tryCode) {
@@ -768,7 +769,9 @@ function App() {
       ))}
     </section>
         <RevealedGallery title={isPeteView ? 'Unveiled in St Petermas' : 'Unveiled so far in St Petermas'} />
-        <p className="logout"><a href="/logout">Log out</a></p>
+        <p className="logout">
+          <button type="button" onClick={() => { window.location.href = '/logout' }}>Log out</button>
+        </p>
       </main>
   )
 }

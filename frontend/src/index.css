@@ -60,17 +60,19 @@ body {
 	background: var(--paper);
 	color: var(--ink);
 }
-.form textarea { min-height: 110px; resize: vertical; }
+.form textarea { min-height: 75px; resize: vertical; }
 .form button {
+	width: 200px;
+	justify-self: center;
 	font: inherit;
 	font-weight: 600;
 	font-size: 17px;
-	padding: 14px;
+	padding: 17px;
 	border: 0.1px solid var(--line);
 	border-radius: 999px;
 	background: var(--ink);
 	color: var(--ground);
-	margin-bottom: 10px;
+	margin: 12px 12px 20px 14px;
 }
 .form button:disabled { opacity: 0.6; }
 .status { margin: 0; text-align: center; color: var(--coral); }
@@ -1047,5 +1049,19 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 .confess-new-tag { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #ffd400; }
 @media (prefers-reduced-motion: reduce) { .confess-door.confess-new { animation: none; } }
 
-.logout { text-align: center; margin-top: 32px; }
-.logout a { color: var(--ground); opacity: 0.7; font-size: 14px; }
+.logout button {
+	background: url('/logout-pete.png') center / 110% no-repeat;
+	width: 200px;
+	font: inherit;
+	font-weight: 600;
+	font-size: 17px;
+	padding: 17px;
+	border: 0.1px solid var(--line);
+	border-radius: 999px;
+	color: var(--ground);
+	color: white;
+	font-weight: 600;
+	text-shadow: 0 1px 3px black;
+	margin: 12px 12px 20px 14px;
+	cursor: pointer;
+}
