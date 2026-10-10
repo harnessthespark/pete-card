@@ -473,8 +473,14 @@ body { overflow-x: hidden; }
 	.pane-today, .canonised .halo { animation: none; }
 }
 
-/* On the 31st he returns in his 90s raver glory */
-/* day 31: he stays short-haired (that's how he raved); the whole window lights up with the halo */
+/* Canonised: the window slowly changes into long-haired St Petermas */
+.canonised .stained::after {
+	content: ""; position: absolute; inset: 14px; border-radius: inherit;
+	background: url('/st-petermas-90s.jpg') center / cover no-repeat;
+	animation: transfigure 4s ease-in-out 1.5s both;
+}
+@keyframes transfigure { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .canonised .stained::after { animation: none; } }
 .petermas-caption {
 	margin: 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-variant: small-caps;
 	font-size: clamp(20px, 5.5vw, 28px); line-height: 1.2; color: #f5b700;
