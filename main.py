@@ -4,15 +4,18 @@ import sqlite3
 import uuid
 import hashlib
 import secrets
+import base64
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 DATA_DIR = os.environ.get("DATA_DIR", ".")
 DB = os.path.join(DATA_DIR, "petebirthday.db")
-SECRET_CODE = os.environ.get("SECRET_CODE", "allin76")
+# The guest code (uploads + the site-wide lock) lives only in Coolify (Environment Variables → SECRET_CODE), never in this file
+SECRET_CODE = os.environ.get("SECRET_CODE", "")
 # The admin code lives only in Coolify (Environment Variables → ADMIN_CODE), never in this file
 ADMIN_CODE = os.environ.get("ADMIN_CODE", "")
 # Pete's own secret word for the Confessional, also only in Coolify (Environment Variables → PETE_CODE)
@@ -20,6 +23,20 @@ PETE_CODE = os.environ.get("PETE_CODE", "")
 UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".heic", ".mp4", ".mov"}
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Private birthday card: the whole site sits behind the guest code (any username, code as password)
+@app.middleware("http")
+async def lock_site(request, call_next):
+    header = request.headers.get("authorization", "")
+    if SECRET_CODE and header.startswith("Basic "):
+        try:
+            _, _, given = base64.b64decode(header[6:]).decode().partition(":")
+        except Exception:
+            given = ""
+        if secrets.compare_digest(given.strip(), SECRET_CODE):
+            return await call_next(request)
+    return Response("Pete's card is private.", status_code=401,
+                    headers={"WWW-Authenticate": 'Basic realm="Pete\'s 50th"'})
 
 # Private birthday card: tell search engines not to index any page, photo or video
 @app.middleware("http")
@@ -147,7 +164,7 @@ def list_relics():
 
 @app.post("/upload")
 def upload(code: str = Form(...), file: UploadFile = File(...)):
-    if code != SECRET_CODE:
+    if not SECRET_CODE or code != SECRET_CODE:
         raise HTTPException(status_code=403, detail="Wrong code")
 
     ext = os.path.splitext(file.filename)[1].lower()
@@ -406,7 +423,7 @@ class CodeCheck(BaseModel):
 
 @app.post("/check-code")
 def check_code(body: CodeCheck):
-    if body.code.strip() != SECRET_CODE:
+    if not SECRET_CODE or body.code.strip() != SECRET_CODE:
         raise HTTPException(status_code=403, detail="That code isn't right")
     return {"ok": True}
 
