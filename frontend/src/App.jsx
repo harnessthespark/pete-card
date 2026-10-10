@@ -582,13 +582,11 @@ function App() {
 
   useEffect(() => {
     loadMessages()
-    let saved = ''
-    try { saved = localStorage.getItem('peteCode') || '' } catch { saved = '' }
-    if (saved) {
-      checkCode(saved).then((ok) => {
-        if (ok) { setCode(saved); setUnlocked(true) }
-      })
-    }
+    // The browser login already checked the guest code, so open the card straight away
+    fetch('/door-code')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => { if (data?.code) { setCode(data.code); setUnlocked(true) } })
+      .catch(() => {})
   }, [])
 
   async function handleUnlock(e) {

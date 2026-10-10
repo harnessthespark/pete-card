@@ -421,6 +421,13 @@ class CodeCheck(BaseModel):
     code: str
 
 
+# Anyone who reaches this is already past the site lock, so hand the card the guest code
+# and it can open without asking a second time
+@app.get("/door-code")
+def door_code():
+    return {"code": SECRET_CODE}
+
+
 @app.post("/check-code")
 def check_code(body: CodeCheck):
     if not SECRET_CODE or body.code.strip() != SECRET_CODE:
