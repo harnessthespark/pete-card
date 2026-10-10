@@ -1057,7 +1057,7 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 .logout { text-align: center; }
 
 .logout button {
-	background: url('/logout-pete.png') center / 100% no-repeat;
+	background: url('/logout-pete.png') center / 160% no-repeat;
 	width: 200px;
 	font: inherit;
 	font-weight: 600;
