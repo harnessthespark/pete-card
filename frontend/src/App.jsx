@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { startBirds } from './birds.js'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { bassThud } from './rave.js'
 import { startMusic, stopMusic, setMusicVolume, getMusicVolume, nowPlaying, enterChapel, enterClub, preloadMusic } from './music.js'
@@ -363,11 +364,20 @@ function QueueScene() {
 // then the lasers and the music kick in.
 function PeteIntro({ onOpen, onDone }) {
   // ticket -> arriving -> standing -> displayed -> open -> leaving
-  const [stage, setStage] = useState('arrive')
+  // 'wake' is a dark screen: the first tap lets the browser play sound, so the birds and the writing arrive together
+  const [stage, setStage] = useState('wake')
+  const stopBirds = useRef(null)
+
+  function tapWake() {
+    if (stage !== 'wake') return
+    stopBirds.current = startBirds()
+    setStage('arrive')
+  }
 
   function tapArrive() {
     if (stage !== 'arrive') return
     bassThud()
+    if (stopBirds.current) stopBirds.current(2) // birds belong to the writing screen only
     setStage('entering')
     setTimeout(() => setStage('ticket'), 1100)
   }
@@ -398,21 +408,27 @@ function PeteIntro({ onOpen, onDone }) {
 
   return (
       <div className={`club club-${stage}`}>
+        {stage === 'wake' && (
+            <div className="arrival arrival-wake" onClick={tapWake} role="button" tabIndex={0} aria-label="Tap to begin"
+                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapWake() }}>
+              <p className="arrival-tap">Tap to begin</p>
+            </div>
+        )}
         {(stage === 'arrive' || stage === 'entering') && (
             <div className="arrival" onClick={tapArrive} role="button" tabIndex={0}
-                 aria-label="Rave Revival, last orders, Halloween night. Tap to arrive"
+                 aria-label="Rave Over, 31st October, dawn is breaking, after-party starts now. Tap to arrive"
                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapArrive() }}>
               <div className="neon-sign">
-                <h1 className="neon neon-title">Rave Revival</h1>
-                <p className="neon neon-date">Last orders · Halloween night<br />The lights are coming up</p>
+                <h1 className="neon neon-title">Rave Over</h1>
+                <p className="neon neon-date">31st October<br />Dawn's breaking. After-party starts now.</p>
               </div>
               <p className="arrival-tap">Tap to arrive</p>
             </div>
         )}
         <div className="club-bg" aria-hidden="true" />
         <div className="queue-msg" aria-hidden={stage === 'open' || stage === 'leaving'}>
-          <p className="queue-line1">The queue’s round the block…</p>
-          <p className="queue-line2">…but the DJs don’t queue.</p>
+          <p className="queue-line1">The queue’s gone home…</p>
+          <p className="queue-line2">…but the DJs are still here.</p>
         </div>
         <div className="haze" aria-hidden="true" />
         <div className="lasers" aria-hidden="true">
