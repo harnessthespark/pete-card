@@ -142,10 +142,6 @@ function Sticker({ relic, children }) {
 }
 
 // The finale's faces, oldest first: each later one melts over the one before. Needs real photos of him at different ages to be a true young-to-now
-const FINALE_FACES = ['/finale/base.jpg']
-const FACE_START = 5 // seconds before the first change begins
-const FACE_STEP = 6 // seconds between changes
-const TEXT_AT = 1 // seconds before the title appears (one face now, so no melt to wait for)
 
 function isPreview() {
   return /^#pete-(eve|day-|closed)/.test(window.location.hash)
@@ -256,15 +252,15 @@ export default function PetermasCalendar() {
     const t = setTimeout(() => setFinale(true), 700)
     return () => clearTimeout(t)
   }, [canonised, scratchDone, showDay, finale, finaleSeen])
-  useEffect(() => { // confetti falls for a while, then tidies itself away
-    if (!finale) return
-    const t = setTimeout(closeFinale, 12000)
-    return () => clearTimeout(t)
-  }, [finale]) // eslint-disable-line react-hooks/exhaustive-deps
   function closeFinale() {
     setFinale(false); setFinaleSeen(true)
     try { localStorage.setItem('petermasFinale', '1') } catch { /* ignore */ }
   }
+  useEffect(() => { // confetti falls for a while, then tidies itself away
+    if (!finale) return
+    const t = setTimeout(closeFinale, 12000)
+    return () => clearTimeout(t)
+  }, [finale])
 
   // Keep the clock live: a page left open across midnight (or woken from sleep) still moves on to the next window
   useEffect(() => {
