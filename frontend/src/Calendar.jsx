@@ -141,6 +141,12 @@ function Sticker({ relic, children }) {
   )
 }
 
+// The finale's faces, oldest first: each later one melts over the one before. Needs real photos of him at different ages to be a true young-to-now
+const FINALE_FACES = ['/pete-young.jpg', '/st-petermasnow.jpg']
+const FACE_START = 5 // seconds before the first change begins
+const FACE_STEP = 6 // seconds between changes
+const TEXT_AT = FACE_START + (FINALE_FACES.length - 1) * FACE_STEP + 2 // title appears once he's fully grown up
+
 function isPreview() {
   return /^#pete-(eve|day-|closed)/.test(window.location.hash)
 }
@@ -221,6 +227,7 @@ function ScratchReveal({ src, done, onDone, relic }) {
 }
 
 export default function PetermasCalendar() {
+  const [, setTick] = useState(0)
   const daysOpen = daysOpenNow()
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
@@ -231,7 +238,32 @@ export default function PetermasCalendar() {
   useEffect(() => {
     fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
   }, [])
-  const canonised = daysOpen >= 31
+  // The grand finale: window 31 is due, or Pete has scratched it open
+  const canonised = daysOpen >= 31 || scratched.includes(31)
+
+  // The finale moment: plays once per device when the feast completes (Lisa's #pete-day-31 preview always plays it)
+  const [finale, setFinale] = useState(false)
+  const [finaleSeen, setFinaleSeen] = useState(() => {
+    try { return !!localStorage.getItem('petermasFinale') } catch { return false }
+  })
+  useEffect(() => {
+    if (!canonised || showDay || finale) return
+    if (finaleSeen && !isPreview()) return
+    const t = setTimeout(() => setFinale(true), 700)
+    return () => clearTimeout(t)
+  }, [canonised, showDay, finale, finaleSeen])
+  function closeFinale() {
+    setFinale(false); setFinaleSeen(true)
+    try { localStorage.setItem('petermasFinale', '1') } catch { /* ignore */ }
+  }
+
+  // Keep the clock live: a page left open across midnight (or woken from sleep) still moves on to the next window
+  useEffect(() => {
+    const bump = () => setTick((t) => t + 1)
+    const id = setInterval(bump, 60000)
+    document.addEventListener('visibilitychange', bump)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', bump) }
+  }, [])
   const sectionRef = useRef(null)
 
   // Two rooms: when the window is on screen, the music moves to the chapel track
@@ -296,6 +328,29 @@ export default function PetermasCalendar() {
           <div className="panes">{cells}</div>
         </div>
         <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
+        {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Watch the canonisation again</button>}
+
+        {finale && (
+            <div className="finale" role="dialog" aria-modal="true" aria-label="St Petermas is canonised" onClick={closeFinale}>
+              {Array.from({ length: 36 }, (_, i) => (
+                  <span key={i} className="confetti" aria-hidden="true"
+                        style={{ left: `${(i * 97) % 100}%`, animationDelay: `${(i % 9) * 0.7}s`, animationDuration: `${7 + (i % 5) * 1.2}s`,
+                                 background: ['#ffd400', '#c1121f', '#2a9d8f', '#f4a261', '#7b2cbf'][i % 5] }} />
+              ))}
+              <div className="finale-card" onClick={(e) => e.stopPropagation()}>
+                <div className="finale-saint">
+                  {FINALE_FACES.map((src, i) => (
+                      <img key={src} src={src} alt={i === FINALE_FACES.length - 1 ? 'St Petermas, canonised' : ''}
+                           className={i ? 'finale-face finale-face-later' : 'finale-face'}
+                           style={i ? { animationDelay: `${FACE_START + (i - 1) * FACE_STEP}s` } : undefined} />
+                  ))}
+                </div>
+                <h2 className="finale-title" style={{ animationDelay: `${TEXT_AT}s` }}>St Petermas is canonised</h2>
+                <p className="finale-sub" style={{ animationDelay: `${TEXT_AT + 2}s` }}>Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
+                <button type="button" className="enter-btn" style={{ animationDelay: `${TEXT_AT + 4}s` }} onClick={closeFinale}>Amen</button>
+              </div>
+            </div>
+        )}
 
         {showDay && (
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>

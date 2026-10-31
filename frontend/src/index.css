@@ -1072,3 +1072,44 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 	margin: 12px 12px 20px 14px;
 	cursor: pointer;
 }
+
+/* ===== The grand finale: St Petermas is canonised ===== */
+.finale {
+	position: fixed; inset: 0; z-index: 95; overflow: hidden;
+	display: flex; align-items: center; justify-content: center; padding: 16px;
+	background: radial-gradient(circle at 50% 38%, rgba(255,212,0,.35), rgba(11,6,18,.96) 62%);
+	animation: finaleIn 2.5s ease both;
+}
+@keyframes finaleIn { from { opacity: 0; } to { opacity: 1; } }
+.finale-card { position: relative; z-index: 2; width: min(92vw, 420px); text-align: center; }
+.finale-saint {
+	position: relative; border-radius: 50% 50% 12px 12px / 22% 22% 12px 12px; overflow: hidden;
+	box-shadow: 0 0 0 4px #3b2a12, 0 0 60px rgba(255,212,0,.55);
+	animation: finaleGlow 4s ease-in-out infinite, finaleRise 4.5s ease-out both;
+}
+.finale-saint { aspect-ratio: 1 / 1.05; background: #0b0612; }
+.finale-face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+/* each later face melts in over the one before: young to now */
+.finale-face-later { opacity: 0; animation: faceMelt 5.5s ease-in-out both; }
+@keyframes faceMelt { from { opacity: 0; } to { opacity: 1; } }
+@keyframes finaleRise { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes finaleGlow { 50% { box-shadow: 0 0 0 4px #3b2a12, 0 0 90px rgba(255,212,0,.85); } }
+.finale-title {
+	margin: 18px 0 6px; font-family: 'Almendra', Georgia, serif; font-weight: 400;
+	font-size: clamp(28px, 8vw, 40px); color: #f0b429; text-shadow: 0 2px 0 rgba(0,0,0,.6), 0 0 18px rgba(255,212,0,.45);
+	animation: finaleText 2s ease 4.5s both;
+}
+.finale-sub { margin: 0 0 16px; color: var(--paper); font-size: 15px; animation: finaleText 2s ease 6.5s both; }
+.finale .enter-btn { animation: finaleText 1.5s ease 9s both; }
+@keyframes finaleText { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.confetti {
+	position: absolute; top: -20px; width: 9px; height: 16px; border-radius: 2px; opacity: .9;
+	animation: confettiFall linear infinite;
+}
+@keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); } }
+.finale-replay { margin-top: 14px; }
+@media (prefers-reduced-motion: reduce) {
+	.finale, .finale-saint, .finale-title, .finale-sub, .finale .enter-btn { animation: none; }
+	.finale-face-later { animation: none; opacity: 1; }
+	.confetti { display: none; }
+}
