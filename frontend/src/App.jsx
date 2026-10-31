@@ -400,11 +400,11 @@ function PeteIntro({ onOpen, onDone }) {
       <div className={`club club-${stage}`}>
         {(stage === 'arrive' || stage === 'entering') && (
             <div className="arrival" onClick={tapArrive} role="button" tabIndex={0}
-                 aria-label="Rave Revival, tonight, 1st October. Tap to arrive"
+                 aria-label="Rave Revival, last orders, 31st October. Tap to arrive"
                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') tapArrive() }}>
               <div className="neon-sign">
                 <h1 className="neon neon-title">Rave Revival</h1>
-                <p className="neon neon-date">Tonight · 1st October<br />50 years in the making</p>
+                <p className="neon neon-date">Last orders · 31st October<br />The lights are coming up</p>
               </div>
               <p className="arrival-tap">Tap to arrive</p>
             </div>
