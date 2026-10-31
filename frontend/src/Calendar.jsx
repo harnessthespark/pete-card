@@ -142,7 +142,7 @@ function Sticker({ relic, children }) {
 }
 
 // The finale's faces, oldest first: each later one melts over the one before. Needs real photos of him at different ages to be a true young-to-now
-const FINALE_FACES = ['/st-petermasnow.jpg']
+const FINALE_FACES = ['/pete-young.jpg', '/st-petermasnow.jpg']
 const FACE_START = 5 // seconds before the first change begins
 const FACE_STEP = 6 // seconds between changes
 const TEXT_AT = FACE_START + (FINALE_FACES.length - 1) * FACE_STEP + 2 // title appears once he's fully grown up
