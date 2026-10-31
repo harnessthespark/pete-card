@@ -142,10 +142,10 @@ function Sticker({ relic, children }) {
 }
 
 // The finale's faces, oldest first: each later one melts over the one before. Needs real photos of him at different ages to be a true young-to-now
-const FINALE_FACES = ['/pete-young.jpg', '/st-petermasnow.jpg']
+const FINALE_FACES = ['/finale/base.jpg']
 const FACE_START = 5 // seconds before the first change begins
 const FACE_STEP = 6 // seconds between changes
-const TEXT_AT = FACE_START + (FINALE_FACES.length - 1) * FACE_STEP + 2 // title appears once he's fully grown up
+const TEXT_AT = 1 // seconds before the title appears (one face now, so no melt to wait for)
 
 function isPreview() {
   return /^#pete-(eve|day-|closed)/.test(window.location.hash)
@@ -243,15 +243,19 @@ export default function PetermasCalendar() {
 
   // The finale moment: plays once per device when the feast completes (Lisa's #pete-day-31 preview always plays it)
   const [finale, setFinale] = useState(false)
+  // The scratch-off in the window comes first; the popup only starts once it has been scratched clean
+  const [scratchDone, setScratchDone] = useState(() => {
+    try { return localStorage.getItem('petermasFinaleDone') === '1' } catch { return false }
+  })
   const [finaleSeen, setFinaleSeen] = useState(() => {
     try { return !!localStorage.getItem('petermasFinale') } catch { return false }
   })
   useEffect(() => {
-    if (!canonised || showDay || finale) return
+    if (!canonised || !scratchDone || showDay || finale) return
     if (finaleSeen && !isPreview()) return
     const t = setTimeout(() => setFinale(true), 700)
     return () => clearTimeout(t)
-  }, [canonised, showDay, finale, finaleSeen])
+  }, [canonised, scratchDone, showDay, finale, finaleSeen])
   function closeFinale() {
     setFinale(false); setFinaleSeen(true)
     try { localStorage.setItem('petermasFinale', '1') } catch { /* ignore */ }
@@ -325,7 +329,7 @@ export default function PetermasCalendar() {
 
         <div className="stained">
           <div className="halo" aria-hidden="true" />
-          <div className="panes">{cells}</div>
+          {canonised ? <ScratchFinale done={scratchDone} onDone={() => setScratchDone(true)} /> : <div className="panes">{cells}</div>}
         </div>
         <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
         {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Watch the canonisation again</button>}
@@ -372,6 +376,91 @@ export default function PetermasCalendar() {
         )}
 
       </section>
+  )
+}
+
+
+// Day-31 finale: scratch off the short-haired Pete, then the long-haired one, to reveal St Petermas canonised.
+// (Ported from petermas_finale_scratch.html. Images live in public/finale/: base, long, short.)
+function ScratchFinale({ done, onDone }) {
+  const wrapRef = useRef(null)
+  const longRef = useRef(null)
+  const shortRef = useRef(null)
+  const [hint, setHint] = useState('Scratch the saint...')
+  const [hintOn, setHintOn] = useState(true)
+
+  useEffect(() => {
+    if (done) return
+    const layers = [longRef.current, shortRef.current] // [0] long hair, [1] short hair (top)
+    const srcs = ['/finale/long.jpg', '/finale/short.jpg']
+    let stage = 1, last = null, strokes = 0
+    layers.forEach((c, i) => {
+      const im = new Image()
+      im.onload = () => { c.width = im.naturalWidth; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0) }
+      im.src = srcs[i]
+    })
+    const pos = (e, c) => {
+      const r = c.getBoundingClientRect()
+      return { x: (e.clientX - r.left) * c.width / r.width, y: (e.clientY - r.top) * c.height / r.height }
+    }
+    const scratch = (c, p) => {
+      const ctx = c.getContext('2d'), rad = c.width * (stage === 0 ? 0.075 : 0.055)
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad)
+      g.addColorStop(0, `rgba(0,0,0,${stage === 0 ? 0.32 : 0.20})`) // low = slow reveal
+      g.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.globalCompositeOperation = 'destination-out'
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, 7); ctx.fill()
+    }
+    const next = (c) => {
+      c.style.transition = 'opacity 2.5s'; c.style.opacity = 0; c.style.pointerEvents = 'none'
+      setHintOn(true); setHint(stage === 1 ? 'Keep going...' : 'Canonised.')
+      if (stage === 0) {
+        try { localStorage.setItem('petermasFinaleDone', '1') } catch { /* ignore */ }
+        setTimeout(onDone, 3200) // let the last layer fade, then hand over to the popup
+      }
+      stage--; last = null
+    }
+    const check = (c) => {
+      const w = 100, h = Math.round(100 * c.height / c.width)
+      const t = document.createElement('canvas'); t.width = w; t.height = h
+      const tc = t.getContext('2d'); tc.drawImage(c, 0, 0, w, h)
+      const d = tc.getImageData(0, 0, w, h).data; let a = 0
+      for (let i = 3; i < d.length; i += 4) a += d[i]
+      if (a / (255 * w * h) < (stage === 0 ? 0.55 : 0.35)) next(c)
+    }
+    const stroke = (e) => {
+      if (stage < 0) return
+      const c = layers[stage], p = pos(e, c)
+      if (last) {
+        const dx = p.x - last.x, dy = p.y - last.y, d = Math.hypot(dx, dy), step = c.width * 0.012
+        for (let i = step; i < d; i += step) scratch(c, { x: last.x + dx * i / d, y: last.y + dy * i / d })
+      }
+      scratch(c, p); last = p
+      if (++strokes % 12 === 0) check(c)
+    }
+    const wrap = wrapRef.current
+    const down = (e) => { wrap.setPointerCapture(e.pointerId); last = null; stroke(e); if (stage === 1) setHintOn(false) }
+    const move = (e) => { if (e.buttons) stroke(e) }
+    const up = () => { last = null }
+    wrap.addEventListener('pointerdown', down)
+    wrap.addEventListener('pointermove', move)
+    wrap.addEventListener('pointerup', up)
+    return () => {
+      wrap.removeEventListener('pointerdown', down)
+      wrap.removeEventListener('pointermove', move)
+      wrap.removeEventListener('pointerup', up)
+    }
+  }, [done]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+      <div className="scratch-finale">
+        <div className="scratch-finale-wrap" ref={wrapRef}>
+          <img src="/finale/base.jpg" alt="St Petermas, canonised" />
+          {!done && <canvas ref={longRef} />}
+          {!done && <canvas ref={shortRef} />}
+        </div>
+        {!done && <p className="scratch-finale-hint" style={{ opacity: hintOn ? 1 : 0 }}>{hint}</p>}
+      </div>
   )
 }
 

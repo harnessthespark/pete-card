@@ -480,14 +480,18 @@ body { overflow-x: hidden; }
 	font-family: 'Almendra', Georgia, serif; font-size: clamp(16px, 4.2vw, 19px);
 	color: #f0b429; text-shadow: 0 1px 0 rgba(0,0,0,.6);
 }
-/* Canonised: the window slowly changes into long-haired St Petermas */
-.canonised .stained::after {
-	content: ""; position: absolute; inset: 14px; border-radius: inherit;
-	background: url('/st-petermas-90s.jpg') center / cover no-repeat;
-	animation: transfigure 4s ease-in-out 1.5s both;
+/* Canonised: the window becomes the day-31 scratch finale (see Finale in Calendar.jsx) */
+.scratch-finale { position: relative; z-index: 3; }
+.scratch-finale-wrap { position: relative; width: 100%; aspect-ratio: 0.95 / 1; touch-action: none; }
+.scratch-finale-wrap img, .scratch-finale-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scratch-finale-wrap canvas { cursor: grab; touch-action: none; }
+.scratch-finale-hint {
+	margin: 10px auto 2px; width: fit-content; max-width: 100%; text-align: center;
+	font-family: 'Young Serif', Georgia, serif; font-size: clamp(18px, 5vw, 24px); letter-spacing: .02em;
+	color: #ffd400; background: rgba(10,6,2,.85); border: 1px solid #ffd400; border-radius: 999px;
+	padding: 6px 18px; text-shadow: 0 1px 0 #000; box-shadow: 0 0 14px rgba(255,212,0,.4);
+	transition: opacity 1.2s; min-height: 1.4em;
 }
-@keyframes transfigure { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .canonised .stained::after { animation: none; } }
 .petermas-caption {
 	margin: 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-variant: small-caps;
 	font-size: clamp(20px, 5.5vw, 28px); line-height: 1.2; color: #f5b700;
