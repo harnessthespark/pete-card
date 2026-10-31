@@ -235,6 +235,22 @@ export default function PetermasCalendar() {
   // The grand finale: window 31 is due, or Pete has scratched it open
   const canonised = daysOpen >= 31 || scratched.includes(31)
 
+  // The finale moment: plays once per device when the feast completes (Lisa's #pete-day-31 preview always plays it)
+  const [finale, setFinale] = useState(false)
+  const [finaleSeen, setFinaleSeen] = useState(() => {
+    try { return !!localStorage.getItem('petermasFinale') } catch { return false }
+  })
+  useEffect(() => {
+    if (!canonised || showDay || finale) return
+    if (finaleSeen && !isPreview()) return
+    const t = setTimeout(() => setFinale(true), 700)
+    return () => clearTimeout(t)
+  }, [canonised, showDay, finale, finaleSeen])
+  function closeFinale() {
+    setFinale(false); setFinaleSeen(true)
+    try { localStorage.setItem('petermasFinale', '1') } catch { /* ignore */ }
+  }
+
   // Keep the clock live: a page left open across midnight (or woken from sleep) still moves on to the next window
   useEffect(() => {
     const bump = () => setTick((t) => t + 1)
@@ -306,6 +322,23 @@ export default function PetermasCalendar() {
           <div className="panes">{cells}</div>
         </div>
         <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
+        {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Watch the canonisation again</button>}
+
+        {finale && (
+            <div className="finale" role="dialog" aria-modal="true" aria-label="St Petermas is canonised" onClick={closeFinale}>
+              {Array.from({ length: 36 }, (_, i) => (
+                  <span key={i} className="confetti" aria-hidden="true"
+                        style={{ left: `${(i * 97) % 100}%`, animationDelay: `${(i % 9) * 0.35}s`, animationDuration: `${3.5 + (i % 5) * 0.6}s`,
+                                 background: ['#ffd400', '#c1121f', '#2a9d8f', '#f4a261', '#7b2cbf'][i % 5] }} />
+              ))}
+              <div className="finale-card" onClick={(e) => e.stopPropagation()}>
+                <div className="finale-saint"><img src="/st-petermas-90s.jpg" alt="St Petermas, long-haired, canonised" /></div>
+                <h2 className="finale-title">St Petermas is canonised</h2>
+                <p className="finale-sub">Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
+                <button type="button" className="enter-btn" onClick={closeFinale}>Amen</button>
+              </div>
+            </div>
+        )}
 
         {showDay && (
             <div className="pane-modal" role="dialog" aria-modal="true" onClick={() => setShowDay(null)}>
