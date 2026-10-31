@@ -644,6 +644,13 @@ function App() {
 
   const isPeteView = window.location.hash.startsWith('#pete')
 
+  // Changing only the #... part of the address doesn't reload the page: do it so previews always start fresh
+  useEffect(() => {
+    const reload = () => window.location.reload()
+    window.addEventListener('hashchange', reload)
+    return () => window.removeEventListener('hashchange', reload)
+  }, [])
+
   if (window.location.hash === '#admin') {
     return <AdminPage />
   }

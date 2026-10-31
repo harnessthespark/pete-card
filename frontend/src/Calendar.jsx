@@ -328,11 +328,11 @@ export default function PetermasCalendar() {
             <div className="finale" role="dialog" aria-modal="true" aria-label="St Petermas is canonised" onClick={closeFinale}>
               {Array.from({ length: 36 }, (_, i) => (
                   <span key={i} className="confetti" aria-hidden="true"
-                        style={{ left: `${(i * 97) % 100}%`, animationDelay: `${(i % 9) * 0.35}s`, animationDuration: `${3.5 + (i % 5) * 0.6}s`,
+                        style={{ left: `${(i * 97) % 100}%`, animationDelay: `${(i % 9) * 0.7}s`, animationDuration: `${7 + (i % 5) * 1.2}s`,
                                  background: ['#ffd400', '#c1121f', '#2a9d8f', '#f4a261', '#7b2cbf'][i % 5] }} />
               ))}
               <div className="finale-card" onClick={(e) => e.stopPropagation()}>
-                <div className="finale-saint"><img src="/st-petermas-90s.jpg" alt="St Petermas, long-haired, canonised" /></div>
+                <div className="finale-saint"><img src="/st-petermasnow.jpg" alt="St Petermas, canonised" /></div>
                 <h2 className="finale-title">St Petermas is canonised</h2>
                 <p className="finale-sub">Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
                 <button type="button" className="enter-btn" onClick={closeFinale}>Amen</button>
