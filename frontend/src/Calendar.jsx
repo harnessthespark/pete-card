@@ -256,6 +256,11 @@ export default function PetermasCalendar() {
     const t = setTimeout(() => setFinale(true), 700)
     return () => clearTimeout(t)
   }, [canonised, scratchDone, showDay, finale, finaleSeen])
+  useEffect(() => { // confetti falls for a while, then tidies itself away
+    if (!finale) return
+    const t = setTimeout(closeFinale, 12000)
+    return () => clearTimeout(t)
+  }, [finale]) // eslint-disable-line react-hooks/exhaustive-deps
   function closeFinale() {
     setFinale(false); setFinaleSeen(true)
     try { localStorage.setItem('petermasFinale', '1') } catch { /* ignore */ }
@@ -329,31 +334,19 @@ export default function PetermasCalendar() {
 
         <div className="stained">
           <div className="halo" aria-hidden="true" />
-          {canonised && !scratchDone && <ScratchFinale done={false} onDone={() => setScratchDone(true)} />}
-          {(!canonised || scratchDone) && <div className="panes">{cells}</div>}
+          {canonised && <ScratchFinale done={scratchDone} onDone={() => setScratchDone(true)} />}
+          {!canonised && <div className="panes">{cells}</div>}
         </div>
         <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
-        {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Watch the canonisation again</button>}
+        {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Confetti again</button>}
 
         {finale && (
-            <div className="finale" role="dialog" aria-modal="true" aria-label="St Petermas is canonised" onClick={closeFinale}>
+            <div className="finale" aria-hidden="true">
               {Array.from({ length: 36 }, (_, i) => (
                   <span key={i} className="confetti" aria-hidden="true"
                         style={{ left: `${(i * 97) % 100}%`, animationDelay: `${(i % 9) * 0.7}s`, animationDuration: `${7 + (i % 5) * 1.2}s`,
                                  background: ['#ffd400', '#c1121f', '#2a9d8f', '#f4a261', '#7b2cbf'][i % 5] }} />
               ))}
-              <div className="finale-card" onClick={(e) => e.stopPropagation()}>
-                <div className="finale-saint">
-                  {FINALE_FACES.map((src, i) => (
-                      <img key={src} src={src} alt={i === FINALE_FACES.length - 1 ? 'St Petermas, canonised' : ''}
-                           className={i ? 'finale-face finale-face-later' : 'finale-face'}
-                           style={i ? { animationDelay: `${FACE_START + (i - 1) * FACE_STEP}s` } : undefined} />
-                  ))}
-                </div>
-                <h2 className="finale-title" style={{ animationDelay: `${TEXT_AT}s` }}>St Petermas is canonised</h2>
-                <p className="finale-sub" style={{ animationDelay: `${TEXT_AT + 2}s` }}>Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
-                <button type="button" className="enter-btn" style={{ animationDelay: `${TEXT_AT + 4}s` }} onClick={closeFinale}>Amen</button>
-              </div>
             </div>
         )}
 
