@@ -141,6 +141,12 @@ function Sticker({ relic, children }) {
   )
 }
 
+// The finale takes his face from young to now: add more photos here (oldest first) and each melts into the next
+const FINALE_FACES = ['/st-petermas-90s.jpg', '/st-petermasnow.jpg']
+const FACE_START = 5 // seconds before the first change begins
+const FACE_STEP = 6 // seconds between changes
+const TEXT_AT = FACE_START + (FINALE_FACES.length - 1) * FACE_STEP + 2 // title appears once he's fully grown up
+
 function isPreview() {
   return /^#pete-(eve|day-|closed)/.test(window.location.hash)
 }
@@ -332,10 +338,16 @@ export default function PetermasCalendar() {
                                  background: ['#ffd400', '#c1121f', '#2a9d8f', '#f4a261', '#7b2cbf'][i % 5] }} />
               ))}
               <div className="finale-card" onClick={(e) => e.stopPropagation()}>
-                <div className="finale-saint"><img src="/st-petermasnow.jpg" alt="St Petermas, canonised" /></div>
-                <h2 className="finale-title">St Petermas is canonised</h2>
-                <p className="finale-sub">Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
-                <button type="button" className="enter-btn" onClick={closeFinale}>Amen</button>
+                <div className="finale-saint">
+                  {FINALE_FACES.map((src, i) => (
+                      <img key={src} src={src} alt={i === FINALE_FACES.length - 1 ? 'St Petermas, canonised' : ''}
+                           className={i ? 'finale-face finale-face-later' : 'finale-face'}
+                           style={i ? { animationDelay: `${FACE_START + (i - 1) * FACE_STEP}s` } : undefined} />
+                  ))}
+                </div>
+                <h2 className="finale-title" style={{ animationDelay: `${TEXT_AT}s` }}>St Petermas is canonised</h2>
+                <p className="finale-sub" style={{ animationDelay: `${TEXT_AT + 2}s` }}>Thirty-one days. Fifty years. Every window lit.<br />Amen, and rave on.</p>
+                <button type="button" className="enter-btn" style={{ animationDelay: `${TEXT_AT + 4}s` }} onClick={closeFinale}>Amen</button>
               </div>
             </div>
         )}
