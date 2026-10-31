@@ -221,6 +221,7 @@ function ScratchReveal({ src, done, onDone, relic }) {
 }
 
 export default function PetermasCalendar() {
+  const [, setTick] = useState(0)
   const daysOpen = daysOpenNow()
   const [opened, setOpened] = useState(loadOpened)
   const [showDay, setShowDay] = useState(null)
@@ -231,7 +232,16 @@ export default function PetermasCalendar() {
   useEffect(() => {
     fetch('/relics').then((r) => (r.ok ? r.json() : [])).then(setRelics).catch(() => {})
   }, [])
-  const canonised = daysOpen >= 31
+  // The grand finale: window 31 is due, or Pete has scratched it open
+  const canonised = daysOpen >= 31 || scratched.includes(31)
+
+  // Keep the clock live: a page left open across midnight (or woken from sleep) still moves on to the next window
+  useEffect(() => {
+    const bump = () => setTick((t) => t + 1)
+    const id = setInterval(bump, 60000)
+    document.addEventListener('visibilitychange', bump)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', bump) }
+  }, [])
   const sectionRef = useRef(null)
 
   // Two rooms: when the window is on screen, the music moves to the chapel track
