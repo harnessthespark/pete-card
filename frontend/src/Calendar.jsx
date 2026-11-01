@@ -74,7 +74,9 @@ const SPARE_WINDOW = 13
 // Special windows: Lisa and Pete, young, open the month on window 1
 const SPECIAL = { 1: '/advent/young.jpg' }
 // Folder photos bumped by the special ones: they still show in the 'Unveiled' gallery
-const BONUS_PHOTOS = ['/advent/2.jpg']
+// Bump PIC_V whenever a picture is replaced under the same file name, so phones fetch the new one instead of their cached copy
+const PIC_V = '?v=2'
+const BONUS_PHOTOS = ['/advent/2.jpg' + PIC_V]
 
 // Who goes behind which window.
 // Relics Lisa has pinned to a window (from #admin) take that window.
@@ -96,8 +98,8 @@ function allocate(relics) {
 
 function basePhoto(day) {
   if (SPECIAL[day]) return SPECIAL[day]
-  if (day === LAST_DAY) return '/advent/1.jpg'
-  if (day < FOLDER_PHOTOS) return `/advent/${day + 1}.jpg`
+  if (day === LAST_DAY) return '/advent/1.jpg' + PIC_V
+  if (day < FOLDER_PHOTOS) return `/advent/${day + 1}.jpg${PIC_V}`
   return null
 }
 
