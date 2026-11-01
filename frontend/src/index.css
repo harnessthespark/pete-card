@@ -1195,3 +1195,8 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
    (it showed a second, cropped saint through the grid). The panes sit on dark leaded glass with a warm gold tint. */
 .canonised .stained::before, .canonised .stained::after { display: none; }
 .canonised .pane-lit, .canonised .pane-ready, .canonised .pane-today { background: rgba(255,212,0,.10); box-shadow: inset 0 0 12px rgba(255,212,0,.28); }
+
+/* Buttons outside the club intro are always visible. Only the intro fades them in (.club-open); in the chapel and the
+   Confessional nothing did, so "Enter", "Seal the booth" and "Confetti again" were invisible. */
+.page .enter-btn, .pane-card .enter-btn { opacity: 1; transition: none; }
+.confess-card p { color: #f3e2b3; }
