@@ -331,7 +331,7 @@ export default function PetermasCalendar() {
         <div className="stained">
           <div className="halo" aria-hidden="true" />
           {canonised && <ScratchFinale done={scratchDone} onDone={() => setScratchDone(true)} />}
-          {!canonised && <div className="panes">{cells}</div>}
+          {(!canonised || scratchDone) && <div className="panes">{cells}</div>}
         </div>
         <p className="petermas-caption">Patron saint of the all-nighter,<br />50 years devout</p>
         {canonised && <button type="button" className="enter-btn finale-replay" onClick={() => setFinale(true)}>Confetti again</button>}
