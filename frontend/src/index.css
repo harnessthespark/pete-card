@@ -594,7 +594,7 @@ iframe#yt-chapel.player-visible { width: 192px !important; height: 108px !import
    Until it exists, this layer is simply empty and the dark club background shows. */
 .club-bg {
 	position: absolute; inset: 0; z-index: 0;
-	background: url('/club-entrance.jpg') center / cover no-repeat;
+	background: url('/club-entrance.jpg?v=2') center / cover no-repeat;
 	transition: opacity 1s ease;
 }
 .club-open .club-bg, .club-leaving .club-bg { opacity: .12; }
@@ -1190,3 +1190,13 @@ iframe#yt-chapel.player-visible { width: 256px !important; height: 144px !import
 		linear-gradient(160deg, #7a3510 0%, #c0561c 45%, #4a2008 100%);
 }
 .club-bg { filter: sepia(.65) saturate(1.5) brightness(1.1) hue-rotate(-8deg); }
+
+/* Once canonised the saint sits above the window grid, so the old picture behind the panes is switched off
+   (it showed a second, cropped saint through the grid). The panes sit on dark leaded glass with a warm gold tint. */
+.canonised .stained::before, .canonised .stained::after { display: none; }
+.canonised .pane-lit, .canonised .pane-ready, .canonised .pane-today { background: rgba(255,212,0,.10); box-shadow: inset 0 0 12px rgba(255,212,0,.28); }
+
+/* Buttons outside the club intro are always visible. Only the intro fades them in (.club-open); in the chapel and the
+   Confessional nothing did, so "Enter", "Seal the booth" and "Confetti again" were invisible. */
+.page .enter-btn, .pane-card .enter-btn { opacity: 1; transition: none; }
+.confess-card p { color: #f3e2b3; }

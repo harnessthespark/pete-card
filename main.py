@@ -103,6 +103,10 @@ def logout():
 async def no_index(request, call_next):
     response = await call_next(request)
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noimageindex"
+    # Pictures keep their file names when replaced, so tell phones to re-check them each visit (a quick 304 when unchanged).
+    # The built /assets/ files have unique names and /media/ uploads are never replaced, so they can stay cached.
+    if not request.url.path.startswith(("/assets/", "/media/")):
+        response.headers["Cache-Control"] = "no-cache"
     return response
 
 app.mount("/media", StaticFiles(directory=UPLOAD_DIR), name="media")
